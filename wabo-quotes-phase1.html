@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WaBo · Anfrage stellen — Präzisionsdrehteile in 2 Werktagen</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%232DBCB6'/%3E%3Ctext x='16' y='23' text-anchor='middle' font-family='-apple-system,Arial,sans-serif' font-size='22' font-weight='900' fill='white'%3EB%3C/text%3E%3C/svg%3E">
+<meta name="description" content="Stellen Sie Ihre Anfrage zu Präzisionsdrehteilen aus Metall.">
+<style>
+  :root {
+    --c-primary: #2DBCB6;
+    --c-primary-dark: #21948F;
+    --c-primary-light: #E8F7F6;
+    --c-ink: #1F2A2D;
+    --c-text: #2C3E40;
+    --c-mute: #6B7280;
+    --c-line: #E5E7EB;
+    --c-bg: #FAFBFB;
+    --c-warn: #B85042;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,.04);
+    --shadow-md: 0 4px 14px rgba(0,0,0,.06);
+    --radius: 10px;
+    --radius-lg: 16px;
+    --font: 'Open Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: var(--font); color: var(--c-text); background: #fff; line-height: 1.6; font-size: 16px; -webkit-font-smoothing: antialiased; }
+  h1, h2, h3, h4 { color: var(--c-ink); font-weight: 700; line-height: 1.25; }
+  a { color: var(--c-primary-dark); }
+  a:hover { color: var(--c-primary); }
+  img { max-width: 100%; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+  header.site { background: #fff; border-bottom: 1px solid var(--c-line); padding: 18px 0; position: sticky; top: 0; z-index: 50; }
+  body.in-iframe header.site { display: none; }
+  .header-row { display: flex; align-items: center; gap: 24px; }
+  .logo { font-weight: 800; font-size: 28px; color: var(--c-ink); letter-spacing: -1px; line-height: 1; text-decoration: none; display: inline-flex; align-items: center; }
+  .logo .b1 { color: var(--c-ink); }
+  .logo .b2 { background: var(--c-primary); color: #fff; padding: 2px 8px; border-radius: 4px; margin-left: 1px; }
+  .logo-tag { margin-left: 14px; padding-left: 14px; border-left: 1px solid var(--c-line); color: var(--c-mute); font-size: 13px; line-height: 1.3; }
+  .header-actions { margin-left: auto; display: flex; align-items: center; gap: 14px; }
+  .header-actions .phone { color: var(--c-ink); text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; }
+  .header-actions .phone:hover { color: var(--c-primary-dark); }
+  .lang-switch { display: flex; border: 1px solid var(--c-line); border-radius: 6px; overflow: hidden; }
+  .lang-switch button { background: transparent; border: 0; padding: 6px 11px; font-family: var(--font); font-size: 12px; font-weight: 700; color: var(--c-mute); cursor: pointer; }
+  .lang-switch button.active { background: var(--c-primary); color: #fff; }
+
+  .hero { padding: 72px 0 56px; background: linear-gradient(180deg, var(--c-primary-light) 0%, #fff 100%); }
+  .eyebrow { color: var(--c-primary-dark); font-weight: 700; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 14px; }
+  .hero h1 { font-size: 48px; line-height: 1.1; margin-bottom: 18px; letter-spacing: -.5px; }
+  .hero h1 .accent { color: var(--c-primary); }
+  .hero-sub { font-size: 19px; color: var(--c-text); max-width: 680px; margin-bottom: 32px; }
+  .hero-ctas { display: flex; gap: 12px; flex-wrap: wrap; }
+
+  .btn { display: inline-flex; align-items: center; gap: 8px; background: var(--c-primary); color: #fff; border: 0; padding: 16px 28px; border-radius: var(--radius); font-family: var(--font); font-size: 16px; font-weight: 700; cursor: pointer; transition: all .15s; text-decoration: none; box-shadow: var(--shadow-sm); }
+  .btn:hover { background: var(--c-primary-dark); transform: translateY(-1px); box-shadow: var(--shadow-md); color: #fff; }
+  .btn-secondary { background: #fff; color: var(--c-ink); border: 1px solid var(--c-line); }
+  .btn-secondary:hover { background: var(--c-bg); border-color: var(--c-mute); color: var(--c-ink); }
+  .btn-block { width: 100%; justify-content: center; }
+
+  .process { padding: 56px 0; background: #fff; }
+  .process h2 { text-align: center; font-size: 28px; margin-bottom: 8px; }
+  .process .subline { text-align: center; color: var(--c-mute); margin-bottom: 40px; }
+  .process-flow { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0; position: relative; margin-top: 24px; }
+  .process-step { text-align: center; padding: 0 6px; position: relative; }
+  .process-step:not(:last-child)::after { content: ''; position: absolute; top: 22px; right: -14px; width: 28px; height: 2px; background: var(--c-line); }
+  .process-num { width: 44px; height: 44px; border-radius: 50%; background: #fff; border: 2px solid var(--c-primary); color: var(--c-primary-dark); font-weight: 700; font-size: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; position: relative; }
+  .process-step h4 { font-size: 13px; margin-bottom: 4px; }
+  .process-step .time { font-size: 11px; color: var(--c-mute); font-weight: 600; }
+
+  .promises { padding: 56px 0; background: var(--c-bg); border-top: 1px solid var(--c-line); border-bottom: 1px solid var(--c-line); }
+  .promises h2 { text-align: center; font-size: 28px; margin-bottom: 12px; }
+  .promises .subline { text-align: center; color: var(--c-mute); margin-bottom: 40px; max-width: 600px; margin-left: auto; margin-right: auto; }
+  .promise-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+  .promise-item { background: #fff; border: 1px solid var(--c-line); border-radius: var(--radius); padding: 22px; }
+  .promise-item .num { width: 32px; height: 32px; border-radius: 50%; background: var(--c-primary-light); color: var(--c-primary-dark); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px; margin-bottom: 12px; }
+  .promise-item h4 { font-size: 16px; margin-bottom: 6px; }
+  .promise-item p { font-size: 14px; color: var(--c-mute); }
+
+  .existing-note { padding: 32px 0; background: var(--c-bg); border-bottom: 1px solid var(--c-line); }
+  .existing-card { background: var(--c-ink); color: #fff; border-radius: var(--radius-lg); padding: 28px 32px; display: grid; grid-template-columns: 56px 1fr; gap: 20px; align-items: center; }
+  .existing-card .ico-circle { width: 56px; height: 56px; border-radius: 50%; background: var(--c-primary); color: var(--c-ink); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .existing-card .ico-circle svg { width: 28px; height: 28px; }
+  .existing-card .label { color: var(--c-primary); font-weight: 700; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px; }
+  .existing-card h3 { color: #fff; font-size: 18px; margin-bottom: 4px; }
+  .existing-card p { color: rgba(255,255,255,.85); font-size: 14px; }
+
+  .anfrage { padding: 72px 0; background: #fff; }
+  .anfrage-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 48px; }
+  .anfrage h2 { font-size: 32px; margin-bottom: 12px; }
+  .anfrage .subline { color: var(--c-mute); font-size: 16px; margin-bottom: 28px; }
+  .form-block { background: #fff; border: 1px solid var(--c-line); border-radius: var(--radius-lg); padding: 32px; box-shadow: var(--shadow-sm); }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .field { display: flex; flex-direction: column; }
+  .field label { font-size: 13px; color: var(--c-ink); font-weight: 600; margin-bottom: 6px; }
+  .field label .req { color: var(--c-warn); margin-left: 2px; }
+  .field input, .field textarea, .field select { padding: 11px 14px; border: 1px solid var(--c-line); border-radius: 6px; font-family: var(--font); font-size: 15px; background: #fff; color: var(--c-ink); }
+  .field input:focus, .field textarea:focus, .field select:focus { outline: 0; border-color: var(--c-primary); box-shadow: 0 0 0 3px var(--c-primary-light); }
+  .field textarea { resize: vertical; min-height: 100px; font-family: inherit; }
+  .field .hint { font-size: 12px; color: var(--c-mute); margin-top: 4px; }
+  .upload-zone { border: 2px dashed var(--c-line); border-radius: var(--radius); padding: 22px; text-align: center; background: var(--c-bg); cursor: pointer; transition: all .15s; }
+  .upload-zone:hover { border-color: var(--c-primary); background: var(--c-primary-light); }
+  .upload-zone strong { color: var(--c-ink); display: block; }
+  .upload-zone span { color: var(--c-mute); font-size: 13px; }
+  .upload-zone input { display: none; }
+  .upload-list { margin-top: 8px; font-size: 13px; color: var(--c-text); }
+  .checkbox-row { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; color: var(--c-mute); margin: 16px 0 24px; line-height: 1.5; }
+  .checkbox-row input { margin-top: 4px; }
+
+  .alt-block { background: var(--c-ink); color: #fff; border-radius: var(--radius-lg); padding: 32px; margin-bottom: 20px; }
+  .alt-block .label { color: var(--c-primary); font-weight: 700; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
+  .alt-block h3 { color: #fff; font-size: 20px; margin-bottom: 10px; }
+  .alt-block p { color: rgba(255,255,255,.85); font-size: 14px; margin-bottom: 16px; }
+  .alt-block .mailto { display: block; background: rgba(255,255,255,.08); padding: 14px 16px; border-radius: 6px; font-family: 'SF Mono', Consolas, monospace; font-size: 14px; color: #fff; text-decoration: none; border: 1px solid rgba(255,255,255,.15); transition: all .15s; }
+  .alt-block .mailto:hover { background: rgba(255,255,255,.14); color: #fff; border-color: var(--c-primary); }
+
+  .contact-block { background: #fff; border: 1px solid var(--c-line); border-radius: var(--radius-lg); padding: 28px; }
+  .contact-head { display: flex; gap: 16px; align-items: center; margin-bottom: 18px; }
+  .avatar { width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, var(--c-primary) 0%, var(--c-primary-dark) 100%); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 20px; flex-shrink: 0; }
+  .contact-head .name { font-weight: 700; color: var(--c-ink); font-size: 16px; }
+  .contact-head .role { font-size: 13px; color: var(--c-mute); }
+  .contact-row { display: flex; gap: 10px; align-items: center; padding: 10px 0; border-top: 1px solid var(--c-line); font-size: 14px; color: var(--c-text); }
+  .contact-row a { color: var(--c-text); text-decoration: none; }
+  .contact-row a:hover { color: var(--c-primary-dark); }
+
+  .termin-block { margin-top: 20px; background: var(--c-primary-light); border-radius: var(--radius-lg); padding: 24px; border: 1px solid var(--c-primary); }
+  .termin-block h4 { font-size: 16px; margin-bottom: 12px; }
+  .termin-block p { font-size: 14px; color: var(--c-text); margin-bottom: 14px; }
+  .slot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+  .slot-btn { background: #fff; border: 1px solid var(--c-line); border-radius: 6px; padding: 10px 8px; font-family: var(--font); font-size: 13px; cursor: pointer; text-align: center; color: var(--c-ink); transition: all .15s; font-weight: 600; }
+  .slot-btn:hover { border-color: var(--c-primary); }
+  .slot-btn.selected { background: var(--c-primary); border-color: var(--c-primary); color: #fff; }
+  .slot-btn .day { display: block; font-size: 12px; }
+  .slot-btn .time { display: block; font-weight: 400; color: var(--c-mute); font-size: 11px; }
+  .slot-btn.selected .time { color: rgba(255,255,255,.9); }
+
+  .next-steps { padding: 64px 0; background: var(--c-ink); color: #fff; }
+  .next-steps h2 { color: #fff; text-align: center; font-size: 28px; margin-bottom: 12px; }
+  .next-steps .subline { text-align: center; color: rgba(255,255,255,.7); margin-bottom: 40px; max-width: 600px; margin-left: auto; margin-right: auto; }
+  .next-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .next-item { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); border-radius: var(--radius); padding: 24px; }
+  .next-item .num { color: var(--c-primary); font-weight: 800; font-size: 32px; line-height: 1; margin-bottom: 14px; }
+  .next-item h4 { color: #fff; font-size: 17px; margin-bottom: 8px; }
+  .next-item p { color: rgba(255,255,255,.8); font-size: 14px; }
+
+  .trust { padding: 40px 0; }
+  .trust-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+  .trust-item { text-align: center; }
+  .trust-num { font-size: 28px; font-weight: 800; color: var(--c-primary); line-height: 1; }
+  .trust-label { font-size: 12px; color: var(--c-mute); margin-top: 6px; text-transform: uppercase; letter-spacing: 1px; }
+
+  footer.site { background: #fff; border-top: 1px solid var(--c-line); padding: 32px 0; color: var(--c-mute); font-size: 13px; }
+  .footer-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+  .footer-links { display: flex; gap: 20px; flex-wrap: wrap; }
+  .footer-links a { color: var(--c-mute); text-decoration: none; }
+  .footer-links a:hover { color: var(--c-primary-dark); }
+
+  .success { display: none; background: var(--c-primary); color: #fff; border-radius: var(--radius-lg); padding: 36px; text-align: center; }
+  .success.show { display: block; }
+  .success h3 { color: #fff; font-size: 24px; margin-bottom: 10px; }
+  .success p { color: rgba(255,255,255,.9); font-size: 16px; margin-bottom: 16px; }
+  .success .ref { background: rgba(255,255,255,.18); display: inline-block; padding: 8px 16px; border-radius: 6px; font-family: 'SF Mono', monospace; font-size: 14px; }
+
+  @media (max-width: 860px) {
+    .hero h1 { font-size: 34px; }
+    .hero-sub { font-size: 17px; }
+    .anfrage-grid { grid-template-columns: 1fr; }
+    .promise-grid { grid-template-columns: 1fr 1fr; }
+    .next-grid { grid-template-columns: 1fr; }
+    .form-row { grid-template-columns: 1fr; }
+    .process-flow { grid-template-columns: 1fr 1fr; gap: 16px; }
+    .process-step:not(:last-child)::after { display: none; }
+    .trust-strip { grid-template-columns: 1fr 1fr; }
+    .logo-tag { display: none; }
+  }
+  @media (max-width: 480px) {
+    .promise-grid { grid-template-columns: 1fr; }
+    .process-flow { grid-template-columns: 1fr; }
+    .trust-strip { grid-template-columns: 1fr 1fr; gap: 16px; }
+    .header-actions .phone span { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="container header-row">
+    <a href="#" class="logo"><span class="b1">Wa</span><span class="b2">Bo</span></a>
+    <div class="logo-tag" data-de="Walter Bornmann GmbH<br>Präzisionsdrehteile aus Metall" data-en="Walter Bornmann GmbH<br>Precision turned metal parts">Walter Bornmann GmbH<br>Präzisionsdrehteile aus Metall</div>
+    <div class="header-actions">
+      <a class="phone" href="tel:+49233368943-12">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
+        <span>+49 2333 68943-12</span>
+      </a>
+      <div class="lang-switch">
+        <button class="active" data-lang="de">DE</button>
+        <button data-lang="en">EN</button>
+      </div>
+      <a class="btn" href="#anfrage" data-de="Anfrage starten" data-en="Start request">Anfrage starten</a>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="container">
+    <div class="eyebrow" data-de="Prozess formt Präzision" data-en="Process shapes precision">Prozess formt Präzision</div>
+    <h1 data-de="Ihre Anfrage. Unsere Vorschläge. <span class='accent'>In 2 Werktagen.</span>" data-en="Your request. Our proposals. <span class='accent'>In 2 business days.</span>">Ihre Anfrage. Unsere Vorschläge. <span class="accent">In 2 Werktagen.</span></h1>
+    <p class="hero-sub" data-de="Übermitteln Sie uns Ihre Anfrage nach Präzisionsdrehteilen. Wir erstellen Ihnen immer zwei Vorschläge — genau passend auf Ihre Anfrage und eine Idee, wie es wirtschaftlicher geht. Transparent und interaktiv in jedem Schritt." data-en="Send us your request for precision turned parts. We always provide two proposals — one matching your request exactly and one with an idea how to make it more economical. Transparent and interactive at every step.">Übermitteln Sie uns Ihre Anfrage nach Präzisionsdrehteilen. Wir erstellen Ihnen immer zwei Vorschläge — genau passend auf Ihre Anfrage und eine Idee, wie es wirtschaftlicher geht. Transparent und interaktiv in jedem Schritt.</p>
+    <div class="hero-ctas">
+      <a href="#anfrage" class="btn" data-de="Anfrage starten →" data-en="Start request →">Anfrage starten →</a>
+      <a href="mailto:anfrage@walter-bornmann.de" class="btn btn-secondary" data-de="Per E-Mail anfragen" data-en="Request by email">Per E-Mail anfragen</a>
+    </div>
+  </div>
+</section>
+
+<section class="process">
+  <div class="container">
+    <h2 data-de="So läuft Ihre Anfrage bei uns" data-en="How your request runs with us">So läuft Ihre Anfrage bei uns</h2>
+    <p class="subline" data-de="Fünf Schritte, jeder mit klarer Zeitangabe — keine Blackbox." data-en="Five steps, each with a clear time — no black box.">Fünf Schritte, jeder mit klarer Zeitangabe — keine Blackbox.</p>
+    <div class="process-flow">
+      <div class="process-step"><div class="process-num">1</div><h4 data-de="Anfrage" data-en="Request">Anfrage</h4><div class="time" data-de="Sie senden ein" data-en="You submit">Sie senden ein</div></div>
+      <div class="process-step"><div class="process-num">2</div><h4 data-de="Bestätigung" data-en="Confirmation">Bestätigung</h4><div class="time" data-de="in Minuten" data-en="in minutes">in Minuten</div></div>
+      <div class="process-step"><div class="process-num">3</div><h4 data-de="Prüfung" data-en="Review">Prüfung</h4><div class="time" data-de="1 Werktag" data-en="1 business day">1 Werktag</div></div>
+      <div class="process-step"><div class="process-num">4</div><h4 data-de="Zwei Angebote" data-en="Two offers">Zwei Angebote</h4><div class="time" data-de="in 2 Werktagen" data-en="in 2 business days">in 2 Werktagen</div></div>
+      <div class="process-step"><div class="process-num">5</div><h4 data-de="Freigabe &amp; Produktion" data-en="Release &amp; production">Freigabe &amp; Produktion</h4><div class="time" data-de="Ihre Wahl" data-en="Your choice">Ihre Wahl</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="promises">
+  <div class="container">
+    <h2 data-de="Was wir Ihnen versprechen" data-en="What we promise you">Was wir Ihnen versprechen</h2>
+    <p class="subline" data-de="Differenzierung entsteht im Prozess — nicht im Drehteil." data-en="Differentiation happens in the process — not in the part itself.">Differenzierung entsteht im Prozess — nicht im Drehteil.</p>
+    <div class="promise-grid">
+      <div class="promise-item"><div class="num">01</div><h4 data-de="Antwort in 2 Werktagen" data-en="Answer in 2 business days">Antwort in 2 Werktagen</h4><p data-de="Verbindlich, ohne Wochen-Pingpong." data-en="Binding, without weeks of back-and-forth.">Verbindlich, ohne Wochen-Pingpong.</p></div>
+      <div class="promise-item"><div class="num">02</div><h4 data-de="Status-Link, kein Login" data-en="Status link, no login">Status-Link, kein Login</h4><p data-de="Persönlicher Link per Mail, jeder Schritt sichtbar." data-en="Personal link by email, every step visible.">Persönlicher Link per Mail, jeder Schritt sichtbar.</p></div>
+      <div class="promise-item"><div class="num">03</div><h4 data-de="Zwei Angebote als Standard" data-en="Two offers as standard">Zwei Angebote als Standard</h4><p data-de="Original + Optimierung mit Begründung." data-en="Original + optimisation with rationale.">Original + Optimierung mit Begründung.</p></div>
+      <div class="promise-item"><div class="num">04</div><h4 data-de="Persönlich erreichbar" data-en="Personally reachable">Persönlich erreichbar</h4><p data-de="Wolfgang Könen direkt, mit Telefon und Mail." data-en="Wolfgang Könen direct, by phone and email.">Wolfgang Könen direkt, mit Telefon und Mail.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="existing-note">
+  <div class="container">
+    <div class="existing-card">
+      <div class="ico-circle">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v6m0 8v6M4.93 4.93l4.24 4.24m5.66 5.66l4.24 4.24M2 12h6m8 0h6M4.93 19.07l4.24-4.24m5.66-5.66l4.24-4.24"/></svg>
+      </div>
+      <div>
+        <div class="label" data-de="Für Bestandskunden" data-en="For existing customers">Für Bestandskunden</div>
+        <h3 data-de="Prototypen und Kleinserien — exklusiv für Sie" data-en="Prototypes and small series — exclusively for you">Prototypen und Kleinserien — exklusiv für Sie</h3>
+        <p data-de="Bestandskunden mit laufendem Mengen-Kontingent fertigen wir auch Prototypen und Kleinserien jenseits unserer Standard-Lose. Sprechen Sie uns an." data-en="For existing customers with running volume contingent we also produce prototypes and small series beyond our standard lots. Get in touch.">Bestandskunden mit laufendem Mengen-Kontingent fertigen wir auch Prototypen und Kleinserien jenseits unserer Standard-Lose. Sprechen Sie uns an.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="anfrage" id="anfrage">
+  <div class="container">
+    <div class="anfrage-grid">
+      <div>
+        <h2 data-de="Anfrage stellen" data-en="Submit your request">Anfrage stellen</h2>
+        <p class="subline" data-de="Senden Sie uns Ihre Eckdaten und Zeichnungen. Sie erhalten innerhalb 2 Werktagen zwei Vorschläge." data-en="Send us your key data and drawings. You'll receive two proposals within 2 business days.">Senden Sie uns Ihre Eckdaten und Zeichnungen. Sie erhalten innerhalb 2 Werktagen zwei Vorschläge.</p>
+
+        <form class="form-block" id="anfrageForm" onsubmit="onSubmit(event)">
+          <div class="form-row">
+            <div class="field"><label data-de="Firma" data-en="Company">Firma</label><span class="req">*</span><input type="text" name="firma" required /></div>
+            <div class="field"><label data-de="Branche" data-en="Industry">Branche</label>
+              <select name="branche">
+                <option value="" data-de="— bitte wählen —" data-en="— please select —">— bitte wählen —</option>
+                <option>Automotive</option>
+                <option data-de="Bau &amp; Infrastruktur" data-en="Construction &amp; Infrastructure">Bau &amp; Infrastruktur</option>
+                <option data-de="Energie &amp; Versorgung" data-en="Energy &amp; Utilities">Energie &amp; Versorgung</option>
+                <option data-de="Industrie &amp; Automation" data-en="Industry &amp; Automation">Industrie &amp; Automation</option>
+                <option data-de="Medizin &amp; Medizintechnik" data-en="Medical &amp; Medtech">Medizin &amp; Medizintechnik</option>
+                <option data-de="Sonstige" data-en="Other">Sonstige</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="field"><label data-de="Ihr Name" data-en="Your name">Ihr Name</label><span class="req">*</span><input type="text" name="name" required /></div>
+            <div class="field"><label data-de="Funktion" data-en="Role">Funktion</label><input type="text" name="funktion" data-de-placeholder="z.B. Strategischer Einkauf" data-en-placeholder="e.g. Strategic procurement" placeholder="z.B. Strategischer Einkauf" /></div>
+          </div>
+          <div class="form-row">
+            <div class="field"><label data-de="E-Mail" data-en="Email">E-Mail</label><span class="req">*</span><input type="email" name="mail" required /></div>
+            <div class="field"><label data-de="Telefon" data-en="Phone">Telefon</label><input type="tel" name="telefon" data-de-placeholder="für eventuelle Rückfragen" data-en-placeholder="for any queries" placeholder="für eventuelle Rückfragen" /></div>
+          </div>
+
+          <div class="field" style="margin-bottom: 16px;">
+            <label data-de="Beschreibung der Drehteile" data-en="Description of the parts">Beschreibung der Drehteile</label><span class="req">*</span>
+            <textarea name="beschreibung" required data-de-placeholder="z.B. Fluidführende Edelstahl-Drehteile, Ø 22 mm, Toleranz IT8, mehrere Bauteile aus einer Baureihe" data-en-placeholder="e.g. Fluid-carrying stainless-steel turned parts, Ø 22 mm, tolerance IT8, multiple parts from one series" placeholder="z.B. Fluidführende Edelstahl-Drehteile, Ø 22 mm, Toleranz IT8, mehrere Bauteile aus einer Baureihe"></textarea>
+          </div>
+
+          <div class="form-row">
+            <div class="field">
+              <label data-de="Stückzahl pro Position" data-en="Quantity per position">Stückzahl pro Position</label>
+              <input type="text" name="menge" data-de-placeholder="z.B. 10.000 / Jahr" data-en-placeholder="e.g. 10,000 / year" placeholder="z.B. 10.000 / Jahr" />
+              <span class="hint" data-de="Wir starten ab 200 Stück pro Auftrag." data-en="We start from 200 pieces per order.">Wir starten ab 200 Stück pro Auftrag.</span>
+            </div>
+            <div class="field">
+              <label data-de="Wunsch-Liefertermin" data-en="Desired delivery date">Wunsch-Liefertermin</label>
+              <input type="text" name="liefertermin" data-de-placeholder="z.B. KW 22 oder Erstmuster KW 17" data-en-placeholder="e.g. CW 22 or first sample CW 17" placeholder="z.B. KW 22 oder Erstmuster KW 17" />
+            </div>
+          </div>
+
+          <div class="field" style="margin-bottom: 16px;">
+            <label data-de="Zeichnungen hochladen <span class='hint' style='margin-left:8px;'>PDF, STEP, DXF · max. 25 MB gesamt</span>" data-en="Upload drawings <span class='hint' style='margin-left:8px;'>PDF, STEP, DXF · max. 25 MB total</span>">Zeichnungen hochladen <span class="hint" style="margin-left:8px;">PDF, STEP, DXF · max. 25 MB gesamt</span></label>
+            <label class="upload-zone" for="files">
+              <strong data-de="Dateien hierher ziehen oder klicken zum Auswählen" data-en="Drag files here or click to select">Dateien hierher ziehen oder klicken zum Auswählen</strong>
+              <span data-de="Wir prüfen Ihre Zeichnungen persönlich und antworten innerhalb 2 Werktagen." data-en="We review your drawings personally and reply within 2 business days.">Wir prüfen Ihre Zeichnungen persönlich und antworten innerhalb 2 Werktagen.</span>
+              <input type="file" id="files" name="files" multiple accept=".pdf,.step,.stp,.dxf,.dwg,.zip" onchange="updateFileList()" />
+              <div class="upload-list" id="fileList"></div>
+            </label>
+          </div>
+
+          <label class="checkbox-row">
+            <input type="checkbox" required />
+            <span data-de="Ich willige ein, dass meine Daten zur Bearbeitung dieser Anfrage gespeichert werden. Die Daten werden verschlüsselt übertragen, automatisch gelöscht nach Auftragsabschluss oder auf Wunsch. Mehr in der <a href='#datenschutz'>Datenschutzerklärung</a>." data-en="I agree that my data is stored for processing this request. Data is encrypted in transit, automatically deleted after order completion or on request. More in the <a href='#datenschutz'>privacy policy</a>.">Ich willige ein, dass meine Daten zur Bearbeitung dieser Anfrage gespeichert werden. Die Daten werden verschlüsselt übertragen, automatisch gelöscht nach Auftragsabschluss oder auf Wunsch. Mehr in der <a href="#datenschutz">Datenschutzerklärung</a>.</span>
+          </label>
+
+          <button type="submit" class="btn btn-block" data-de="Anfrage senden →" data-en="Send request →">Anfrage senden →</button>
+        </form>
+
+        <div class="success" id="successMsg">
+          <h3 data-de="Anfrage erhalten — vielen Dank!" data-en="Request received — thank you!">Anfrage erhalten — vielen Dank!</h3>
+          <p data-de="Wir bestätigen Ihren Eingang in den nächsten Minuten per E-Mail. Sie erhalten dort auch Ihren persönlichen Status-Link." data-en="We'll confirm your submission by email in the next few minutes. You'll receive your personal status link there as well.">Wir bestätigen Ihren Eingang in den nächsten Minuten per E-Mail. Sie erhalten dort auch Ihren persönlichen Status-Link.</p>
+          <div class="ref" id="refNum">WB-2026-XXXXXX</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="alt-block">
+          <div class="label" data-de="Lieber per E-Mail?" data-en="Prefer email?">Lieber per E-Mail?</div>
+          <h3 data-de="Senden Sie uns einfach Ihre Unterlagen" data-en="Just send us your documents">Senden Sie uns einfach Ihre Unterlagen</h3>
+          <p data-de="Zeichnungen, Eckdaten, Mengen — wir bringen es für Sie in den Prozess und schicken Ihnen den Status-Link zurück." data-en="Drawings, key data, quantities — we bring it into the process for you and send back the status link.">Zeichnungen, Eckdaten, Mengen — wir bringen es für Sie in den Prozess und schicken Ihnen den Status-Link zurück.</p>
+          <a class="mailto" href="mailto:anfrage@walter-bornmann.de?subject=Anfrage%20Pr%C3%A4zisionsdrehteile&body=Sehr%20geehrte%20Damen%20und%20Herren%2C%0A%0Aanbei%20unsere%20Anfrage%20zu%20Pr%C3%A4zisionsdrehteilen.%0A%0AFirma%3A%20%0AAnsprechpartner%3A%20%0AStückzahl%3A%20%0AWunsch-Liefertermin%3A%20%0A%0ABeschreibung%2FBesonderheiten%3A%20%0A%0AZeichnungen%3A%20anbei%0A%0AMit%20freundlichen%20Gr%C3%BC%C3%9Fen%0A">✉ &nbsp; anfrage@walter-bornmann.de</a>
+        </div>
+
+        <div class="contact-block">
+          <div class="contact-head">
+            <div class="avatar">WK</div>
+            <div>
+              <div class="name">Wolfgang Könen</div>
+              <div class="role" data-de="Vertrieb · Walter Bornmann GmbH" data-en="Sales · Walter Bornmann GmbH">Vertrieb · Walter Bornmann GmbH</div>
+            </div>
+          </div>
+          <div class="contact-row">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
+            <a href="tel:+49233368943-12">+49 2333 68943-12</a>
+          </div>
+          <div class="contact-row">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 7l10 7 10-7"/></svg>
+            <a href="mailto:koenen@walter-bornmann.de">koenen@walter-bornmann.de</a>
+          </div>
+
+          <div class="termin-block">
+            <h4 data-de="Lieber direkt sprechen?" data-en="Prefer a direct call?">Lieber direkt sprechen?</h4>
+            <p data-de="Wählen Sie einen Slot — Herr Könen ruft Sie an." data-en="Pick a slot — Mr. Könen will call you.">Wählen Sie einen Slot — Herr Könen ruft Sie an.</p>
+            <div class="slot-grid" id="slotGrid">
+              <button type="button" class="slot-btn"><span class="day" data-de="Heute" data-en="Today">Heute</span><span class="time">14:00</span></button>
+              <button type="button" class="slot-btn"><span class="day" data-de="Heute" data-en="Today">Heute</span><span class="time">16:00</span></button>
+              <button type="button" class="slot-btn"><span class="day" data-de="Morgen" data-en="Tomorrow">Morgen</span><span class="time">09:30</span></button>
+              <button type="button" class="slot-btn"><span class="day" data-de="Morgen" data-en="Tomorrow">Morgen</span><span class="time">14:30</span></button>
+            </div>
+            <button type="button" class="btn btn-block" onclick="bookSlot()" data-de="Termin buchen" data-en="Book slot">Termin buchen</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="next-steps">
+  <div class="container">
+    <h2 data-de="Was passiert nach Ihrer Anfrage?" data-en="What happens after your request?">Was passiert nach Ihrer Anfrage?</h2>
+    <p class="subline" data-de="Drei klare Schritte. Keine Blackbox, keine Stille." data-en="Three clear steps. No black box, no silence.">Drei klare Schritte. Keine Blackbox, keine Stille.</p>
+    <div class="next-grid">
+      <div class="next-item"><div class="num">01</div><h4 data-de="Eingangsbestätigung in Minuten" data-en="Receipt confirmation in minutes">Eingangsbestätigung in Minuten</h4><p data-de="Sie erhalten automatisch eine E-Mail mit Ihrem persönlichen Status-Link — kein Login nötig." data-en="You'll automatically receive an email with your personal status link — no login needed.">Sie erhalten automatisch eine E-Mail mit Ihrem persönlichen Status-Link — kein Login nötig.</p></div>
+      <div class="next-item"><div class="num">02</div><h4 data-de="Status-Updates per E-Mail" data-en="Status updates by email">Status-Updates per E-Mail</h4><p data-de="Bei jeder Änderung (Voranalyse abgeschlossen, Detail-Prüfung läuft, Angebote bereit) bekommen Sie eine Nachricht." data-en="With every change (pre-analysis complete, detail review running, offers ready) you get a notification.">Bei jeder Änderung (Voranalyse abgeschlossen, Detail-Prüfung läuft, Angebote bereit) bekommen Sie eine Nachricht.</p></div>
+      <div class="next-item"><div class="num">03</div><h4 data-de="Zwei Angebote in 2 Werktagen" data-en="Two offers in 2 business days">Zwei Angebote in 2 Werktagen</h4><p data-de="Original wie angefragt + WaBo-Empfehlung mit konkreten Optimierungen — einzeln annehmbar." data-en="Original as requested + WaBo recommendation with concrete optimisations — each individually accept-able.">Original wie angefragt + WaBo-Empfehlung mit konkreten Optimierungen — einzeln annehmbar.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="trust">
+  <div class="container">
+    <div class="trust-strip">
+      <div class="trust-item"><div class="trust-num">20+</div><div class="trust-label" data-de="Mio. Teile / Jahr" data-en="Million parts / year">Mio. Teile / Jahr</div></div>
+      <div class="trust-item"><div class="trust-num">60</div><div class="trust-label" data-de="Maschinen" data-en="Machines">Maschinen</div></div>
+      <div class="trust-item"><div class="trust-num">Ø 10–300</div><div class="trust-label" data-de="mm Drehteile" data-en="mm turned parts">mm Drehteile</div></div>
+      <div class="trust-item"><div class="trust-num">100 %</div><div class="trust-label" data-de="Eigenfertigung" data-en="In-house production">Eigenfertigung</div></div>
+    </div>
+  </div>
+</section>
+
+<footer class="site">
+  <div class="container footer-row">
+    <div>Walter Bornmann GmbH · Hagener Str. 168 b · 58256 Ennepetal · HRB 10984</div>
+    <div class="footer-links">
+      <a href="https://walter-bornmann.de" target="_blank">walter-bornmann.de</a>
+      <a href="#impressum" data-de="Impressum" data-en="Imprint">Impressum</a>
+      <a href="#datenschutz" data-de="Datenschutz" data-en="Privacy">Datenschutz</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+let currentLang = 'de';
+
+// Detect iframe (master wrapper) — hide redundant chrome
+try {
+  if (window.self !== window.top) {
+    document.documentElement.classList.add('in-iframe');
+    document.addEventListener('DOMContentLoaded', () => {
+      document.body.classList.add('in-iframe');
+    });
+  }
+} catch (e) {}
+
+// Pick up language from URL param (used by master wrapper)
+try {
+  const urlLang = new URLSearchParams(window.location.search).get('lang');
+  if (urlLang === 'de' || urlLang === 'en') currentLang = urlLang;
+} catch (e) {}
+
+function applyLang() {
+  document.querySelectorAll('[data-de]').forEach(el => {
+    const txt = el.getAttribute('data-' + currentLang);
+    if (txt !== null) el.innerHTML = txt;
+  });
+  document.querySelectorAll('[data-de-placeholder]').forEach(el => {
+    const ph = el.getAttribute('data-' + currentLang + '-placeholder');
+    if (ph !== null) el.placeholder = ph;
+  });
+  document.documentElement.lang = currentLang;
+  document.querySelectorAll('.lang-switch button').forEach(b => {
+    b.classList.toggle('active', b.dataset.lang === currentLang);
+  });
+}
+
+document.querySelectorAll('.lang-switch button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    currentLang = btn.dataset.lang;
+    applyLang();
+  });
+});
+
+function updateFileList() {
+  const files = document.getElementById('files').files;
+  const list = document.getElementById('fileList');
+  if (!files.length) { list.textContent = ''; return; }
+  const label = currentLang === 'de' ? ' Datei(en) gewählt:' : ' file(s) selected:';
+  list.innerHTML = '<strong style="color:var(--c-primary-dark);">' + files.length + label + '</strong> ' +
+    Array.from(files).map(f => f.name).join(', ');
+}
+
+document.querySelectorAll('.slot-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.slot-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+  });
+});
+
+function bookSlot() {
+  const sel = document.querySelector('.slot-btn.selected');
+  if (!sel) {
+    alert(currentLang === 'de' ? 'Bitte wählen Sie zuerst ein Zeitfenster.' : 'Please select a time slot first.');
+    return;
+  }
+  const day = sel.querySelector('.day').textContent;
+  const time = sel.querySelector('.time').textContent;
+  const msg = currentLang === 'de'
+    ? 'Termin reserviert: ' + day + ' um ' + time + '.\n\nWolfgang Könen ruft Sie pünktlich an. Sie erhalten eine Bestätigung per E-Mail.'
+    : 'Slot reserved: ' + day + ' at ' + time + '.\n\nWolfgang Könen will call you punctually. You will receive a confirmation by email.';
+  alert(msg);
+}
+
+function onSubmit(e) {
+  e.preventDefault();
+  const ref = 'WB-2026-' + Math.floor(100000 + Math.random() * 900000);
+  document.getElementById('refNum').textContent = ref;
+  document.getElementById('anfrageForm').style.display = 'none';
+  document.getElementById('successMsg').classList.add('show');
+  document.getElementById('successMsg').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+applyLang();
+</script>
+
+</body>
+</html>

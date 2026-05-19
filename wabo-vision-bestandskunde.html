@@ -1,0 +1,1786 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WaBo · Bestandskunden-Vision · Demo</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%232DBCB6'/%3E%3Ctext x='16' y='23' text-anchor='middle' font-family='-apple-system,Arial,sans-serif' font-size='22' font-weight='900' fill='white'%3EB%3C/text%3E%3C/svg%3E">
+<style>
+  :root {
+    --c-primary: #2DBCB6;
+    --c-primary-dark: #21948F;
+    --c-primary-light: #E8F7F6;
+    --c-ink: #1F2A2D;
+    --c-text: #2C3E40;
+    --c-mute: #6B7280;
+    --c-line: #E5E7EB;
+    --c-bg: #F4F6F7;
+    --c-bg-soft: #FAFBFB;
+    --c-white: #FFFFFF;
+    --c-warn: #2C3E40;
+    --c-warn-bg: #F0F2F3;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,.04);
+    --shadow-md: 0 4px 14px rgba(0,0,0,.06);
+    --shadow-lg: 0 12px 32px rgba(0,0,0,.10);
+    --radius-sm: 6px;
+    --radius: 10px;
+    --radius-lg: 16px;
+    --font: 'Open Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: var(--font);
+    color: var(--c-text);
+    background: var(--c-bg);
+    line-height: 1.55;
+    font-size: 15px;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, h4 { color: var(--c-ink); font-weight: 700; line-height: 1.2; }
+  h1 { font-size: 40px; letter-spacing: -.5px; }
+  h2 { font-size: 26px; }
+  h3 { font-size: 19px; }
+  h4 { font-size: 16px; }
+  p { color: var(--c-text); }
+  a { color: var(--c-primary-dark); text-decoration: none; }
+
+  /* ---------- Demo-Bar ---------- */
+  .demo-bar {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--c-ink); color: #fff;
+    padding: 8px 16px;
+    display: flex; align-items: center; gap: 12px;
+    font-size: 12px;
+    border-bottom: 1px solid #000;
+  }
+  .demo-bar .demo-label {
+    background: var(--c-primary); color: var(--c-ink);
+    padding: 3px 8px; border-radius: 4px; font-weight: 700; letter-spacing: .5px;
+  }
+  .demo-bar .case-label {
+    background: #4a5b5f; color: #fff;
+    padding: 3px 8px; border-radius: 4px; font-weight: 600; font-size: 11px;
+  }
+  .demo-bar .jumps {
+    display: flex; gap: 4px; flex-wrap: wrap; flex: 1;
+  }
+  .demo-bar .jumps button {
+    background: transparent; color: #fff; border: 1px solid #3a4a4d;
+    width: 26px; height: 26px; border-radius: 4px; cursor: pointer;
+    font-size: 11px; font-weight: 700; font-family: var(--font);
+    transition: all .15s;
+  }
+  .demo-bar .jumps button:hover { background: #3a4a4d; }
+  .demo-bar .jumps button.active {
+    background: var(--c-primary); color: var(--c-ink); border-color: var(--c-primary);
+  }
+  .demo-bar .toggle-bar {
+    background: transparent; color: #aaa; border: 1px solid #3a4a4d;
+    padding: 3px 8px; border-radius: 4px; cursor: pointer; font-size: 11px;
+  }
+  .demo-bar.collapsed .jumps,
+  .demo-bar.collapsed .demo-label,
+  .demo-bar.collapsed .case-label,
+  .demo-bar.collapsed .step-label { display: none; }
+  .step-label { color: #ccc; }
+
+  /* ---------- App Header ---------- */
+  .app-header {
+    background: var(--c-white);
+    border-bottom: 1px solid var(--c-line);
+    padding: 18px 40px;
+    display: flex; align-items: center; gap: 24px;
+  }
+  body.in-iframe .app-header { display: none; }
+  .logo {
+    display: flex; align-items: center; gap: 0;
+    font-weight: 800; font-size: 26px; color: var(--c-ink);
+    letter-spacing: -1px;
+  }
+  .logo .b1 { color: var(--c-ink); }
+  .logo .b2 { background: var(--c-primary); color: #fff; padding: 2px 8px; border-radius: 4px; margin-left: 1px; }
+  .logo-tag {
+    margin-left: 14px; padding-left: 14px; border-left: 1px solid var(--c-line);
+    color: var(--c-mute); font-size: 13px; line-height: 1.3;
+  }
+  .header-actions {
+    margin-left: auto; display: flex; align-items: center; gap: 12px;
+  }
+  .user-chip {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--c-bg-soft); border: 1px solid var(--c-line);
+    padding: 6px 14px 6px 6px; border-radius: 100px;
+  }
+  .user-chip .avatar-sm {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--c-primary) 0%, var(--c-primary-dark) 100%);
+    color: #fff; display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 12px;
+  }
+  .user-chip .user-name { font-size: 13px; font-weight: 600; color: var(--c-ink); }
+  .user-chip .user-meta { font-size: 11px; color: var(--c-mute); }
+  .user-chip.hidden { display: none; }
+  .logout-link {
+    color: var(--c-mute); font-size: 12px; cursor: pointer;
+    padding: 6px 10px;
+  }
+  .logout-link:hover { color: var(--c-ink); }
+
+  .lang-switch {
+    display: flex; border: 1px solid var(--c-line); border-radius: 6px; overflow: hidden;
+  }
+  .lang-switch button {
+    background: transparent; border: 0; padding: 6px 11px;
+    font-family: var(--font); font-size: 12px; font-weight: 700; color: var(--c-mute);
+    cursor: pointer;
+  }
+  .lang-switch button.active { background: var(--c-primary); color: #fff; }
+
+  /* ---------- Main ---------- */
+  main { min-height: calc(100vh - 130px); }
+  .screen {
+    display: none;
+    padding: 48px 40px 100px;
+    max-width: 1280px; margin: 0 auto;
+  }
+  .screen.active { display: block; animation: fadeIn .3s ease; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ---------- Buttons ---------- */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    background: var(--c-primary); color: #fff; border: 0;
+    padding: 14px 28px; border-radius: var(--radius);
+    font-family: var(--font); font-size: 15px; font-weight: 700;
+    cursor: pointer; transition: all .15s;
+    box-shadow: var(--shadow-sm); text-decoration: none;
+  }
+  .btn:hover { background: var(--c-primary-dark); transform: translateY(-1px); box-shadow: var(--shadow-md); color: #fff; }
+  .btn-lg { padding: 18px 36px; font-size: 17px; }
+  .btn-secondary {
+    background: #fff; color: var(--c-ink); border: 1px solid var(--c-line);
+  }
+  .btn-secondary:hover { background: var(--c-bg); border-color: var(--c-mute); color: var(--c-ink); }
+  .btn-ghost {
+    background: transparent; color: var(--c-text); border: 0; padding: 10px 16px;
+  }
+  .btn-ghost:hover { color: var(--c-primary-dark); }
+
+  /* ---------- Cards ---------- */
+  .card {
+    background: #fff; border: 1px solid var(--c-line); border-radius: var(--radius);
+    padding: 24px;
+  }
+
+  /* ============================================================
+     SCREEN 1 — Login (Mock)
+     ============================================================ */
+  .login-wrap {
+    display: flex; align-items: center; justify-content: center;
+    min-height: calc(100vh - 130px);
+    padding: 40px;
+  }
+  .login-card {
+    background: #fff; border-radius: var(--radius-lg);
+    padding: 48px 56px; max-width: 480px; width: 100%;
+    box-shadow: var(--shadow-lg); border: 1px solid var(--c-line);
+    text-align: center;
+  }
+  .login-label {
+    color: var(--c-primary-dark); font-weight: 700; font-size: 13px;
+    letter-spacing: 2px; text-transform: uppercase; margin-bottom: 14px;
+  }
+  .login-card h1 { font-size: 30px; margin-bottom: 12px; }
+  .login-card .sub { color: var(--c-mute); margin-bottom: 32px; }
+  .login-fields { display: flex; flex-direction: column; gap: 14px; margin-bottom: 24px; text-align: left; }
+  .login-fields .field input {
+    width: 100%; padding: 12px 14px; border: 1px solid var(--c-line);
+    border-radius: var(--radius-sm); font-family: var(--font); font-size: 15px;
+    background: var(--c-bg-soft); color: var(--c-mute);
+  }
+  .login-fields .field label {
+    display: block; font-size: 12px; color: var(--c-mute); font-weight: 600;
+    margin-bottom: 4px; text-transform: uppercase; letter-spacing: .5px;
+  }
+  .login-demo-hint {
+    background: var(--c-warn-bg); border-radius: var(--radius-sm);
+    padding: 12px 16px; font-size: 12px; color: var(--c-mute);
+    text-align: left; margin-top: 16px;
+  }
+  .login-demo-hint strong { color: var(--c-ink); }
+
+  /* ============================================================
+     SCREEN 2 — Dashboard
+     ============================================================ */
+  .dashboard-greeting {
+    margin-bottom: 24px;
+  }
+  .dashboard-greeting .label {
+    color: var(--c-primary-dark); font-weight: 700; font-size: 13px;
+    letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px;
+  }
+  .dashboard-greeting h1 { margin-bottom: 8px; }
+  .dashboard-greeting p { color: var(--c-mute); }
+
+  .dash-grid {
+    display: grid; grid-template-columns: 2fr 1fr; gap: 24px; margin-bottom: 32px;
+  }
+  .dash-main { display: flex; flex-direction: column; gap: 20px; }
+  .dash-side { display: flex; flex-direction: column; gap: 20px; }
+
+  .score-card {
+    background: linear-gradient(135deg, var(--c-primary) 0%, var(--c-primary-dark) 100%);
+    color: #fff; border-radius: var(--radius-lg); padding: 28px 32px;
+    display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: center;
+  }
+  .score-card .label {
+    color: rgba(255,255,255,.85); font-weight: 700; font-size: 12px;
+    letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px;
+  }
+  .score-card h3 { color: #fff; font-size: 18px; margin-bottom: 4px; }
+  .score-card p { color: rgba(255,255,255,.85); font-size: 13px; }
+  .score-card .score-num {
+    font-size: 48px; font-weight: 800; color: #fff; line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .order-list {
+    background: #fff; border-radius: var(--radius-lg); padding: 28px;
+    border: 1px solid var(--c-line);
+  }
+  .order-list h3 { margin-bottom: 16px; }
+  .order-row {
+    display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 16px;
+    padding: 14px; border-radius: var(--radius-sm);
+    background: var(--c-bg-soft); margin-bottom: 8px;
+    align-items: center;
+  }
+  .order-row .nr { font-weight: 600; color: var(--c-ink); font-size: 13px; }
+  .order-row .meta { font-size: 12px; color: var(--c-mute); }
+  .order-row .reorder-btn {
+    background: #fff; border: 1px solid var(--c-line);
+    padding: 6px 12px; border-radius: var(--radius-sm);
+    font-family: var(--font); font-size: 12px; font-weight: 600;
+    cursor: pointer; color: var(--c-ink);
+  }
+  .order-row .reorder-btn:hover { border-color: var(--c-primary); color: var(--c-primary-dark); }
+
+  .new-request-card {
+    background: var(--c-ink); color: #fff;
+    border-radius: var(--radius-lg); padding: 32px;
+  }
+  .new-request-card .label {
+    color: var(--c-primary); font-weight: 700; font-size: 12px;
+    letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px;
+  }
+  .new-request-card h3 { color: #fff; font-size: 22px; margin-bottom: 8px; }
+  .new-request-card p { color: rgba(255,255,255,.85); font-size: 14px; margin-bottom: 20px; }
+
+  .prototype-card {
+    background: #fff; border: 1px solid var(--c-primary); border-radius: var(--radius-lg);
+    padding: 24px;
+  }
+  .prototype-card .label {
+    color: var(--c-primary-dark); font-weight: 700; font-size: 11px;
+    letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px;
+  }
+  .prototype-card h4 { font-size: 16px; margin-bottom: 6px; }
+  .prototype-card p { font-size: 13px; color: var(--c-mute); margin-bottom: 14px; }
+
+  .contact-mini-card {
+    background: #fff; border: 1px solid var(--c-line); border-radius: var(--radius-lg);
+    padding: 20px;
+  }
+  .contact-mini-card .head {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 12px;
+  }
+  .contact-mini-card .avatar {
+    width: 42px; height: 42px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--c-primary) 0%, var(--c-primary-dark) 100%);
+    color: #fff; display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 15px;
+  }
+  .contact-mini-card .name { font-weight: 700; color: var(--c-ink); font-size: 14px; }
+  .contact-mini-card .role { font-size: 12px; color: var(--c-mute); }
+  .contact-mini-card .line {
+    font-size: 12px; padding: 4px 0; color: var(--c-text);
+    border-top: 1px solid var(--c-line);
+  }
+
+  /* ============================================================
+     SCREEN 3 + 4 — Wizard
+     ============================================================ */
+  .wizard-header { margin-bottom: 32px; }
+  .wizard-progress { display: flex; gap: 8px; margin-bottom: 24px; }
+  .wizard-progress .step { flex: 1; height: 4px; background: var(--c-line); border-radius: 2px; }
+  .wizard-progress .step.active { background: var(--c-primary); }
+  .wizard-step-num {
+    color: var(--c-primary-dark); font-weight: 700; font-size: 13px;
+    letter-spacing: 1px; text-transform: uppercase;
+  }
+
+  .upload-zone {
+    background: var(--c-primary-light); border: 2px dashed var(--c-primary);
+    border-radius: var(--radius-lg); padding: 32px;
+    text-align: center; margin-bottom: 24px;
+  }
+  .upload-zone .icon {
+    width: 56px; height: 56px; background: #fff; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;
+    color: var(--c-primary); font-size: 24px;
+  }
+  .upload-zone h3 { margin-bottom: 6px; }
+  .upload-zone p { color: var(--c-mute); font-size: 13px; }
+
+  .parts-list { display: flex; flex-direction: column; gap: 12px; }
+  .part-item {
+    background: #fff; border: 1px solid var(--c-line); border-radius: var(--radius);
+    padding: 16px 20px; display: grid;
+    grid-template-columns: 32px 1.4fr 1fr 1fr 200px; gap: 16px; align-items: center;
+    transition: all .15s;
+  }
+  .part-item:hover { border-color: var(--c-primary); box-shadow: var(--shadow-sm); }
+  .part-item .file-icon {
+    width: 32px; height: 32px; background: var(--c-bg); border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--c-mute); font-weight: 700; font-size: 10px;
+  }
+  .part-item .meta { font-size: 12px; color: var(--c-mute); }
+  .part-item .name { font-weight: 600; color: var(--c-ink); font-size: 14px; }
+  .part-item .qty { font-weight: 600; color: var(--c-ink); }
+  .part-item .qty span { font-weight: 400; color: var(--c-mute); font-size: 12px; }
+
+  .badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border-radius: 100px; font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .5px; white-space: nowrap;
+  }
+  .badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+  .badge-ok { background: var(--c-primary-light); color: var(--c-primary-dark); }
+  .badge-warn { background: var(--c-warn-bg); color: var(--c-warn); }
+  .badge-info { background: #eef0f1; color: var(--c-mute); }
+  .badge-history { background: #fff5e1; color: #8a6a13; }
+  .badge-history::before { background: #c08a14; }
+
+  /* Bestandskunden-Stammdaten-Block (read-only) */
+  .stamm-block {
+    background: var(--c-bg-soft); border: 1px solid var(--c-line);
+    border-radius: var(--radius); padding: 20px 24px;
+    margin-bottom: 20px;
+  }
+  .stamm-block .label {
+    font-size: 11px; color: var(--c-mute); font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .stamm-block .label-tag {
+    background: var(--c-primary-light); color: var(--c-primary-dark);
+    padding: 2px 8px; border-radius: 3px; font-size: 10px;
+  }
+  .stamm-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+  }
+  .stamm-grid .field { display: flex; flex-direction: column; }
+  .stamm-grid .field label {
+    font-size: 11px; color: var(--c-mute); font-weight: 600;
+    margin-bottom: 2px; text-transform: uppercase; letter-spacing: .5px;
+  }
+  .stamm-grid .field .value {
+    font-size: 13px; color: var(--c-ink); font-weight: 600;
+  }
+
+  .data-card {
+    background: #fff; border: 1px solid var(--c-line); border-radius: var(--radius);
+    padding: 20px; margin-bottom: 12px;
+  }
+  .data-card-header {
+    display: flex; align-items: center; gap: 12px; cursor: pointer; user-select: none;
+  }
+  .data-card-header .title { flex: 1; }
+  .data-card-header .toggle-icon { color: var(--c-mute); transition: transform .2s; }
+  .data-card.expanded .toggle-icon { transform: rotate(180deg); }
+  .data-card .summary { font-size: 13px; color: var(--c-mute); margin-top: 4px; }
+  .data-card-body {
+    display: none; margin-top: 20px; padding-top: 20px;
+    border-top: 1px solid var(--c-line);
+  }
+  .data-card.expanded .data-card-body { display: block; }
+  .data-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  .field label {
+    display: block; font-size: 12px; color: var(--c-mute); font-weight: 600;
+    margin-bottom: 4px; text-transform: uppercase; letter-spacing: .5px;
+  }
+  .field input, .field select {
+    width: 100%; padding: 10px 12px; border: 1px solid var(--c-line);
+    border-radius: var(--radius-sm); font-family: var(--font); font-size: 14px;
+    background: #fff; color: var(--c-ink);
+  }
+  .field input:focus, .field select:focus {
+    outline: 0; border-color: var(--c-primary); box-shadow: 0 0 0 3px var(--c-primary-light);
+  }
+  .auto-tag {
+    background: var(--c-primary-light); color: var(--c-primary-dark);
+    font-size: 10px; padding: 2px 6px; border-radius: 3px; margin-left: 6px;
+    font-weight: 700; text-transform: uppercase;
+  }
+
+  /* ============================================================
+     SCREEN 5 — Komplexitäts-Weiche
+     ============================================================ */
+  .switch-intro {
+    background: linear-gradient(135deg, var(--c-primary-light) 0%, #fff 100%);
+    border-radius: var(--radius-lg); padding: 40px; margin-bottom: 32px;
+    border: 1px solid var(--c-line);
+  }
+  .switch-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .switch-col {
+    background: #fff; border-radius: var(--radius-lg); padding: 28px;
+    border: 1px solid var(--c-line);
+  }
+  .switch-col-standard { border-top: 4px solid var(--c-primary); }
+  .switch-col-personal { border-top: 4px solid var(--c-ink); }
+  .switch-col h3 { margin-bottom: 6px; }
+  .switch-col .count {
+    background: var(--c-primary-light); color: var(--c-primary-dark);
+    padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: 700;
+    display: inline-block; margin-bottom: 16px;
+  }
+  .switch-col-personal .count { background: var(--c-warn-bg); color: var(--c-warn); }
+  .switch-col p { color: var(--c-mute); font-size: 14px; margin-bottom: 16px; }
+  .switch-list {
+    list-style: none; display: flex; flex-direction: column; gap: 8px;
+    padding: 16px 0; border-top: 1px solid var(--c-line);
+  }
+  .switch-list li {
+    padding: 10px 14px; background: var(--c-bg-soft); border-radius: var(--radius-sm);
+    display: flex; align-items: center; gap: 10px; font-size: 13px;
+  }
+  .switch-list li::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--c-primary); }
+  .switch-col-personal .switch-list li::before { background: var(--c-ink); }
+  .switch-list li .reason { margin-left: auto; color: var(--c-mute); font-size: 12px; }
+
+  .slot-picker {
+    background: var(--c-bg-soft); padding: 20px; border-radius: var(--radius);
+    margin-top: 16px;
+  }
+  .slot-picker h4 { margin-bottom: 12px; }
+  .slot-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .slot-btn {
+    background: #fff; border: 1px solid var(--c-line); border-radius: var(--radius-sm);
+    padding: 12px 8px; font-family: var(--font); font-size: 12px; font-weight: 600;
+    cursor: pointer; text-align: center; color: var(--c-ink); transition: all .15s;
+  }
+  .slot-btn:hover { border-color: var(--c-primary); }
+  .slot-btn.selected { background: var(--c-primary); border-color: var(--c-primary); color: #fff; }
+  .slot-btn .day { font-weight: 800; display: block; }
+  .slot-btn .time { font-weight: 400; color: var(--c-mute); font-size: 11px; }
+  .slot-btn.selected .time { color: rgba(255,255,255,.9); }
+
+  .or-divider {
+    display: flex; align-items: center; gap: 12px;
+    margin: 16px 0; color: var(--c-mute); font-size: 12px;
+    font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px;
+  }
+  .or-divider::before, .or-divider::after {
+    content: ''; flex: 1; height: 1px; background: var(--c-line);
+  }
+
+  .email-alt {
+    background: #fff; border: 1px solid var(--c-line);
+    border-radius: var(--radius); padding: 18px 20px;
+  }
+  .email-alt h4 { margin-bottom: 6px; font-size: 14px; }
+  .email-alt p { color: var(--c-mute); font-size: 13px; margin-bottom: 14px; line-height: 1.5; }
+  .email-alt input[type=email] {
+    width: 100%; padding: 10px 12px; border: 1px solid var(--c-line);
+    border-radius: var(--radius-sm); font-family: var(--font); font-size: 13px;
+    background: #fff;
+  }
+
+  /* ============================================================
+     SCREEN 6 — Indikation
+     ============================================================ */
+  .indication-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px; }
+  .ind-row {
+    background: #fff; border: 1px solid var(--c-line); border-radius: var(--radius);
+    padding: 18px 24px; display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 16px; align-items: center;
+  }
+  .ind-row .label { font-size: 11px; color: var(--c-mute); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
+  .ind-row .value { font-weight: 700; color: var(--c-ink); }
+  .ind-row .price-range { color: var(--c-primary-dark); font-size: 16px; }
+
+  .history-box {
+    background: #fff5e1; border: 1px solid #f5d97a;
+    border-radius: var(--radius); padding: 20px 24px; margin-bottom: 24px;
+    display: grid; grid-template-columns: 42px 1fr; gap: 16px; align-items: center;
+  }
+  .history-box .ico {
+    width: 42px; height: 42px; border-radius: 50%;
+    background: #fff; color: #8a6a13; font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+  .history-box h4 { margin-bottom: 4px; color: var(--c-ink); }
+  .history-box p { font-size: 13px; color: #6f5a18; }
+
+  /* ============================================================
+     SCREEN 7 — Status
+     ============================================================ */
+  .status-banner {
+    background: var(--c-ink); color: #fff; border-radius: var(--radius-lg);
+    padding: 24px 32px; margin-bottom: 24px;
+    display: flex; align-items: center; gap: 24px;
+  }
+  .status-banner .url-info { flex: 1; }
+  .status-banner .label {
+    color: var(--c-primary); font-size: 11px; font-weight: 700;
+    letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px;
+  }
+  .status-banner .url {
+    font-family: 'SF Mono', Consolas, monospace; font-size: 13px; color: rgba(255,255,255,.8);
+  }
+  .status-banner .eta { text-align: right; }
+  .status-banner .eta .time {
+    font-size: 22px; font-weight: 800; color: var(--c-primary);
+  }
+
+  .process-section {
+    background: #fff; border-radius: var(--radius-lg); padding: 24px;
+    box-shadow: var(--shadow-sm); border: 1px solid var(--c-line);
+    margin-bottom: 24px;
+  }
+  .process-flow {
+    display: grid; grid-template-columns: repeat(7, 1fr); gap: 0; position: relative;
+  }
+  .process-step { text-align: center; padding: 0 8px; position: relative; }
+  .process-step:not(:last-child)::after {
+    content: ''; position: absolute; top: 26px; right: -18px; width: 36px; height: 2px;
+    background: var(--c-line);
+  }
+  .process-step.done:not(:last-child)::after { background: var(--c-primary); }
+  .process-num {
+    width: 52px; height: 52px; border-radius: 50%;
+    background: #fff; border: 2px solid var(--c-line);
+    color: var(--c-mute); font-weight: 700; font-size: 18px;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 12px; position: relative; z-index: 1;
+    transition: all .3s;
+  }
+  .process-step.active .process-num {
+    background: var(--c-primary); border-color: var(--c-primary); color: #fff;
+    box-shadow: 0 0 0 6px var(--c-primary-light);
+  }
+  .process-step.done .process-num {
+    background: var(--c-primary); border-color: var(--c-primary); color: #fff;
+  }
+  .process-step h4 { font-size: 14px; margin-bottom: 4px; }
+  .process-step .time { font-size: 11px; color: var(--c-mute); font-weight: 600; }
+  .process-step.active .time { color: var(--c-primary-dark); }
+
+  .status-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; }
+  .status-detail {
+    background: #fff; border-radius: var(--radius-lg); padding: 28px;
+    border: 1px solid var(--c-line);
+  }
+  .status-detail h3 { margin-bottom: 20px; }
+  .substatus-list { display: flex; flex-direction: column; gap: 12px; }
+  .substatus {
+    display: grid; grid-template-columns: 28px 1fr auto; gap: 14px; align-items: center;
+    padding: 14px; border-radius: var(--radius-sm); background: var(--c-bg-soft);
+  }
+  .substatus.active { background: var(--c-primary-light); }
+  .substatus.done { opacity: .8; }
+  .substatus .check {
+    width: 28px; height: 28px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--c-line); color: var(--c-mute); font-weight: 700;
+  }
+  .substatus.done .check { background: var(--c-primary); color: #fff; }
+  .substatus.active .check { background: #fff; border: 2px solid var(--c-primary); color: var(--c-primary); }
+  .substatus .text { font-weight: 600; color: var(--c-ink); }
+  .substatus .meta { color: var(--c-mute); font-size: 12px; margin-top: 2px; }
+  .substatus .time { color: var(--c-mute); font-size: 12px; }
+  .substatus.active .time { color: var(--c-primary-dark); font-weight: 600; }
+
+  .contact-card {
+    background: #fff; border-radius: var(--radius-lg); padding: 28px;
+    border: 1px solid var(--c-line);
+  }
+  .avatar {
+    width: 56px; height: 56px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--c-primary) 0%, var(--c-primary-dark) 100%);
+    color: #fff; display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 20px;
+  }
+  .contact-card .head { display: flex; gap: 14px; align-items: center; margin-bottom: 16px; }
+  .contact-card h4 { margin: 0; }
+  .contact-card .role { font-size: 12px; color: var(--c-mute); }
+  .contact-card .phone, .contact-card .mail {
+    font-size: 13px; color: var(--c-text); padding: 6px 0;
+    border-top: 1px solid var(--c-line);
+  }
+
+  /* ============================================================
+     SCREEN 8 — Zwei Angebote (mit Historien-Hebel)
+     ============================================================ */
+  .offers-header { text-align: center; margin-bottom: 32px; }
+  .offers-header .label {
+    color: var(--c-primary-dark); font-weight: 700; font-size: 13px;
+    letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px;
+  }
+  .offers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .offer-card {
+    background: #fff; border-radius: var(--radius-lg); border: 1px solid var(--c-line);
+    overflow: hidden;
+  }
+  .offer-card .head { padding: 24px 28px; border-bottom: 1px solid var(--c-line); }
+  .offer-card.b .head {
+    background: linear-gradient(135deg, var(--c-primary) 0%, var(--c-primary-dark) 100%);
+    color: #fff; border-bottom: 0;
+  }
+  .offer-card .head .badge-offer {
+    display: inline-block; background: var(--c-bg); padding: 4px 10px;
+    border-radius: 4px; font-size: 11px; font-weight: 700;
+    color: var(--c-mute); letter-spacing: 1px; margin-bottom: 12px;
+  }
+  .offer-card.b .head .badge-offer { background: rgba(255,255,255,.2); color: #fff; }
+  .offer-card.b .head h3, .offer-card.b .head .sub { color: #fff; }
+  .offer-card .sub { color: var(--c-mute); font-size: 13px; margin-top: 4px; }
+  .offer-body { padding: 24px 28px; }
+  .lever-list { display: flex; flex-direction: column; gap: 14px; margin-bottom: 20px; }
+  .lever {
+    background: var(--c-bg-soft); border: 1px solid var(--c-line);
+    border-radius: var(--radius); padding: 16px;
+  }
+  .lever-head { display: flex; align-items: flex-start; gap: 12px; }
+  .lever-toggle {
+    appearance: none; width: 40px; height: 22px; background: var(--c-line);
+    border-radius: 100px; position: relative; cursor: pointer; flex-shrink: 0;
+    transition: background .2s;
+  }
+  .lever-toggle::after {
+    content: ''; position: absolute; top: 2px; left: 2px; width: 18px; height: 18px;
+    background: #fff; border-radius: 50%; transition: transform .2s;
+  }
+  .lever-toggle:checked { background: var(--c-primary); }
+  .lever-toggle:checked::after { transform: translateX(18px); }
+  .lever-info { flex: 1; }
+  .lever-title { font-weight: 700; color: var(--c-ink); font-size: 14px; }
+  .lever-desc { color: var(--c-mute); font-size: 12px; margin-top: 4px; }
+  .lever-effect { margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .effect-tag {
+    background: #fff; border: 1px solid var(--c-line); border-radius: 4px;
+    padding: 3px 8px; font-size: 11px; font-weight: 700; color: var(--c-primary-dark);
+  }
+  .effect-tag.neutral { color: var(--c-mute); }
+  .effect-tag.history {
+    background: #fff5e1; border-color: #f5d97a; color: #8a6a13;
+  }
+
+  .offer-summary {
+    background: #fff; border-top: 1px solid var(--c-line); padding: 20px 28px;
+  }
+  .offer-card.b .offer-summary { background: var(--c-primary-light); }
+  .offer-summary .sum-row {
+    display: flex; justify-content: space-between; padding: 4px 0; font-size: 14px;
+  }
+  .offer-summary .sum-row.total {
+    border-top: 2px solid var(--c-line); padding-top: 12px; margin-top: 8px;
+    font-size: 18px; font-weight: 800; color: var(--c-ink);
+  }
+  .offer-summary .delta {
+    background: var(--c-primary); color: #fff; border-radius: var(--radius-sm);
+    padding: 12px 16px; margin-top: 14px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .offer-summary .delta strong { font-size: 18px; }
+
+  .offer-actions { display: flex; gap: 12px; padding: 0 28px 24px; flex-wrap: wrap; }
+
+  /* ============================================================
+     SCREEN 9 — Vorher / Nachher (Viega-Zahlen)
+     ============================================================ */
+  .vn-intro { text-align: center; margin-bottom: 36px; }
+  .vn-intro .label {
+    color: var(--c-primary-dark); font-weight: 700; font-size: 13px;
+    letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px;
+  }
+  .vn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+  .vn-col { background: #fff; padding: 32px; }
+  .vn-col-old {
+    background: var(--c-bg-soft); border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+    border: 1px solid var(--c-line);
+  }
+  .vn-col-new {
+    background: linear-gradient(135deg, #fff 0%, var(--c-primary-light) 100%);
+    border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+    border: 1px solid var(--c-primary); border-left: 0;
+  }
+  .vn-col h3 {
+    font-size: 18px; padding-bottom: 16px; border-bottom: 2px solid var(--c-line);
+    margin-bottom: 20px;
+  }
+  .vn-col-new h3 { color: var(--c-primary-dark); border-bottom-color: var(--c-primary); }
+  .vn-col .topline {
+    font-size: 12px; color: var(--c-mute); text-transform: uppercase;
+    letter-spacing: 1px; margin-bottom: 8px;
+  }
+  .vn-row { display: flex; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--c-line); }
+  .vn-row:last-child { border: 0; }
+  .vn-day {
+    background: var(--c-bg); color: var(--c-ink); border-radius: 4px;
+    padding: 4px 10px; font-size: 11px; font-weight: 700;
+    flex-shrink: 0; height: fit-content; min-width: 70px; text-align: center;
+  }
+  .vn-col-new .vn-day { background: var(--c-primary); color: #fff; }
+  .vn-text { font-size: 14px; line-height: 1.5; }
+  .vn-text strong { color: var(--c-ink); }
+  .vn-footer {
+    text-align: center; margin-top: 24px; color: var(--c-mute);
+    font-size: 12px; font-style: italic;
+  }
+  .vn-stats {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 32px;
+  }
+  .stat-box {
+    background: #fff; border: 1px solid var(--c-line); border-radius: var(--radius);
+    padding: 20px; text-align: center;
+  }
+  .stat-num { font-size: 28px; font-weight: 800; color: var(--c-primary); line-height: 1; }
+  .stat-label { font-size: 12px; color: var(--c-mute); margin-top: 6px; }
+
+  /* ============================================================
+     SCREEN 10 — Freigabe + Prototyp prominent
+     ============================================================ */
+  .confirm-hero {
+    background: linear-gradient(135deg, var(--c-primary) 0%, var(--c-primary-dark) 100%);
+    color: #fff; border-radius: var(--radius-lg); padding: 48px;
+    text-align: center; margin-bottom: 32px;
+  }
+  .confirm-hero h2 { color: #fff; font-size: 32px; margin-bottom: 8px; }
+  .confirm-hero p { color: rgba(255,255,255,.9); font-size: 16px; }
+  .confirm-hero .order-id {
+    background: rgba(255,255,255,.2); display: inline-block;
+    padding: 6px 14px; border-radius: 6px; font-family: 'SF Mono', monospace;
+    font-size: 13px; margin-top: 16px;
+  }
+
+  .prototyp-prominent {
+    background: var(--c-ink); color: #fff;
+    border-radius: var(--radius-lg); padding: 40px;
+    margin-bottom: 32px;
+    display: grid; grid-template-columns: 1fr 320px; gap: 32px; align-items: center;
+  }
+  .prototyp-prominent .label {
+    color: var(--c-primary); font-weight: 700; font-size: 12px;
+    letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px;
+  }
+  .prototyp-prominent h3 { color: #fff; font-size: 24px; margin-bottom: 10px; }
+  .prototyp-prominent p { color: rgba(255,255,255,.85); font-size: 15px; margin-bottom: 18px; }
+  .prototyp-prominent ul { list-style: none; }
+  .prototyp-prominent li {
+    padding: 4px 0; font-size: 13px; color: rgba(255,255,255,.9);
+    display: flex; gap: 8px; align-items: flex-start;
+  }
+  .prototyp-prominent li::before { content: '✓'; color: var(--c-primary); font-weight: 700; }
+  .prototyp-cta { text-align: center; }
+  .prototyp-cta .btn { width: 100%; padding: 16px 24px; }
+
+  .next-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px; }
+  .next-card {
+    background: #fff; border: 1px solid var(--c-line); border-radius: var(--radius-lg);
+    padding: 28px;
+  }
+  .next-card h3 { margin-bottom: 12px; }
+
+  /* ---------- Footer Nav ---------- */
+  .nav-footer {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: #fff; border-top: 1px solid var(--c-line);
+    padding: 12px 40px; display: flex; align-items: center; gap: 16px;
+    box-shadow: 0 -4px 12px rgba(0,0,0,.04); z-index: 90;
+  }
+  .nav-footer .info { flex: 1; font-size: 13px; color: var(--c-mute); }
+  .nav-footer .info strong { color: var(--c-ink); }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 960px) {
+    .dash-grid, .switch-grid, .status-grid, .offers-grid, .next-grid, .vn-grid,
+    .stamm-grid, .prototyp-prominent { grid-template-columns: 1fr; }
+    .process-flow { grid-template-columns: 1fr; }
+    .process-step:not(:last-child)::after { display: none; }
+    .stamm-grid { grid-template-columns: 1fr 1fr; }
+    .data-grid { grid-template-columns: 1fr; }
+    .ind-row { grid-template-columns: 1fr; gap: 8px; }
+    .vn-stats { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     DEMO-BAR
+     ============================================================ -->
+<div class="demo-bar" id="demoBar">
+  <span class="demo-label">DEMO</span>
+  <span class="case-label" data-de="Vision Bestandskunde" data-en="Existing-customer vision">Vision Bestandskunde</span>
+  <span class="step-label" id="stepLabel">Screen 1 · Login</span>
+  <div class="jumps" id="jumps">
+    <button data-jump="1" class="active">1</button>
+    <button data-jump="2">2</button>
+    <button data-jump="3">3</button>
+    <button data-jump="4">4</button>
+    <button data-jump="5">5</button>
+    <button data-jump="6">6</button>
+    <button data-jump="7">7</button>
+    <button data-jump="8">8</button>
+    <button data-jump="9">9</button>
+    <button data-jump="10">10</button>
+  </div>
+  <button class="toggle-bar" onclick="document.getElementById('demoBar').classList.toggle('collapsed')">↕ ausblenden</button>
+</div>
+
+<!-- ============================================================
+     APP HEADER
+     ============================================================ -->
+<header class="app-header">
+  <div class="logo">
+    <span class="b1">Wa</span><span class="b2">Bo</span>
+  </div>
+  <div class="logo-tag" data-de="Walter Bornmann GmbH<br>Präzisionsdrehteile aus Metall" data-en="Walter Bornmann GmbH<br>Precision turned metal parts">
+    Walter Bornmann GmbH<br>
+    Präzisionsdrehteile aus Metall
+  </div>
+  <div class="header-actions">
+    <div class="user-chip hidden" id="userChip">
+      <div class="avatar-sm">JV</div>
+      <div>
+        <div class="user-name">J. V.</div>
+        <div class="user-meta" data-de="Viega GmbH · Strategic Sourcing" data-en="Viega GmbH · Strategic Sourcing">Viega GmbH · Strategic Sourcing</div>
+      </div>
+    </div>
+    <span class="logout-link hidden" id="logoutLink" onclick="logout()" data-de="Abmelden" data-en="Sign out">Abmelden</span>
+    <div class="lang-switch">
+      <button class="active" data-lang="de">DE</button>
+      <button data-lang="en">EN</button>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<!-- ============================================================
+     SCREEN 1 — LOGIN (Mock)
+     ============================================================ -->
+<section class="screen active" data-screen="1">
+  <div class="login-wrap">
+    <div class="login-card">
+      <div class="login-label" data-de="Bestandskunden-Bereich" data-en="Existing-customer area">Bestandskunden-Bereich</div>
+      <h1 data-de="Willkommen zurück" data-en="Welcome back">Willkommen zurück</h1>
+      <p class="sub" data-de="Melden Sie sich an, um Ihre Aufträge, Status und Lieferhistorie zu sehen — und neue Anfragen schneller zu stellen." data-en="Sign in to see your orders, status and delivery history — and to submit new requests faster.">Melden Sie sich an, um Ihre Aufträge, Status und Lieferhistorie zu sehen — und neue Anfragen schneller zu stellen.</p>
+
+      <div class="login-fields">
+        <div class="field">
+          <label data-de="E-Mail" data-en="Email">E-Mail</label>
+          <input type="email" value="j.v@viega.de" readonly />
+        </div>
+        <div class="field">
+          <label data-de="Passwort" data-en="Password">Passwort</label>
+          <input type="password" value="••••••••" readonly />
+        </div>
+      </div>
+
+      <button class="btn btn-lg" style="width:100%;" onclick="loginAndGoToDashboard()" data-de="Anmelden als J. V." data-en="Sign in as J. V.">Anmelden als J. V.</button>
+
+      <div class="login-demo-hint" data-de="<strong>Demo-Hinweis:</strong> Login-Mock. Klicken Sie einfach auf „Anmelden" — kein echtes Passwort nötig. Sie werden als <strong>J. V., Strategic Sourcing Manager bei Viega GmbH</strong> angemeldet." data-en="<strong>Demo note:</strong> Login mock. Just click „Sign in" — no real password needed. You'll be signed in as <strong>J. V., Strategic Sourcing Manager at Viega GmbH</strong>.">
+        <strong>Demo-Hinweis:</strong> Login-Mock. Klicken Sie einfach auf „Anmelden" — kein echtes Passwort nötig. Sie werden als <strong>J. V., Strategic Sourcing Manager bei Viega GmbH</strong> angemeldet.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SCREEN 2 — DASHBOARD
+     ============================================================ -->
+<section class="screen" data-screen="2">
+  <div class="dashboard-greeting">
+    <div class="label" data-de="Bestandskunden-Dashboard" data-en="Existing-customer dashboard">Bestandskunden-Dashboard</div>
+    <h1 data-de="Guten Tag, J. V." data-en="Hello, J. V.">Guten Tag, J. V.</h1>
+    <p data-de="Hier sehen Sie Ihre laufenden Aufträge und können neue Anfragen stellen — mit allen Vorteilen Ihrer bestehenden Geschäftsbeziehung." data-en="Here you see your active orders and can submit new requests — with all advantages of our existing business relationship.">Hier sehen Sie Ihre laufenden Aufträge und können neue Anfragen stellen — mit allen Vorteilen Ihrer bestehenden Geschäftsbeziehung.</p>
+  </div>
+
+  <div class="dash-grid">
+    <div class="dash-main">
+      <!-- Liefertreue-Score -->
+      <div class="score-card">
+        <div>
+          <div class="label" data-de="Ihre Liefertreue mit uns" data-en="Your on-time score with us">Ihre Liefertreue mit uns</div>
+          <h3 data-de="98,7 % pünktliche Lieferung" data-en="98.7 % on-time delivery">98,7 % pünktliche Lieferung</h3>
+          <p data-de="Über die letzten 24 Monate · 142 Aufträge · keine Reklamation" data-en="Over the last 24 months · 142 orders · no complaints">Über die letzten 24 Monate · 142 Aufträge · keine Reklamation</p>
+        </div>
+        <div class="score-num">98,7</div>
+      </div>
+
+      <!-- Letzte Aufträge -->
+      <div class="order-list">
+        <h3 data-de="Letzte Aufträge" data-en="Recent orders">Letzte Aufträge</h3>
+        <div class="order-row">
+          <div>
+            <div class="nr">WB-2026-000012</div>
+            <div class="meta" data-de="Edelstahl-Flansche · 4 Pos." data-en="Stainless-steel flanges · 4 pos.">Edelstahl-Flansche · 4 Pos.</div>
+          </div>
+          <div>
+            <div class="meta" data-de="Status" data-en="Status">Status</div>
+            <span class="badge badge-ok" data-de="In Produktion" data-en="In production">In Produktion</span>
+          </div>
+          <div>
+            <div class="meta" data-de="Liefertermin" data-en="Delivery date">Liefertermin</div>
+            <div class="nr" style="font-weight:600;" data-de="KW 22 · pünktlich" data-en="CW 22 · on time">KW 22 · pünktlich</div>
+          </div>
+          <button class="reorder-btn" data-de="Wieder bestellen" data-en="Reorder">Wieder bestellen</button>
+        </div>
+        <div class="order-row">
+          <div>
+            <div class="nr">WB-2025-001890</div>
+            <div class="meta" data-de="Stahl-Flansche · 2 Pos." data-en="Steel flanges · 2 pos.">Stahl-Flansche · 2 Pos.</div>
+          </div>
+          <div>
+            <div class="meta" data-de="Status" data-en="Status">Status</div>
+            <span class="badge badge-info" data-de="Abgeschlossen" data-en="Completed">Abgeschlossen</span>
+          </div>
+          <div>
+            <div class="meta" data-de="Geliefert" data-en="Delivered">Geliefert</div>
+            <div class="nr" style="font-weight:600;" data-de="KW 47 · pünktlich" data-en="CW 47 · on time">KW 47 · pünktlich</div>
+          </div>
+          <button class="reorder-btn" data-de="Wieder bestellen" data-en="Reorder">Wieder bestellen</button>
+        </div>
+        <div class="order-row">
+          <div>
+            <div class="nr">WB-2025-001234</div>
+            <div class="meta" data-de="Edelstahl-Flansche · 5 Pos." data-en="Stainless-steel flanges · 5 pos.">Edelstahl-Flansche · 5 Pos.</div>
+          </div>
+          <div>
+            <div class="meta" data-de="Status" data-en="Status">Status</div>
+            <span class="badge badge-info" data-de="Abgeschlossen" data-en="Completed">Abgeschlossen</span>
+          </div>
+          <div>
+            <div class="meta" data-de="Geliefert" data-en="Delivered">Geliefert</div>
+            <div class="nr" style="font-weight:600;" data-de="KW 38 · pünktlich" data-en="CW 38 · on time">KW 38 · pünktlich</div>
+          </div>
+          <button class="reorder-btn" data-de="Wieder bestellen" data-en="Reorder">Wieder bestellen</button>
+        </div>
+        <div style="text-align:center; margin-top:16px;">
+          <a href="#" style="font-size:13px;" data-de="Alle 142 Aufträge anzeigen →" data-en="Show all 142 orders →">Alle 142 Aufträge anzeigen →</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="dash-side">
+      <!-- Neue Anfrage CTA -->
+      <div class="new-request-card">
+        <div class="label" data-de="Neue Anfrage" data-en="New request">Neue Anfrage</div>
+        <h3 data-de="Mit Kundenkonto ein Angebot in 30 Sekunden anfragen" data-en="Request a quote in 30 seconds with your customer account">Mit Kundenkonto ein Angebot in 30 Sekunden anfragen</h3>
+        <p data-de="Ihr Unternehmen ist bereits bei uns registriert und Ihre Stammdaten sind hinterlegt. Sie müssen nur noch Ihre Zeichnungen und Spezifikationen hochladen — den Rest übernehmen wir für Sie." data-en="Your company is already registered with us and your master data is stored. You just need to upload your drawings and specifications — we take care of the rest.">Ihr Unternehmen ist bereits bei uns registriert und Ihre Stammdaten sind hinterlegt. Sie müssen nur noch Ihre Zeichnungen und Spezifikationen hochladen — den Rest übernehmen wir für Sie.</p>
+        <button class="btn" style="background:var(--c-primary); width:100%;" onclick="goToScreen(3)" data-de="Anfrage starten →" data-en="Start request →">Anfrage starten →</button>
+      </div>
+
+      <!-- Privileg Prototyp -->
+      <div class="prototype-card">
+        <div class="label" data-de="Privileg Prototyp" data-en="Prototype privilege">Privileg Prototyp</div>
+        <h4 data-de="Prototypen und Kleinserien" data-en="Prototypes and small series">Prototypen und Kleinserien</h4>
+        <p data-de="Als Bestandskunde mit laufendem Mengen-Kontingent fertigen wir Ihnen Prototypen und Kleinserien jenseits unserer Standard-Lose." data-en="As an existing customer with running volume contingent we produce prototypes and small series beyond our standard lots.">Als Bestandskunde mit laufendem Mengen-Kontingent fertigen wir Ihnen Prototypen und Kleinserien jenseits unserer Standard-Lose.</p>
+        <a href="#" style="font-size:13px; font-weight:600;" data-de="Mehr erfahren →" data-en="Learn more →">Mehr erfahren →</a>
+      </div>
+
+      <!-- Ansprechpartner -->
+      <div class="contact-mini-card">
+        <div class="head">
+          <div class="avatar">WK</div>
+          <div>
+            <div class="name">Wolfgang Könen</div>
+            <div class="role" data-de="Ihr Ansprechpartner · Vertrieb" data-en="Your contact · Sales">Ihr Ansprechpartner · Vertrieb</div>
+          </div>
+        </div>
+        <div class="line">📞 +49 2333 68943-12</div>
+        <div class="line">✉ koenen@walter-bornmann.de</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SCREEN 3 — Wizard Schritt 1: Zeichnungen
+     ============================================================ -->
+<section class="screen" data-screen="3">
+  <div class="wizard-header">
+    <div class="wizard-step-num" data-de="Schritt 1 von 2" data-en="Step 1 of 2">Schritt 1 von 2</div>
+    <div class="wizard-progress">
+      <div class="step active"></div><div class="step"></div>
+    </div>
+    <h2 data-de="Zeichnungen hochladen" data-en="Upload drawings">Zeichnungen hochladen</h2>
+    <p style="color:var(--c-mute); margin-top:6px;" data-de="Ihre Stammdaten sind bereits hinterlegt — Sie laden nur Zeichnungen hoch." data-en="Your master data is already stored — you just upload the drawings.">Ihre Stammdaten sind bereits hinterlegt — Sie laden nur Zeichnungen hoch.</p>
+  </div>
+
+  <div class="upload-zone">
+    <div class="icon">↑</div>
+    <h3 data-de="7 Zeichnungen erkannt — Edelstahl- und Stahl-Flansche" data-en="7 drawings detected — stainless-steel and steel flanges">7 Zeichnungen erkannt — Edelstahl- und Stahl-Flansche</h3>
+    <p data-de="Voranalyse abgeschlossen. Bei 6 Zeichnungen fehlt die Gewichtsangabe — wir ergänzen sie aus Ihrer Materialhistorie." data-en="Pre-analysis complete. 6 drawings lack weight data — we fill it in from your material history.">Voranalyse abgeschlossen. Bei 6 Zeichnungen fehlt die Gewichtsangabe — wir ergänzen sie aus Ihrer Materialhistorie.</p>
+  </div>
+
+  <div class="parts-list" id="partsList"></div>
+</section>
+
+<!-- ============================================================
+     SCREEN 4 — Wizard Schritt 2: Eckdaten
+     ============================================================ -->
+<section class="screen" data-screen="4">
+  <div class="wizard-header">
+    <div class="wizard-step-num" data-de="Schritt 2 von 2" data-en="Step 2 of 2">Schritt 2 von 2</div>
+    <div class="wizard-progress">
+      <div class="step active"></div><div class="step active"></div>
+    </div>
+    <h2 data-de="Eckdaten prüfen" data-en="Review key data">Eckdaten prüfen</h2>
+    <p style="color:var(--c-mute); margin-top:6px;" data-de="Stammdaten und Materialinfos sind aus Ihren letzten Aufträgen vorausgefüllt." data-en="Master data and material info are pre-filled from your recent orders.">Stammdaten und Materialinfos sind aus Ihren letzten Aufträgen vorausgefüllt.</p>
+  </div>
+
+  <div class="stamm-block">
+    <div class="label" data-de="Vorausgefüllte Stammdaten <span class='label-tag'>aus Ihrem Konto</span>" data-en="Pre-filled master data <span class='label-tag'>from your account</span>">Vorausgefüllte Stammdaten <span class="label-tag">aus Ihrem Konto</span></div>
+    <div class="stamm-grid">
+      <div class="field">
+        <label data-de="Firma" data-en="Company">Firma</label>
+        <div class="value">Viega GmbH &amp; Co. KG</div>
+      </div>
+      <div class="field">
+        <label data-de="Branche" data-en="Industry">Branche</label>
+        <div class="value" data-de="Bauen &amp; Infrastruktur" data-en="Construction &amp; Infrastructure">Bauen &amp; Infrastruktur</div>
+      </div>
+      <div class="field">
+        <label data-de="Ansprechpartner" data-en="Contact">Ansprechpartner</label>
+        <div class="value">J. V.</div>
+      </div>
+      <div class="field">
+        <label data-de="E-Mail" data-en="Email">E-Mail</label>
+        <div class="value">j.v@viega.de</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="dataCards"></div>
+
+  <div style="margin-top:24px;">
+    <div class="card" style="background:#fff5e1; border-color:#f5d97a;">
+      <div style="display:flex; align-items:center; gap:16px;">
+        <div style="font-size:32px;">📊</div>
+        <div>
+          <strong style="color:var(--c-ink);" data-de="Historien-Erkennung: Pos. 178551 + 178671 + 178451 + 178211" data-en="History match: Pos. 178551 + 178671 + 178451 + 178211">Historien-Erkennung: Pos. 178551 + 178671 + 178451 + 178211</strong>
+          <p style="font-size:13px; color:#6f5a18; margin-top:2px;" data-de="Diese vier Edelstahl-Positionen haben wir in Ihrem Auftrag <strong>WB-2024-002145</strong> bereits in einer gemeinsamen Vormaterial-Charge gefertigt — wir schlagen das wieder vor." data-en="These four stainless-steel positions were already produced in a common raw-material batch in your order <strong>WB-2024-002145</strong> — we propose the same again.">
+            Diese vier Edelstahl-Positionen haben wir in Ihrem Auftrag <strong>WB-2024-002145</strong> bereits in einer gemeinsamen Vormaterial-Charge gefertigt — wir schlagen das wieder vor.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SCREEN 5 — Komplexitäts-Weiche
+     ============================================================ -->
+<section class="screen" data-screen="5">
+  <div class="switch-intro">
+    <div style="color:var(--c-primary-dark); font-weight:700; font-size:13px; letter-spacing:2px; text-transform:uppercase; margin-bottom:6px;" data-de="Wir haben Ihre Anfrage sortiert" data-en="We've sorted your request">Wir haben Ihre Anfrage sortiert</div>
+    <h2 data-de="5 Teile gehen den Standard-Weg. 2 Teile brauchen Vormaterial-Klärung — genau dafür sind wir da." data-en="5 parts go the standard route. 2 parts need raw-material clarification — that's exactly what we're here for.">5 Teile gehen den Standard-Weg. 2 Teile brauchen Vormaterial-Klärung — genau dafür sind wir da.</h2>
+  </div>
+
+  <div class="switch-grid">
+    <div class="switch-col switch-col-standard">
+      <h3 data-de="Standard-Pfad" data-en="Standard path">Standard-Pfad</h3>
+      <span class="count" data-de="5 Teile · automatisierte Indikation" data-en="5 parts · automated indication">5 Teile · automatisierte Indikation</span>
+      <p data-de="Diese Teile fallen in unser Standard-Profil und greifen auf Ihre Materialhistorie zurück. Indikation in 5 Minuten, Detail-Angebot in 2 Werktagen." data-en="These parts fall within our standard profile and use your material history. Indication in 5 minutes, detail offer in 2 business days.">Diese Teile fallen in unser Standard-Profil und greifen auf Ihre Materialhistorie zurück. Indikation in 5 Minuten, Detail-Angebot in 2 Werktagen.</p>
+      <ul class="switch-list">
+        <li>619471 · <span data-de="Stahl-Flansch" data-en="Steel flange">Stahl-Flansch</span> <span class="reason" data-de="1.000 Stk" data-en="1,000 pcs">1.000 Stk</span></li>
+        <li>409823 · <span data-de="Edelstahl-Flansch" data-en="Stainless-steel flange">Edelstahl-Flansch</span> <span class="reason" data-de="4.000 Stk" data-en="4,000 pcs">4.000 Stk</span></li>
+        <li>178551 · <span data-de="Edelstahl-Flansch" data-en="Stainless-steel flange">Edelstahl-Flansch</span> <span class="reason" data-de="3.000 Stk" data-en="3,000 pcs">3.000 Stk</span></li>
+        <li>178671 · <span data-de="Edelstahl-Flansch" data-en="Stainless-steel flange">Edelstahl-Flansch</span> <span class="reason" data-de="4.000 Stk" data-en="4,000 pcs">4.000 Stk</span></li>
+        <li>178211 · <span data-de="Edelstahl-Flansch" data-en="Stainless-steel flange">Edelstahl-Flansch</span> <span class="reason" data-de="2.400 Stk" data-en="2,400 pcs">2.400 Stk</span></li>
+      </ul>
+    </div>
+
+    <div class="switch-col switch-col-personal">
+      <h3 data-de="Persönlicher Pfad" data-en="Personal path">Persönlicher Pfad</h3>
+      <span class="count" data-de="2 Teile · Vormaterial-Klärung" data-en="2 parts · raw-material clarification">2 Teile · Vormaterial-Klärung</span>
+      <p data-de="Bei diesen beiden Positionen ist das Vormaterial aktuell nicht standardmäßig verfügbar. Wir klären die Beschaffung gemeinsam mit Ihnen — wahlweise per Termin oder E-Mail." data-en="For these two positions the raw material is currently not available standard. We'll clarify procurement with you — by appointment or email.">Bei diesen beiden Positionen ist das Vormaterial aktuell nicht standardmäßig verfügbar. Wir klären die Beschaffung gemeinsam mit Ihnen — wahlweise per Termin oder E-Mail.</p>
+      <ul class="switch-list">
+        <li>619451 · <span data-de="Edelstahl-Flansch" data-en="Stainless-steel flange">Edelstahl-Flansch</span> <span class="reason" data-de="2.000 Stk · Vormaterial-Engpass" data-en="2,000 pcs · raw-material shortage">2.000 Stk · Vormaterial-Engpass</span></li>
+        <li>178451 · <span data-de="Edelstahl-Flansch" data-en="Stainless-steel flange">Edelstahl-Flansch</span> <span class="reason" data-de="4.400 Stk · Vormaterial-Engpass" data-en="4,400 pcs · raw-material shortage">4.400 Stk · Vormaterial-Engpass</span></li>
+      </ul>
+
+      <div class="slot-picker">
+        <h4 data-de="Telefontermin — wann passt es Ihnen?" data-en="Phone slot — when suits you?">Telefontermin — wann passt es Ihnen?</h4>
+        <div class="slot-grid">
+          <button class="slot-btn"><span class="day" data-de="Heute" data-en="Today">Heute</span><span class="time">14:00</span></button>
+          <button class="slot-btn"><span class="day" data-de="Heute" data-en="Today">Heute</span><span class="time">16:00</span></button>
+          <button class="slot-btn"><span class="day" data-de="Morgen" data-en="Tomorrow">Morgen</span><span class="time">09:30</span></button>
+          <button class="slot-btn"><span class="day" data-de="Morgen" data-en="Tomorrow">Morgen</span><span class="time">11:00</span></button>
+          <button class="slot-btn"><span class="day" data-de="Morgen" data-en="Tomorrow">Morgen</span><span class="time">14:30</span></button>
+          <button class="slot-btn"><span class="day" data-de="Übermorgen" data-en="Day after">Übermorgen</span><span class="time">10:00</span></button>
+        </div>
+        <div style="margin-top:10px; font-size:12px; color:var(--c-mute);" data-de="Oder anderen Termin vorschlagen — wir richten uns nach Ihnen." data-en="Or propose another time — we'll work around you.">Oder anderen Termin vorschlagen — wir richten uns nach Ihnen.</div>
+      </div>
+
+      <div class="or-divider"><span data-de="oder" data-en="or">oder</span></div>
+
+      <div class="email-alt">
+        <h4 data-de="Fragen und Optionen per E-Mail erhalten" data-en="Receive questions and options by email">Fragen und Optionen per E-Mail erhalten</h4>
+        <p data-de="Wir senden Ihnen unsere offenen Fragen zur Vormaterial-Beschaffung per E-Mail an j.v@viega.de." data-en="We send you our open questions about raw-material procurement by email to j.v@viega.de.">Wir senden Ihnen unsere offenen Fragen zur Vormaterial-Beschaffung per E-Mail an j.v@viega.de.</p>
+        <button class="btn btn-secondary" style="width:100%;" data-de="Per E-Mail klären lassen" data-en="Clarify by email">Per E-Mail klären lassen</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SCREEN 6 — Sofort-Indikation
+     ============================================================ -->
+<section class="screen" data-screen="6">
+  <div class="wizard-header">
+    <div class="wizard-step-num" data-de="Indikation · in 5 Minuten" data-en="Indication · in 5 minutes">Indikation · in 5 Minuten</div>
+    <h2 data-de="Indikative Preise für die 5 Standard-Teile" data-en="Indicative prices for the 5 standard parts">Indikative Preise für die 5 Standard-Teile</h2>
+    <p style="color:var(--c-mute); margin-top:6px;" data-de="Verbindlich nach Detail-Prüfung. Preisspanne und Lieferfenster auf Basis Ihrer Eckdaten und Ihrer Auftragshistorie." data-en="Binding after detail review. Price range and delivery window based on your key data and order history.">Verbindlich nach Detail-Prüfung. Preisspanne und Lieferfenster auf Basis Ihrer Eckdaten und Ihrer Auftragshistorie.</p>
+  </div>
+
+  <div class="history-box">
+    <div class="ico">i</div>
+    <div>
+      <h4 data-de="Auf Basis Ihrer letzten 14 Aufträge" data-en="Based on your last 14 orders">Auf Basis Ihrer letzten 14 Aufträge</h4>
+      <p data-de="Die Preisspanne fällt enger aus als bei einer Neukunden-Anfrage — wir kennen Ihre Spezifikationen, Toleranz-Erwartungen und Logistik-Anforderungen aus 24 Monaten Zusammenarbeit." data-en="The price range is tighter than for a new-customer request — we know your specifications, tolerance expectations and logistics requirements from 24 months of cooperation.">Die Preisspanne fällt enger aus als bei einer Neukunden-Anfrage — wir kennen Ihre Spezifikationen, Toleranz-Erwartungen und Logistik-Anforderungen aus 24 Monaten Zusammenarbeit.</p>
+    </div>
+  </div>
+
+  <div class="indication-list" id="indList"></div>
+
+  <div style="text-align:center; padding:24px; background:var(--c-primary-light); border-radius:var(--radius-lg);">
+    <strong data-de="Sie erhalten das vollständige Detail-Angebot mit Optimierungen innerhalb von 2 Werktagen." data-en="You'll receive the full detail offer with optimisations within 2 business days.">Sie erhalten das vollständige Detail-Angebot mit Optimierungen innerhalb von 2 Werktagen.</strong>
+  </div>
+</section>
+
+<!-- ============================================================
+     SCREEN 7 — Status-Dashboard
+     ============================================================ -->
+<section class="screen" data-screen="7">
+  <div class="wizard-header">
+    <div class="wizard-step-num" data-de="Status-Tracking" data-en="Status tracking">Status-Tracking</div>
+    <h2 data-de="Anfrage WB-2026-000156 — wir sind dran" data-en="Request WB-2026-000156 — we're on it">Anfrage WB-2026-000156 — wir sind dran</h2>
+    <p style="color:var(--c-mute); margin-top:6px;" data-de="Sie kennen unseren Prozess — alle Schritte sind transparent. Der Link liegt auch in Ihrem Mailfach (j.v@viega.de)." data-en="You know our process — every step is transparent. The link is also in your mailbox (j.v@viega.de).">Sie kennen unseren Prozess — alle Schritte sind transparent. Der Link liegt auch in Ihrem Mailfach (j.v@viega.de).</p>
+  </div>
+
+  <div class="status-banner">
+    <div class="url-info">
+      <div class="label" data-de="Ihr Status-Link (automatisch per E-Mail erhalten)" data-en="Your status link (received by email)">Ihr Status-Link (automatisch per E-Mail erhalten)</div>
+      <div class="url">walter-bornmann.de/status/WB-2026-000156-vg72k</div>
+    </div>
+    <div class="eta">
+      <div class="label" data-de="Voraussichtlich" data-en="Expected">Voraussichtlich</div>
+      <div class="time" data-de="Morgen · 11:00 Uhr" data-en="Tomorrow · 11:00 AM">Morgen · 11:00 Uhr</div>
+    </div>
+  </div>
+
+  <div class="process-section">
+    <div class="process-flow">
+      <div class="process-step done"><div class="process-num">1</div><h4 data-de="Hochladen<br>Zeichnung &amp; Spezifikationen" data-en="Upload<br>drawing &amp; specs">Hochladen<br>Zeichnung &amp; Spezifikationen</h4><div class="time" data-de="heute · 08:14" data-en="today · 08:14">heute · 08:14</div></div>
+      <div class="process-step done"><div class="process-num">2</div><h4 data-de="Feedback &amp;<br>Optimierung der Anfrage" data-en="Feedback &amp;<br>request optimisation">Feedback &amp;<br>Optimierung der Anfrage</h4><div class="time" data-de="heute · 08:16" data-en="today · 08:16">heute · 08:16</div></div>
+      <div class="process-step done"><div class="process-num">3</div><h4 data-de="Erste Angebots-<br>Indikation" data-en="Initial quote<br>indication">Erste Angebots-<br>Indikation</h4><div class="time" data-de="heute · 08:21" data-en="today · 08:21">heute · 08:21</div></div>
+      <div class="process-step active"><div class="process-num">4</div><h4 data-de="Detail-Prüfung &amp;<br>Kundenberatung" data-en="Detail review &amp;<br>customer consulting">Detail-Prüfung &amp;<br>Kundenberatung</h4><div class="time" data-de="läuft" data-en="running">läuft</div></div>
+      <div class="process-step"><div class="process-num">5</div><h4 data-de="Zwei Angebots-<br>vorschläge" data-en="Two offer<br>proposals">Zwei Angebots-<br>vorschläge</h4><div class="time" data-de="morgen" data-en="tomorrow">morgen</div></div>
+      <div class="process-step"><div class="process-num">6</div><h4 data-de="Freigabe<br>im System" data-en="Release<br>in the system">Freigabe<br>im System</h4><div class="time">—</div></div>
+      <div class="process-step"><div class="process-num">7</div><h4 data-de="Produktion<br>&amp; Lieferung" data-en="Production<br>&amp; delivery">Produktion<br>&amp; Lieferung</h4><div class="time">—</div></div>
+    </div>
+  </div>
+
+  <div class="status-grid">
+    <div class="status-detail">
+      <h3 data-de="Detail-Prüfung läuft — Sie sehen jeden Teilschritt" data-en="Detail review running — you see every sub-step">Detail-Prüfung läuft — Sie sehen jeden Teilschritt</h3>
+      <div class="substatus-list">
+        <div class="substatus done">
+          <div class="check">✓</div>
+          <div>
+            <div class="text" data-de="Arbeitsvorbereitung" data-en="Work preparation">Arbeitsvorbereitung</div>
+            <div class="meta" data-de="Maschinen-Allokation auf Linie 3 + 5 (wie in WB-2025-001890), Toleranz-Check geprüft" data-en="Machine allocation on lines 3 + 5 (like in WB-2025-001890), tolerance check verified">Maschinen-Allokation auf Linie 3 + 5 (wie in WB-2025-001890), Toleranz-Check geprüft</div>
+          </div>
+          <div class="time" data-de="heute · 09:30" data-en="today · 09:30">heute · 09:30</div>
+        </div>
+        <div class="substatus done">
+          <div class="check">✓</div>
+          <div>
+            <div class="text" data-de="Einkauf · Vormaterial" data-en="Procurement · raw material">Einkauf · Vormaterial</div>
+            <div class="meta" data-de="Vormaterial für 5 Standard-Positionen verfügbar (Bündelung mit laufender Charge KW 26 geprüft)" data-en="Raw material for 5 standard positions available (bundling with running batch CW 26 checked)">Vormaterial für 5 Standard-Positionen verfügbar (Bündelung mit laufender Charge KW 26 geprüft)</div>
+          </div>
+          <div class="time" data-de="heute · 11:45" data-en="today · 11:45">heute · 11:45</div>
+        </div>
+        <div class="substatus done">
+          <div class="check">✓</div>
+          <div>
+            <div class="text" data-de="Qualitätssicherung" data-en="Quality assurance">Qualitätssicherung</div>
+            <div class="meta" data-de="Druckdichtheit + DIN-Konformität bestätigt (Profil aus Ihrer Liefertreue-Historie übernommen)" data-en="Pressure tightness + DIN conformity confirmed (profile taken from your delivery history)">Druckdichtheit + DIN-Konformität bestätigt (Profil aus Ihrer Liefertreue-Historie übernommen)</div>
+          </div>
+          <div class="time" data-de="heute · 14:20" data-en="today · 14:20">heute · 14:20</div>
+        </div>
+        <div class="substatus active">
+          <div class="check">●</div>
+          <div>
+            <div class="text" data-de="Angebots-Erstellung" data-en="Offer preparation">Angebots-Erstellung</div>
+            <div class="meta" data-de="Original + Optimierungs-Vorschläge auf Basis Ihrer Historie werden zusammengestellt" data-en="Original + optimisation proposals being compiled based on your history">Original + Optimierungs-Vorschläge auf Basis Ihrer Historie werden zusammengestellt</div>
+          </div>
+          <div class="time" data-de="läuft" data-en="running">läuft</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="contact-card">
+        <div class="head">
+          <div class="avatar">WK</div>
+          <div>
+            <h4>Wolfgang Könen</h4>
+            <div class="role" data-de="Ihr Ansprechpartner seit 2022" data-en="Your contact since 2022">Ihr Ansprechpartner seit 2022</div>
+          </div>
+        </div>
+        <div class="phone">📞 +49 2333 68943-12</div>
+        <div class="mail">✉ koenen@walter-bornmann.de</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SCREEN 8 — Zwei Angebote (mit Historien-Hebel)
+     ============================================================ -->
+<section class="screen" data-screen="8">
+  <div class="offers-header">
+    <div class="label" data-de="Ihre zwei Angebote · 20.03.2026 · 11:00" data-en="Your two offers · 20 March 2026 · 11:00">Ihre zwei Angebote · 20.03.2026 · 11:00</div>
+    <h2 data-de="Ihr Angebot und unsere Vorschläge — auf Basis Ihrer Historie" data-en="Your offer and our proposals — based on your history">Ihr Angebot und unsere Vorschläge — auf Basis Ihrer Historie</h2>
+    <p style="color:var(--c-mute); margin-top:6px;" data-de="Drei der vier Optimierungs-Hebel nutzen Daten aus Ihren letzten 14 Aufträgen. Toggeln Sie einzelne Hebel an oder ab." data-en="Three of the four optimisation levers use data from your last 14 orders. Toggle individual levers on or off.">Drei der vier Optimierungs-Hebel nutzen Daten aus Ihren letzten 14 Aufträgen. Toggeln Sie einzelne Hebel an oder ab.</p>
+  </div>
+
+  <div class="offers-grid">
+    <!-- Angebot A -->
+    <div class="offer-card a">
+      <div class="head">
+        <div class="badge-offer" data-de="Angebot A" data-en="Offer A">Angebot A</div>
+        <h3 data-de="Wie angefragt" data-en="As requested">Wie angefragt</h3>
+        <div class="sub" data-de="1:1 nach Ihrer Spezifikation · 5 Positionen · Standard-Verpackung" data-en="1:1 to your specification · 5 positions · standard packaging">1:1 nach Ihrer Spezifikation · 5 Positionen · Standard-Verpackung</div>
+      </div>
+      <div class="offer-summary">
+        <div class="sum-row"><span data-de="5 Positionen" data-en="5 positions">5 Positionen</span><span>105.220 €</span></div>
+        <div class="sum-row"><span data-de="Verpackung (Einweg)" data-en="Packaging (single-use)">Verpackung (Einweg)</span><span>2.100 €</span></div>
+        <div class="sum-row total"><span data-de="Summe netto / Jahr" data-en="Total net / year">Summe netto / Jahr</span><span>107.320 €</span></div>
+        <div class="sum-row" style="margin-top:8px; font-size:12px; color:var(--c-mute);"><span data-de="Lieferzeit" data-en="Delivery">Lieferzeit</span><span data-de="10 Wochen" data-en="10 weeks">10 Wochen</span></div>
+      </div>
+      <div class="offer-actions">
+        <a class="btn btn-secondary" style="flex:1; text-decoration:none;" href="wabo-angebot-beispiel.pdf" target="_blank" data-de="Angebot als PDF" data-en="Offer as PDF">Angebot als PDF</a>
+        <button class="btn" style="flex:1;" data-de="Angebot A annehmen" data-en="Accept offer A">Angebot A annehmen</button>
+      </div>
+    </div>
+
+    <!-- Angebot B -->
+    <div class="offer-card b">
+      <div class="head">
+        <div class="badge-offer" data-de="Angebot B · WaBo-Empfehlung" data-en="Offer B · WaBo recommendation">Angebot B · WaBo-Empfehlung</div>
+        <h3 data-de="Mitgedacht — auf Basis Ihrer Historie" data-en="Thought-through — based on your history">Mitgedacht — auf Basis Ihrer Historie</h3>
+        <div class="sub" data-de="3 von 4 Hebeln nutzen Daten Ihrer letzten Aufträge" data-en="3 of 4 levers use data from your past orders">3 von 4 Hebeln nutzen Daten Ihrer letzten Aufträge</div>
+      </div>
+      <div class="offer-body">
+        <div class="lever-list">
+          <div class="lever">
+            <div class="lever-head">
+              <input type="checkbox" class="lever-toggle" data-saving="3160" data-days="0" checked />
+              <div class="lever-info">
+                <div class="lever-title" data-de="Material-Konsolidierung Pos. 178551 + 178671 + 178451 + 178211" data-en="Material consolidation pos. 178551 + 178671 + 178451 + 178211">Material-Konsolidierung Pos. 178551 + 178671 + 178451 + 178211</div>
+                <div class="lever-desc" data-de="Vier Edelstahl-Positionen aus der gleichen Werkstoffgruppe in eine gemeinsame Vormaterial-Charge — wie in Ihrem Auftrag WB-2024-002145 erfolgreich umgesetzt. Reduziert Beschaffungskosten und Rüstzeiten." data-en="Four stainless-steel positions from the same material group into a common raw-material batch — successfully implemented in your order WB-2024-002145. Reduces procurement cost and setup time.">Vier Edelstahl-Positionen aus der gleichen Werkstoffgruppe in eine gemeinsame Vormaterial-Charge — wie in Ihrem Auftrag WB-2024-002145 erfolgreich umgesetzt. Reduziert Beschaffungskosten und Rüstzeiten.</div>
+                <div class="lever-effect">
+                  <span class="effect-tag" data-de="−3.160 € / Jahr" data-en="−€3,160 / year">−3.160 € / Jahr</span>
+                  <span class="effect-tag history" data-de="Historien-Hebel" data-en="History lever">Historien-Hebel</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="lever">
+            <div class="lever-head">
+              <input type="checkbox" class="lever-toggle" data-saving="1580" data-days="0" checked />
+              <div class="lever-info">
+                <div class="lever-title" data-de="Lieferlos abgestimmt auf Ihren Lagerumschlag" data-en="Lot size matched to your inventory turn">Lieferlos abgestimmt auf Ihren Lagerumschlag</div>
+                <div class="lever-desc" data-de="Auf Basis Ihres Abrufverhaltens Q3+Q4 2025: 1.000er- statt 500er-Lose für die Stahl-Positionen, gestaffelt nach Ihrem Bedarf. Weniger Rüstkosten ohne zusätzliches Lagerrisiko." data-en="Based on your call-off pattern Q3+Q4 2025: 1,000-pcs lots instead of 500 for the steel positions, staggered to your needs. Lower setup cost, no extra stock risk.">Auf Basis Ihres Abrufverhaltens Q3+Q4 2025: 1.000er- statt 500er-Lose für die Stahl-Positionen, gestaffelt nach Ihrem Bedarf. Weniger Rüstkosten ohne zusätzliches Lagerrisiko.</div>
+                <div class="lever-effect">
+                  <span class="effect-tag" data-de="−1.580 € / Jahr" data-en="−€1,580 / year">−1.580 € / Jahr</span>
+                  <span class="effect-tag history" data-de="Historien-Hebel" data-en="History lever">Historien-Hebel</span>
+                  <span class="effect-tag neutral" data-de="1,5 % Stückpreis-Effekt" data-en="1.5 % unit price effect">1,5 % Stückpreis-Effekt</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="lever">
+            <div class="lever-head">
+              <input type="checkbox" class="lever-toggle" data-saving="1785" data-days="0" checked />
+              <div class="lever-info">
+                <div class="lever-title" data-de="Mehrweg-Verpackung — Erweiterung Ihrer Linie HRG-3" data-en="Reusable packaging — extension of your line HRG-3">Mehrweg-Verpackung — Erweiterung Ihrer Linie HRG-3</div>
+                <div class="lever-desc" data-de="Sie nutzen unser KLT-Pool-System bereits auf der Linie für Hausanschluss-Komponenten. Wir erweitern es auf diese 5 Positionen — kein Setup-Aufwand bei Ihnen." data-en="You already use our KLT pool system on your line for house-connection components. We extend it to these 5 positions — no setup work on your end.">Sie nutzen unser KLT-Pool-System bereits auf der Linie für Hausanschluss-Komponenten. Wir erweitern es auf diese 5 Positionen — kein Setup-Aufwand bei Ihnen.</div>
+                <div class="lever-effect">
+                  <span class="effect-tag" data-de="−1.785 € / Jahr" data-en="−€1,785 / year">−1.785 € / Jahr</span>
+                  <span class="effect-tag history" data-de="Historien-Hebel" data-en="History lever">Historien-Hebel</span>
+                  <span class="effect-tag neutral" data-de="−85 % Verpackung" data-en="−85 % packaging">−85 % Verpackung</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="lever">
+            <div class="lever-head">
+              <input type="checkbox" class="lever-toggle" data-saving="475" data-days="4" checked />
+              <div class="lever-info">
+                <div class="lever-title" data-de="Bündelung mit laufender Charge KW 26" data-en="Bundling with running batch CW 26">Bündelung mit laufender Charge KW 26</div>
+                <div class="lever-desc" data-de="Sie haben aus Ihrem Rahmenauftrag WB-2024-002145 noch 1.500 Stück Material-Nr. 178551 offen. Wir fertigen die neue Charge im selben Maschinendurchgang — spart Rüstkosten und Lieferzeit." data-en="From your master order WB-2024-002145 there are still 1,500 pcs of material no. 178551 open. We produce the new batch in the same machine run — saves setup cost and delivery time.">Sie haben aus Ihrem Rahmenauftrag WB-2024-002145 noch 1.500 Stück Material-Nr. 178551 offen. Wir fertigen die neue Charge im selben Maschinendurchgang — spart Rüstkosten und Lieferzeit.</div>
+                <div class="lever-effect">
+                  <span class="effect-tag" data-de="−475 € / Jahr" data-en="−€475 / year">−475 € / Jahr</span>
+                  <span class="effect-tag" data-de="−4 Tage Lieferzeit" data-en="−4 days delivery">−4 Tage Lieferzeit</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="offer-summary">
+        <div class="sum-row"><span data-de="5 Positionen (Original)" data-en="5 positions (original)">5 Positionen (Original)</span><span>105.220 €</span></div>
+        <div class="sum-row"><span data-de="Verpackung Mehrweg" data-en="Packaging reusable">Verpackung Mehrweg</span><span id="packLine">315 €</span></div>
+        <div class="sum-row"><span data-de="Optimierungen aktiv" data-en="Active optimisations">Optimierungen aktiv</span><span id="optLine">−5.215 €</span></div>
+        <div class="sum-row total"><span data-de="Summe netto / Jahr" data-en="Total net / year">Summe netto / Jahr</span><span id="totalB">100.320 €</span></div>
+        <div class="delta">
+          <span data-de="Ihre Ersparnis vs. Angebot A" data-en="Your savings vs. offer A">Ihre Ersparnis vs. Angebot A</span>
+          <strong id="savingTotal">7.000 €</strong>
+        </div>
+        <div class="sum-row" style="margin-top:8px; font-size:12px; color:var(--c-mute);"><span data-de="Lieferzeit" data-en="Delivery">Lieferzeit</span><span id="deliveryB" data-de="9 Wochen 1 Tag" data-en="9 weeks 1 day">9 Wochen 1 Tag</span></div>
+      </div>
+      <div class="offer-actions">
+        <a class="btn btn-secondary" style="flex:1; min-width:140px; text-decoration:none;" href="wabo-angebot-beispiel.pdf" target="_blank" data-de="Angebot als PDF" data-en="Offer as PDF">Angebot als PDF</a>
+        <button class="btn btn-secondary" style="flex:1; min-width:140px;" data-de="15-Min-Call buchen" data-en="Book 15-min call">15-Min-Call buchen</button>
+        <button class="btn" style="flex:1; min-width:140px;" onclick="goToScreen(10)" data-de="Angebot B annehmen →" data-en="Accept offer B →">Angebot B annehmen →</button>
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align:center; margin-top:32px;">
+    <button class="btn-ghost" onclick="goToScreen(9)" data-de="Vorher / Nachher anzeigen →" data-en="Show before / after →">Vorher / Nachher anzeigen →</button>
+  </div>
+</section>
+
+<!-- ============================================================
+     SCREEN 9 — Vorher / Nachher (Viega-Zahlen)
+     ============================================================ -->
+<section class="screen" data-screen="9">
+  <div class="vn-intro">
+    <div class="label" data-de="Echte Anfrage. Echte Zahlen. Vom 19. März 2026." data-en="Real request. Real numbers. From 19 March 2026.">Echte Anfrage. Echte Zahlen. Vom 19. März 2026.</div>
+    <h2 data-de="Was sich für Sie ändert — Tag für Tag" data-en="What changes for you — day by day">Was sich für Sie ändert — Tag für Tag</h2>
+    <p style="color:var(--c-mute); margin-top:8px;" data-de="Anfrage von Viega über 7 Edelstahl- und Stahl-Flansche · Personen anonymisiert" data-en="Request from Viega for 7 stainless-steel and steel flanges · persons anonymised">Anfrage von Viega über 7 Edelstahl- und Stahl-Flansche · Personen anonymisiert</p>
+  </div>
+
+  <div class="vn-grid">
+    <div class="vn-col vn-col-old">
+      <div class="topline" data-de="So lief es bisher" data-en="How it ran so far">So lief es bisher</div>
+      <h3 data-de="33 Tage Mail-Pingpong und ein unvollständiges Angebot" data-en="33 days of email back-and-forth and an incomplete offer">33 Tage Mail-Pingpong und ein unvollständiges Angebot</h3>
+      <div class="vn-row">
+        <div class="vn-day" data-de="Tag 0" data-en="Day 0">Tag 0</div>
+        <div class="vn-text" data-de="Anfrage per E-Mail mit 7 Zeichnungen — verteilt an mehrere Lieferanten parallel." data-en="Request by email with 7 drawings — sent to several suppliers in parallel.">Anfrage per E-Mail mit 7 Zeichnungen — verteilt an mehrere Lieferanten parallel.</div>
+      </div>
+      <div class="vn-row">
+        <div class="vn-day" data-de="Tag 1–32" data-en="Day 1–32">Tag 1–32</div>
+        <div class="vn-text" data-de="<strong>Stille.</strong> Keine Sichtbarkeit, ob die Anfrage bearbeitet wird. Mehrfaches Nachhaken nötig." data-en="<strong>Silence.</strong> No visibility whether the request is being processed. Multiple follow-ups needed."><strong>Stille.</strong> Keine Sichtbarkeit, ob die Anfrage bearbeitet wird. Mehrfaches Nachhaken nötig.</div>
+      </div>
+      <div class="vn-row">
+        <div class="vn-day" data-de="Tag 33" data-en="Day 33">Tag 33</div>
+        <div class="vn-text" data-de="Angebot trifft ein. <strong>5 von 7 Positionen.</strong> Für 2 Bauteile „leider kein geeignetes Vormaterialangebot". Liefertermine fehlen. Standard-Verpackung — obwohl Mehrweg auf Ihrer Linie HRG-3 bereits etabliert ist." data-en="Offer arrives. <strong>5 of 7 positions.</strong> For 2 parts 'unfortunately no suitable raw-material offer'. Delivery dates missing. Standard packaging — although reusable is already established on your line HRG-3.">Angebot trifft ein. <strong>5 von 7 Positionen.</strong> Für 2 Bauteile „leider kein geeignetes Vormaterialangebot". Liefertermine fehlen. Standard-Verpackung — obwohl Mehrweg auf Ihrer Linie HRG-3 bereits etabliert ist.</div>
+      </div>
+      <div class="vn-row">
+        <div class="vn-day" data-de="Tag 34–45" data-en="Day 34–45">Tag 34–45</div>
+        <div class="vn-text" data-de="Excel-Vergleichstabelle mit mehreren Lieferantenangeboten aufbauen. Telefonate zur Klärung der fehlenden 6 Gewichtsangaben und der 2 fehlenden Bauteile." data-en="Build Excel comparison sheet with multiple supplier offers. Phone calls to clarify 6 missing weights and 2 missing parts.">Excel-Vergleichstabelle mit mehreren Lieferantenangeboten aufbauen. Telefonate zur Klärung der fehlenden 6 Gewichtsangaben und der 2 fehlenden Bauteile.</div>
+      </div>
+      <div class="vn-row">
+        <div class="vn-day" data-de="Tag 50+" data-en="Day 50+">Tag 50+</div>
+        <div class="vn-text" data-de="Entscheidung in der Einkaufsleitung. Erst dann nachreichendes Telefonat zu offenen Punkten." data-en="Decision in procurement leadership. Only then a follow-up call on open points.">Entscheidung in der Einkaufsleitung. Erst dann nachreichendes Telefonat zu offenen Punkten.</div>
+      </div>
+    </div>
+
+    <div class="vn-col vn-col-new">
+      <div class="topline" data-de="So läuft es bei WaBo" data-en="How it runs at WaBo">So läuft es bei WaBo</div>
+      <h3 data-de="2 Werktage zur Entscheidung — mit Ersparnis durch Ihre Historie" data-en="2 business days to decision — with savings through your history">2 Werktage zur Entscheidung — mit Ersparnis durch Ihre Historie</h3>
+      <div class="vn-row">
+        <div class="vn-day" data-de="Tag 0 · 0 Min" data-en="Day 0 · 0 min">Tag 0 · 0 Min</div>
+        <div class="vn-text" data-de="Angemeldet als Viega. Zeichnungen hochgeladen. Sofort erkannt: <strong>7 Teile, 5 Standard, 2 Vormaterial-Klärung.</strong> 6 fehlende Gewichte aus Ihrer Historie ergänzt." data-en="Signed in as Viega. Drawings uploaded. Instantly recognised: <strong>7 parts, 5 standard, 2 raw-material clarification.</strong> 6 missing weights filled in from your history.">Angemeldet als Viega. Zeichnungen hochgeladen. Sofort erkannt: <strong>7 Teile, 5 Standard, 2 Vormaterial-Klärung.</strong> 6 fehlende Gewichte aus Ihrer Historie ergänzt.</div>
+      </div>
+      <div class="vn-row">
+        <div class="vn-day" data-de="Tag 0 · 5 Min" data-en="Day 0 · 5 min">Tag 0 · 5 Min</div>
+        <div class="vn-text" data-de="Indikative Preisspanne für 5 Teile sichtbar — enger als für Neukunden, weil wir Ihre Spezifikationen kennen. <strong>Slot-Buchung</strong> oder E-Mail-Klärung für die 2 Sonderfälle." data-en="Indicative price range for 5 parts visible — tighter than for new customers because we know your specifications. <strong>Slot booking</strong> or email clarification for the 2 special cases.">Indikative Preisspanne für 5 Teile sichtbar — enger als für Neukunden, weil wir Ihre Spezifikationen kennen. <strong>Slot-Buchung</strong> oder E-Mail-Klärung für die 2 Sonderfälle.</div>
+      </div>
+      <div class="vn-row">
+        <div class="vn-day" data-de="Tag 0 · laufend" data-en="Day 0 · ongoing">Tag 0 · laufend</div>
+        <div class="vn-text" data-de="Status live: AV ✓ → Einkauf ✓ → QS ✓ → Angebot in Vorbereitung. Sie kennen den Prozess." data-en="Status live: WP ✓ → Procurement ✓ → QA ✓ → Offer in preparation. You know the process.">Status live: AV ✓ → Einkauf ✓ → QS ✓ → Angebot in Vorbereitung. Sie kennen den Prozess.</div>
+      </div>
+      <div class="vn-row">
+        <div class="vn-day" data-de="Tag 1 · 11:00" data-en="Day 1 · 11:00">Tag 1 · 11:00</div>
+        <div class="vn-text" data-de="<strong>Beide Angebote vollständig.</strong> Vier Hebel — drei davon mit konkretem Bezug zu Ihren letzten Aufträgen." data-en="<strong>Both offers complete.</strong> Four levers — three of them with concrete reference to your past orders."><strong>Beide Angebote vollständig.</strong> Vier Hebel — drei davon mit konkretem Bezug zu Ihren letzten Aufträgen.</div>
+      </div>
+      <div class="vn-row">
+        <div class="vn-day" data-de="Tag 1–2" data-en="Day 1–2">Tag 1–2</div>
+        <div class="vn-text" data-de="Side-by-side direkt im System. Inline-Kommentare. Ersparnis-Vorschau live." data-en="Side-by-side directly in the system. Inline comments. Live savings preview.">Side-by-side direkt im System. Inline-Kommentare. Ersparnis-Vorschau live.</div>
+      </div>
+      <div class="vn-row">
+        <div class="vn-day" data-de="Tag 2" data-en="Day 2">Tag 2</div>
+        <div class="vn-text" data-de="<strong>Freigabe per Klick.</strong> Auftragsbestätigung sofort. Optional: Prototyp parallel anfordern." data-en="<strong>Release with one click.</strong> Order confirmation immediately. Optional: prototype in parallel."><strong>Freigabe per Klick.</strong> Auftragsbestätigung sofort. Optional: Prototyp parallel anfordern.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="vn-stats">
+    <div class="stat-box">
+      <div class="stat-num">−96%</div>
+      <div class="stat-label" data-de="Zeit bis zur Entscheidung" data-en="Time to decision">Zeit bis zur Entscheidung</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num">7.000 €</div>
+      <div class="stat-label" data-de="Ersparnis im 1. Vertragsjahr" data-en="Savings in year 1">Ersparnis im 1. Vertragsjahr</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num">−4 Tage</div>
+      <div class="stat-label" data-de="Lieferzeit" data-en="Delivery time">Lieferzeit</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num">3 / 4</div>
+      <div class="stat-label" data-de="Hebel aus Ihrer Historie" data-en="Levers from your history">Hebel aus Ihrer Historie</div>
+    </div>
+  </div>
+
+  <p class="vn-footer" data-de="Echte Anfrage von Viega, 19.03.2026 · Personen anonymisiert · Stückpreise plausibilisierte Beispielzahlen für Demo-Zwecke." data-en="Real request from Viega, 19 March 2026 · persons anonymised · unit prices plausibilised demo figures.">Echte Anfrage von Viega, 19.03.2026 · Personen anonymisiert · Stückpreise plausibilisierte Beispielzahlen für Demo-Zwecke.</p>
+</section>
+
+<!-- ============================================================
+     SCREEN 10 — Freigabe + Prototyp prominent
+     ============================================================ -->
+<section class="screen" data-screen="10">
+  <div class="confirm-hero">
+    <div style="font-size:48px; margin-bottom:8px;">✓</div>
+    <h2 data-de="Auftrag bestätigt — wir liefern ab" data-en="Order confirmed — we deliver">Auftrag bestätigt — wir liefern ab</h2>
+    <p data-de="Sie erhalten in wenigen Minuten die Auftragsbestätigung. Produktions-Tracking ist aktiv." data-en="You'll receive the order confirmation in a few minutes. Production tracking is active.">Sie erhalten in wenigen Minuten die Auftragsbestätigung. Produktions-Tracking ist aktiv.</p>
+    <div class="order-id" data-de="Auftrag · WB-2026-000156-B" data-en="Order · WB-2026-000156-B">Auftrag · WB-2026-000156-B</div>
+  </div>
+
+  <div class="prototyp-prominent">
+    <div>
+      <div class="label" data-de="Privileg Prototyp · nur für Bestandskunden" data-en="Prototype privilege · existing customers only">Privileg Prototyp · nur für Bestandskunden</div>
+      <h3 data-de="Möchten Sie zu dieser Serie auch einen Prototyp testen?" data-en="Would you also like to test a prototype for this series?">Möchten Sie zu dieser Serie auch einen Prototyp testen?</h3>
+      <p data-de="Als Viega mit laufendem Mengen-Kontingent bei uns fertigen wir Ihnen gerne einen Prototyp parallel zur Serie — jenseits unserer Standard-Lose." data-en="As Viega with running volume contingent with us we'll gladly produce a prototype parallel to the series — beyond our standard lots.">Als Viega mit laufendem Mengen-Kontingent bei uns fertigen wir Ihnen gerne einen Prototyp parallel zur Serie — jenseits unserer Standard-Lose.</p>
+      <ul>
+        <li data-de="Fertigung in 2 Wochen, parallel zur Serien-Vorbereitung" data-en="Production in 2 weeks, parallel to series preparation">Fertigung in 2 Wochen, parallel zur Serien-Vorbereitung</li>
+        <li data-de="Beliebige Stückzahl ab 5 Stück, individuell angepasst" data-en="Any quantity from 5 pieces, individually adapted">Beliebige Stückzahl ab 5 Stück, individuell angepasst</li>
+        <li data-de="Kostentransparent — Sie sehen den Mehraufwand vorab" data-en="Cost-transparent — you see the additional cost upfront">Kostentransparent — Sie sehen den Mehraufwand vorab</li>
+        <li data-de="Ideal für Vor-Tests neuer Anwendungen oder Materialvarianten" data-en="Ideal for pre-tests of new applications or material variants">Ideal für Vor-Tests neuer Anwendungen oder Materialvarianten</li>
+      </ul>
+    </div>
+    <div class="prototyp-cta">
+      <button class="btn" data-de="Prototyp anfordern →" data-en="Request prototype →">Prototyp anfordern →</button>
+      <div style="margin-top:12px; font-size:12px; color:rgba(255,255,255,.6);" data-de="oder später aus dem Dashboard" data-en="or later from the dashboard">oder später aus dem Dashboard</div>
+    </div>
+  </div>
+
+  <div class="next-grid">
+    <div class="next-card">
+      <span class="badge badge-ok" data-de="Was als nächstes passiert" data-en="What happens next">Was als nächstes passiert</span>
+      <h3 style="margin-top:8px;" data-de="Produktion gemäß Rahmen-Vereinbarung" data-en="Production as per master agreement">Produktion gemäß Rahmen-Vereinbarung</h3>
+      <ul style="list-style:none; margin-top:12px;">
+        <li style="padding:8px 0; border-bottom:1px solid var(--c-line);" data-de="✓ Vormaterial-Bestellung ausgelöst (gebündelt mit WB-2024-002145)" data-en="✓ Raw-material order triggered (bundled with WB-2024-002145)">✓ Vormaterial-Bestellung ausgelöst (gebündelt mit WB-2024-002145)</li>
+        <li style="padding:8px 0; border-bottom:1px solid var(--c-line);" data-de="○ Fertigungs-Start · KW 22" data-en="○ Production start · CW 22">○ Fertigungs-Start · KW 22</li>
+        <li style="padding:8px 0; border-bottom:1px solid var(--c-line);" data-de="○ QS-Prüfung gemäß Ihrem Profil · laufend" data-en="○ QA inspection per your profile · running">○ QS-Prüfung gemäß Ihrem Profil · laufend</li>
+        <li style="padding:8px 0;" data-de="○ Lieferung · KW 31 (4 Tage vor Standard)" data-en="○ Delivery · CW 31 (4 days before standard)">○ Lieferung · KW 31 (4 Tage vor Standard)</li>
+      </ul>
+    </div>
+
+    <div class="next-card">
+      <span class="badge badge-info" data-de="Ihre Vereinbarung" data-en="Your agreement">Ihre Vereinbarung</span>
+      <h3 style="margin-top:8px;" data-de="Angebot B mit allen 4 Optimierungen" data-en="Offer B with all 4 optimisations">Angebot B mit allen 4 Optimierungen</h3>
+      <div style="background:var(--c-bg-soft); padding:14px; border-radius:var(--radius-sm); margin-top:12px;">
+        <div style="display:flex; justify-content:space-between; padding:6px 0;"><span data-de="Volumen / Jahr" data-en="Volume / year">Volumen / Jahr</span><strong>100.320 €</strong></div>
+        <div style="display:flex; justify-content:space-between; padding:6px 0; color:var(--c-primary-dark);"><span data-de="Ersparnis" data-en="Savings">Ersparnis</span><strong>7.000 €</strong></div>
+        <div style="display:flex; justify-content:space-between; padding:6px 0;"><span data-de="Lieferzeit" data-en="Delivery">Lieferzeit</span><strong data-de="9 Wochen 1 Tag" data-en="9 weeks 1 day">9 Wochen 1 Tag</strong></div>
+        <div style="display:flex; justify-content:space-between; padding:6px 0;"><span data-de="Verpackung" data-en="Packaging">Verpackung</span><strong data-de="Mehrweg KLT-Pool (Linie HRG-3)" data-en="Reusable KLT pool (line HRG-3)">Mehrweg KLT-Pool (Linie HRG-3)</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align:center; margin-top:32px;">
+    <button class="btn btn-secondary" onclick="goToScreen(2)" data-de="Zurück zum Dashboard" data-en="Back to dashboard">Zurück zum Dashboard</button>
+  </div>
+</section>
+
+</main>
+
+<!-- ============================================================
+     FOOTER NAV
+     ============================================================ -->
+<footer class="nav-footer">
+  <div class="info">
+    <strong data-de="WaBo Angebotsprozess · Bestandskunden-Vision" data-en="WaBo quote process · existing-customer vision">WaBo Angebotsprozess · Bestandskunden-Vision</strong> · <span data-de="Demo für Vorstellung" data-en="Demo for presentation">Demo für Vorstellung</span>
+  </div>
+  <button class="btn btn-secondary" id="prevBtn" data-de="← Zurück" data-en="← Back">← Zurück</button>
+  <button class="btn" id="nextBtn" data-de="Weiter →" data-en="Next →">Weiter →</button>
+</footer>
+
+<script>
+let currentScreen = 1;
+let currentLang = 'de';
+const totalScreens = 10;
+
+// Detect iframe (master wrapper) — hide redundant chrome
+try {
+  if (window.self !== window.top) {
+    document.documentElement.classList.add('in-iframe');
+    document.addEventListener('DOMContentLoaded', () => {
+      document.body.classList.add('in-iframe');
+    });
+  }
+} catch (e) {}
+const screenLabels = {
+  de: ['Login', 'Dashboard', 'Wizard · Zeichnungen', 'Wizard · Eckdaten', 'Komplexitäts-Weiche', 'Sofort-Indikation', 'Status-Dashboard', 'Zwei Angebote', 'Vorher / Nachher', 'Freigabe & Prototyp'],
+  en: ['Login', 'Dashboard', 'Wizard · Drawings', 'Wizard · Key data', 'Complexity switch', 'Instant indication', 'Status dashboard', 'Two offers', 'Before / After', 'Release & Prototype']
+};
+
+// Pick up language from URL param (used by master wrapper)
+try {
+  const urlLang = new URLSearchParams(window.location.search).get('lang');
+  if (urlLang === 'de' || urlLang === 'en') currentLang = urlLang;
+} catch (e) {}
+
+function applyLang() {
+  document.querySelectorAll('[data-de]').forEach(el => {
+    const txt = el.getAttribute('data-' + currentLang);
+    if (txt !== null) el.innerHTML = txt;
+  });
+  document.querySelectorAll('[data-de-placeholder]').forEach(el => {
+    const ph = el.getAttribute('data-' + currentLang + '-placeholder');
+    if (ph !== null) el.placeholder = ph;
+  });
+  document.querySelectorAll('[data-de-value]').forEach(el => {
+    const v = el.getAttribute('data-' + currentLang + '-value');
+    if (v !== null) el.value = v;
+  });
+  document.documentElement.lang = currentLang;
+  document.querySelectorAll('.lang-switch button').forEach(b => {
+    b.classList.toggle('active', b.dataset.lang === currentLang);
+  });
+  updateStepLabel();
+}
+
+document.querySelectorAll('.lang-switch button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    currentLang = btn.dataset.lang;
+    applyLang();
+  });
+});
+
+function updateStepLabel() {
+  document.getElementById('stepLabel').textContent =
+    'Screen ' + currentScreen + ' · ' + screenLabels[currentLang][currentScreen - 1];
+}
+
+function goToScreen(n) {
+  if (n < 1) n = 1;
+  if (n > totalScreens) n = totalScreens;
+  currentScreen = n;
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const target = document.querySelector('.screen[data-screen="' + n + '"]');
+  if (target) target.classList.add('active');
+  document.querySelectorAll('.jumps button').forEach(b => {
+    b.classList.toggle('active', parseInt(b.dataset.jump) === n);
+  });
+  // Show/hide user chip based on screen — only show from Screen 2 onwards
+  const chip = document.getElementById('userChip');
+  const logout = document.getElementById('logoutLink');
+  if (n >= 2) {
+    chip.classList.remove('hidden');
+    logout.classList.remove('hidden');
+  } else {
+    chip.classList.add('hidden');
+    logout.classList.add('hidden');
+  }
+  updateStepLabel();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function loginAndGoToDashboard() {
+  goToScreen(2);
+}
+
+function logout() {
+  goToScreen(1);
+}
+
+document.getElementById('prevBtn').addEventListener('click', () => goToScreen(currentScreen - 1));
+document.getElementById('nextBtn').addEventListener('click', () => goToScreen(currentScreen + 1));
+document.querySelectorAll('.jumps button').forEach(btn => {
+  btn.addEventListener('click', () => goToScreen(parseInt(btn.dataset.jump)));
+});
+
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  if (e.key === 'ArrowRight') goToScreen(currentScreen + 1);
+  if (e.key === 'ArrowLeft') goToScreen(currentScreen - 1);
+});
+
+// ===== Parts List (Screen 3) =====
+const parts = [
+  { nr: '619471', idx_de: 'Zeichn. 494985 Index D · 25 mm · DIN', idx_en: 'Drwg. 494985 idx D · 25 mm · DIN', qty_de: '1.000 Stk', qty_en: '1,000 pcs', mat_de: 'C45 / Stahl', mat_en: 'C45 / Steel', status: 'ok', weight_de: '3.957 g/Stk', weight_en: '3,957 g/pc' },
+  { nr: '409823', idx_de: 'Zeichn. 495548 Index H · 32 mm · DIN', idx_en: 'Drwg. 495548 idx H · 32 mm · DIN', qty_de: '4.000 Stk', qty_en: '4,000 pcs', mat_de: '1.4404 / Edelstahl', mat_en: '1.4404 / Stainless steel', status: 'ok', weight_de: '5.400 g/Stk', weight_en: '5,400 g/pc' },
+  { nr: '619451', idx_de: 'Zeichn. 494981 Index C · 28 mm', idx_en: 'Drwg. 494981 idx C · 28 mm', qty_de: '2.000 Stk', qty_en: '2,000 pcs', mat_de: '1.4404 / Edelstahl', mat_en: '1.4404 / Stainless steel', status: 'warn', warn_de: 'Vormaterial-Engpass', warn_en: 'Raw-material shortage' },
+  { nr: '178551', idx_de: 'Zeichn. 1066561 Index B · 24 mm', idx_en: 'Drwg. 1066561 idx B · 24 mm', qty_de: '3.000 Stk', qty_en: '3,000 pcs', mat_de: '1.4404 / Edelstahl', mat_en: '1.4404 / Stainless steel', status: 'ok', history_de: 'aus WB-2024-002145', history_en: 'from WB-2024-002145' },
+  { nr: '178671', idx_de: 'Zeichn. 1066577 Index A · 26 mm', idx_en: 'Drwg. 1066577 idx A · 26 mm', qty_de: '4.000 Stk', qty_en: '4,000 pcs', mat_de: '1.4404 / Edelstahl', mat_en: '1.4404 / Stainless steel', status: 'ok', history_de: 'aus WB-2024-002145', history_en: 'from WB-2024-002145' },
+  { nr: '178451', idx_de: 'Zeichn. 1066592 · 30 mm', idx_en: 'Drwg. 1066592 · 30 mm', qty_de: '4.400 Stk', qty_en: '4,400 pcs', mat_de: '1.4404 / Edelstahl', mat_en: '1.4404 / Stainless steel', status: 'warn', warn_de: 'Vormaterial-Engpass', warn_en: 'Raw-material shortage' },
+  { nr: '178211', idx_de: 'Zeichn. 1066582 Index A · 22 mm', idx_en: 'Drwg. 1066582 idx A · 22 mm', qty_de: '2.400 Stk', qty_en: '2,400 pcs', mat_de: '1.4404 / Edelstahl', mat_en: '1.4404 / Stainless steel', status: 'ok', history_de: 'aus WB-2024-002145', history_en: 'from WB-2024-002145' }
+];
+
+const partsList = document.getElementById('partsList');
+parts.forEach(p => {
+  let badge;
+  if (p.status === 'ok') {
+    if (p.history_de) {
+      badge = '<span class="badge badge-history" data-de="' + p.history_de + '" data-en="' + p.history_en + '">' + p.history_de + '</span>';
+    } else {
+      badge = '<span class="badge badge-ok" data-de="erkannt" data-en="detected">erkannt</span>';
+    }
+  } else {
+    badge = '<span class="badge badge-warn" data-de="' + p.warn_de + '" data-en="' + p.warn_en + '">' + p.warn_de + '</span>';
+  }
+  partsList.insertAdjacentHTML('beforeend',
+    '<div class="part-item">' +
+      '<div class="file-icon">PDF</div>' +
+      '<div><div class="name">' + p.nr + '</div><div class="meta" data-de="' + p.idx_de + '" data-en="' + p.idx_en + '">' + p.idx_de + '</div></div>' +
+      '<div class="meta" data-de="' + p.qty_de + '" data-en="' + p.qty_en + '">' + p.qty_de + '</div>' +
+      '<div class="meta" data-de="' + p.mat_de + '" data-en="' + p.mat_en + '">' + p.mat_de + '</div>' +
+      '<div>' + badge + '</div>' +
+    '</div>'
+  );
+});
+
+// ===== Data Cards (Screen 4) =====
+const dataCards = document.getElementById('dataCards');
+parts.forEach((p, i) => {
+  const expanded = i === 0 ? 'expanded' : '';
+  const hasWeight = !!p.weight_de;
+  const weightDe = hasWeight ? p.weight_de : '~ 4.800 g/Stk (geschätzt)';
+  const weightEn = hasWeight ? p.weight_en : '~ 4,800 g/pc (estimated)';
+  const weightTagDe = hasWeight ? 'AUS ZEICHNUNG' : 'AUS HISTORIE';
+  const weightTagEn = hasWeight ? 'FROM DRAWING' : 'FROM HISTORY';
+  const weightTagStyle = hasWeight ? '' : ' style="background:#fff5e1; color:#8a6a13;"';
+  const warnSegDe = p.warn_de ? ' · ' + p.warn_de : '';
+  const warnSegEn = p.warn_en ? ' · ' + p.warn_en : '';
+  const histSegDe = p.history_de ? ' · ' + p.history_de : '';
+  const histSegEn = p.history_en ? ' · ' + p.history_en : '';
+  const summaryDe = p.qty_de + ' · ' + p.idx_de + warnSegDe + histSegDe;
+  const summaryEn = p.qty_en + ' · ' + p.idx_en + warnSegEn + histSegEn;
+
+  dataCards.insertAdjacentHTML('beforeend',
+    '<div class="data-card ' + expanded + '">' +
+      '<div class="data-card-header" onclick="this.parentElement.classList.toggle(\'expanded\')">' +
+        '<div class="title">' +
+          '<strong>Mat.-Nr. ' + p.nr + '</strong> · <span data-de="' + p.mat_de + '" data-en="' + p.mat_en + '">' + p.mat_de + '</span>' +
+          '<div class="summary" data-de="' + summaryDe + '" data-en="' + summaryEn + '">' + summaryDe + '</div>' +
+        '</div>' +
+        '<div class="toggle-icon">▾</div>' +
+      '</div>' +
+      '<div class="data-card-body">' +
+        '<div class="data-grid">' +
+          '<div class="field"><label><span data-de="Material" data-en="Material">Material</span> <span class="auto-tag" data-de="AUTO" data-en="AUTO">AUTO</span></label><input type="text" value="' + p.mat_de + '" /></div>' +
+          '<div class="field"><label><span data-de="Gewicht" data-en="Weight">Gewicht</span> <span class="auto-tag"' + weightTagStyle + ' data-de="' + weightTagDe + '" data-en="' + weightTagEn + '">' + weightTagDe + '</span></label><input type="text" value="' + weightDe + '" data-de-value="' + weightDe + '" data-en-value="' + weightEn + '" /></div>' +
+          '<div class="field"><label data-de="Stückzahl" data-en="Quantity">Stückzahl</label><input type="text" value="' + p.qty_de + '" data-de-value="' + p.qty_de + '" data-en-value="' + p.qty_en + '" /></div>' +
+          '<div class="field"><label data-de="Norm / Anwendung" data-en="Standard / application">Norm / Anwendung</label><input type="text" value="DIN EN 1092-1 · Hausanschluss" data-de-value="DIN EN 1092-1 · Hausanschluss" data-en-value="DIN EN 1092-1 · House connection" /></div>' +
+          '<div class="field"><label data-de="Liefertermin" data-en="Delivery date">Liefertermin</label><input type="text" value="Lt. Rahmenvereinbarung" data-de-value="Lt. Rahmenvereinbarung" data-en-value="As per master agreement" /></div>' +
+          '<div class="field"><label data-de="Verpackung" data-en="Packaging">Verpackung</label><input type="text" value="Mehrweg-KLT (Linie HRG-3) — wie bisher" data-de-value="Mehrweg-KLT (Linie HRG-3) — wie bisher" data-en-value="Reusable KLT (line HRG-3) — as before" /></div>' +
+        '</div>' +
+      '</div>' +
+    '</div>'
+  );
+});
+
+// ===== Slot Picker (Screen 5) =====
+document.querySelectorAll('.slot-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.slot-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+  });
+});
+
+// ===== Indication List (Screen 6) =====
+const inds = [
+  { nr: '619471', qty_de: '1.000', qty_en: '1,000', range_de: '3,80 € – 4,20 €', range_en: '€3.80 – €4.20', delivery_de: '10–11 Wochen', delivery_en: '10–11 weeks' },
+  { nr: '409823', qty_de: '4.000', qty_en: '4,000', range_de: '5,60 € – 6,10 €', range_en: '€5.60 – €6.10', delivery_de: '9–11 Wochen', delivery_en: '9–11 weeks' },
+  { nr: '178551', qty_de: '3.000', qty_en: '3,000', range_de: '5,30 € – 5,70 €', range_en: '€5.30 – €5.70', delivery_de: '9–11 Wochen', delivery_en: '9–11 weeks' },
+  { nr: '178671', qty_de: '4.000', qty_en: '4,000', range_de: '5,10 € – 5,50 €', range_en: '€5.10 – €5.50', delivery_de: '9–11 Wochen', delivery_en: '9–11 weeks' },
+  { nr: '178211', qty_de: '2.400', qty_en: '2,400', range_de: '4,30 € – 4,70 €', range_en: '€4.30 – €4.70', delivery_de: '9–11 Wochen', delivery_en: '9–11 weeks' }
+];
+const indList = document.getElementById('indList');
+inds.forEach(i => {
+  indList.insertAdjacentHTML('beforeend',
+    '<div class="ind-row">' +
+      '<div><div class="label" data-de="Position" data-en="Position">Position</div><div class="value">' + i.nr + '</div></div>' +
+      '<div><div class="label" data-de="Menge" data-en="Quantity">Menge</div><div class="value" data-de="' + i.qty_de + '" data-en="' + i.qty_en + '">' + i.qty_de + '</div></div>' +
+      '<div><div class="label" data-de="Stückpreis (Spanne)" data-en="Unit price (range)">Stückpreis (Spanne)</div><div class="value price-range" data-de="' + i.range_de + '" data-en="' + i.range_en + '">' + i.range_de + '</div></div>' +
+      '<div><div class="label" data-de="Lieferzeit" data-en="Delivery">Lieferzeit</div><div class="value" data-de="' + i.delivery_de + '" data-en="' + i.delivery_en + '">' + i.delivery_de + '</div></div>' +
+    '</div>'
+  );
+});
+
+// ===== Offer B Live Calculation (Screen 8) =====
+const baseSum = 105220;
+const packStandard = 2100;
+const packReuse = 315;
+
+function recalcOfferB() {
+  let saving = 0;
+  let days = 0;
+  let useReusePack = false;
+  document.querySelectorAll('.lever-toggle').forEach((cb, idx) => {
+    if (cb.checked) {
+      saving += parseInt(cb.dataset.saving || 0);
+      days += parseInt(cb.dataset.days || 0);
+      if (idx === 2) useReusePack = true;
+    }
+  });
+  const packDelta = useReusePack ? (packStandard - packReuse) : 0;
+  const otherSavings = saving - packDelta;
+  const packLine = useReusePack ? packReuse : packStandard;
+  const totalB = baseSum + packLine - otherSavings;
+  const totalA = baseSum + packStandard;
+  const totalSaving = totalA - totalB;
+  document.getElementById('packLine').textContent = formatEUR(packLine);
+  document.getElementById('optLine').textContent = '−' + formatEUR(otherSavings);
+  document.getElementById('totalB').textContent = formatEUR(totalB);
+  document.getElementById('savingTotal').textContent = formatEUR(totalSaving);
+  const baseWeeks = 10;
+  const daysTotal = (baseWeeks * 7) - days;
+  const w = Math.floor(daysTotal / 7);
+  const d = daysTotal % 7;
+  document.getElementById('deliveryB').textContent = w + ' Wochen' + (d ? ' ' + d + ' Tag' + (d > 1 ? 'e' : '') : '');
+}
+function formatEUR(n) { return n.toLocaleString('de-DE') + ' €'; }
+document.querySelectorAll('.lever-toggle').forEach(cb => cb.addEventListener('change', recalcOfferB));
+recalcOfferB();
+
+// ===== Init =====
+applyLang();
+updateStepLabel();
+</script>
+
+</body>
+</html>

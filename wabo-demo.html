@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WaBo Demo · Drei Visionen unseres neuen Angebotsprozesses</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%232DBCB6'/%3E%3Ctext x='16' y='23' text-anchor='middle' font-family='-apple-system,Arial,sans-serif' font-size='22' font-weight='900' fill='white'%3EB%3C/text%3E%3C/svg%3E">
+<style>
+  :root {
+    --c-primary: #2DBCB6;
+    --c-primary-dark: #21948F;
+    --c-primary-light: #E8F7F6;
+    --c-ink: #1F2A2D;
+    --c-text: #2C3E40;
+    --c-mute: #6B7280;
+    --c-line: #E5E7EB;
+    --c-bg: #F4F6F7;
+    --c-bg-soft: #FAFBFB;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,.04);
+    --shadow-md: 0 4px 14px rgba(0,0,0,.06);
+    --shadow-lg: 0 12px 32px rgba(0,0,0,.10);
+    --radius: 10px;
+    --radius-lg: 16px;
+    --font: 'Open Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: var(--font);
+    color: var(--c-text);
+    background: var(--c-bg);
+    line-height: 1.55;
+    font-size: 15px;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, h4 { color: var(--c-ink); font-weight: 700; line-height: 1.2; }
+  h1 { font-size: 48px; letter-spacing: -.5px; }
+  h2 { font-size: 30px; }
+  h3 { font-size: 20px; }
+  p { color: var(--c-text); }
+
+  /* ===== APP HEADER ===== */
+  .app-header {
+    background: #fff; border-bottom: 1px solid var(--c-line);
+    padding: 16px 32px; display: flex; align-items: center; gap: 20px;
+    position: sticky; top: 0; z-index: 50;
+  }
+  .logo {
+    display: inline-flex; align-items: center;
+    font-weight: 800; font-size: 26px; color: var(--c-ink);
+    letter-spacing: -1px; cursor: pointer;
+  }
+  .logo .b1 { color: var(--c-ink); }
+  .logo .b2 { background: var(--c-primary); color: #fff; padding: 2px 8px; border-radius: 4px; margin-left: 1px; }
+  .logo-tag {
+    margin-left: 14px; padding-left: 14px; border-left: 1px solid var(--c-line);
+    color: var(--c-mute); font-size: 13px; line-height: 1.3;
+  }
+  .header-actions { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+  .back-btn {
+    background: transparent; border: 1px solid var(--c-line);
+    padding: 8px 14px; border-radius: 6px;
+    font-family: var(--font); font-size: 13px; font-weight: 600;
+    color: var(--c-ink); cursor: pointer; display: none;
+  }
+  .back-btn:hover { background: var(--c-bg); border-color: var(--c-mute); }
+  .back-btn.visible { display: inline-flex; align-items: center; gap: 6px; }
+  .lang-switch {
+    display: flex; border: 1px solid var(--c-line); border-radius: 6px; overflow: hidden;
+  }
+  .lang-switch button {
+    background: transparent; border: 0; padding: 6px 12px;
+    font-family: var(--font); font-size: 12px; font-weight: 700; color: var(--c-mute);
+    cursor: pointer;
+  }
+  .lang-switch button.active { background: var(--c-primary); color: #fff; }
+
+  /* ===== INDEX VIEW ===== */
+  .index-view {
+    max-width: 1180px; margin: 0 auto; padding: 64px 32px 80px;
+  }
+  .index-view.hidden { display: none; }
+
+  .hero { margin-bottom: 56px; max-width: 800px; }
+  .eyebrow {
+    color: var(--c-primary-dark); font-weight: 700; font-size: 13px;
+    letter-spacing: 2px; text-transform: uppercase; margin-bottom: 14px;
+  }
+  .hero h1 { margin-bottom: 18px; }
+  .hero h1 .accent { color: var(--c-primary); }
+  .hero p { font-size: 18px; color: var(--c-mute); }
+
+  /* Case Grid */
+  .case-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 64px;
+  }
+  .case-card {
+    background: #fff; border: 1px solid var(--c-line); border-radius: var(--radius-lg);
+    padding: 32px; display: flex; flex-direction: column;
+    transition: all .15s; cursor: pointer; position: relative;
+    overflow: hidden;
+  }
+  .case-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0;
+    height: 4px; background: var(--c-line); transition: background .15s;
+  }
+  .case-card:hover {
+    border-color: var(--c-primary); transform: translateY(-2px); box-shadow: var(--shadow-md);
+  }
+  .case-card:hover::before { background: var(--c-primary); }
+  .case-card .case-num {
+    color: var(--c-primary); font-weight: 800; font-size: 32px; line-height: 1; margin-bottom: 12px;
+    font-variant-numeric: tabular-nums;
+  }
+  .case-card .label {
+    color: var(--c-primary-dark); font-weight: 700; font-size: 11px;
+    letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px;
+  }
+  .case-card h3 { margin-bottom: 12px; }
+  .case-card .desc { color: var(--c-mute); font-size: 14px; margin-bottom: 20px; flex: 1; }
+  .case-card .specs {
+    display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px;
+  }
+  .case-card .spec {
+    background: var(--c-bg-soft); border-radius: 4px;
+    padding: 4px 10px; font-size: 11px; color: var(--c-text); font-weight: 600;
+  }
+  .case-card .btn-open {
+    background: var(--c-primary); color: #fff; border: 0;
+    padding: 12px 20px; border-radius: var(--radius);
+    font-family: var(--font); font-size: 14px; font-weight: 700;
+    cursor: pointer; transition: all .15s; text-align: center;
+  }
+  .case-card:hover .btn-open { background: var(--c-primary-dark); }
+
+  /* Special case-card variants */
+  .case-card.new-customer::before { background: var(--c-primary); }
+  .case-card.existing-customer::before { background: var(--c-ink); }
+  .case-card.quick-win::before { background: #c08a14; }
+
+  /* ===== VORHER / NACHHER SECTION ===== */
+  .vn-section {
+    margin-bottom: 64px;
+  }
+  .vn-intro { text-align: center; margin-bottom: 40px; max-width: 700px; margin-left: auto; margin-right: auto; }
+  .vn-intro .label {
+    color: var(--c-primary-dark); font-weight: 700; font-size: 13px;
+    letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px;
+  }
+  .vn-intro h2 { margin-bottom: 12px; }
+  .vn-intro p { color: var(--c-mute); }
+
+  .vn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+  .vn-col { padding: 32px; }
+  .vn-col-old {
+    background: var(--c-bg-soft);
+    border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+    border: 1px solid var(--c-line);
+  }
+  .vn-col-new {
+    background: linear-gradient(135deg, #fff 0%, var(--c-primary-light) 100%);
+    border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+    border: 1px solid var(--c-primary); border-left: 0;
+  }
+  .vn-col h3 {
+    font-size: 18px; padding-bottom: 16px; border-bottom: 2px solid var(--c-line);
+    margin-bottom: 20px;
+  }
+  .vn-col-new h3 { color: var(--c-primary-dark); border-bottom-color: var(--c-primary); }
+  .vn-col .topline {
+    font-size: 12px; color: var(--c-mute); text-transform: uppercase;
+    letter-spacing: 1px; margin-bottom: 8px;
+  }
+  .vn-row {
+    display: flex; gap: 14px; padding: 14px 0;
+    border-bottom: 1px solid var(--c-line);
+  }
+  .vn-row:last-child { border: 0; }
+  .vn-day {
+    background: var(--c-bg); color: var(--c-ink); border-radius: 4px;
+    padding: 4px 10px; font-size: 11px; font-weight: 700;
+    flex-shrink: 0; height: fit-content; min-width: 80px; text-align: center;
+  }
+  .vn-col-new .vn-day { background: var(--c-primary); color: #fff; }
+  .vn-text { font-size: 14px; line-height: 1.5; }
+  .vn-text strong { color: var(--c-ink); }
+  .vn-footer {
+    text-align: center; margin-top: 20px; color: var(--c-mute);
+    font-size: 12px; font-style: italic;
+  }
+  .vn-stats {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 32px;
+  }
+  .stat-box {
+    background: #fff; border: 1px solid var(--c-line); border-radius: var(--radius);
+    padding: 20px; text-align: center;
+  }
+  .stat-num { font-size: 28px; font-weight: 800; color: var(--c-primary); line-height: 1; font-variant-numeric: tabular-nums; }
+  .stat-label { font-size: 12px; color: var(--c-mute); margin-top: 6px; }
+
+  /* ===== VN-TABS ===== */
+  .vn-tabs {
+    display: flex; gap: 8px; margin-bottom: 28px;
+    background: var(--c-bg-soft); padding: 6px; border-radius: var(--radius);
+    border: 1px solid var(--c-line);
+  }
+  .vn-tab {
+    flex: 1; background: transparent; border: 0;
+    padding: 14px 20px; border-radius: var(--radius-sm);
+    font-family: var(--font); font-size: 14px; font-weight: 600;
+    color: var(--c-mute); cursor: pointer; transition: all .15s;
+    text-align: left;
+  }
+  .vn-tab:hover { color: var(--c-ink); }
+  .vn-tab.active {
+    background: #fff; color: var(--c-ink);
+    box-shadow: var(--shadow-sm);
+  }
+  .vn-tab .tab-label {
+    display: block; font-size: 10px; font-weight: 700;
+    letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 4px;
+    color: var(--c-primary-dark);
+  }
+  .vn-tab.active .tab-label { color: var(--c-primary); }
+  .vn-content { display: none; }
+  .vn-content.active { display: block; }
+
+  /* ===== PDF-CTA ===== */
+  .pdf-cta {
+    margin-top: 32px; margin-bottom: 48px;
+    background: var(--c-ink); color: #fff;
+    border-radius: var(--radius-lg); padding: 28px 32px;
+    display: grid; grid-template-columns: 56px 1fr auto; gap: 24px; align-items: center;
+  }
+  .pdf-cta .icon {
+    width: 56px; height: 56px; border-radius: 50%;
+    background: var(--c-primary); color: var(--c-ink);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; font-weight: 800;
+    flex-shrink: 0;
+  }
+  .pdf-cta .label {
+    color: var(--c-primary); font-weight: 700; font-size: 11px;
+    letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px;
+  }
+  .pdf-cta h3 { color: #fff; font-size: 19px; margin-bottom: 4px; }
+  .pdf-cta p { color: rgba(255,255,255,.85); font-size: 14px; }
+  .pdf-cta .btn { white-space: nowrap; text-decoration: none; }
+  @media (max-width: 700px) {
+    .pdf-cta { grid-template-columns: 1fr; text-align: center; }
+    .pdf-cta .icon { margin: 0 auto; }
+  }
+
+  /* ===== HINTS ===== */
+  .hints {
+    background: var(--c-ink); color: #fff;
+    border-radius: var(--radius-lg); padding: 36px 40px;
+    display: grid; grid-template-columns: 200px 1fr; gap: 32px; align-items: center;
+  }
+  .hints h3 { color: #fff; font-size: 18px; }
+  .hints .hint-label {
+    color: var(--c-primary); font-weight: 700; font-size: 11px;
+    letter-spacing: 2px; text-transform: uppercase;
+  }
+  .hints ul { list-style: none; }
+  .hints li {
+    padding: 6px 0; font-size: 14px; color: rgba(255,255,255,.85);
+    display: flex; gap: 10px; align-items: flex-start;
+  }
+  .hints li::before {
+    content: '→'; color: var(--c-primary); font-weight: 700; flex-shrink: 0;
+  }
+
+  /* ===== FOOTER ===== */
+  .index-footer {
+    text-align: center; padding: 32px 0; color: var(--c-mute); font-size: 12px;
+    border-top: 1px solid var(--c-line); margin-top: 48px;
+  }
+
+  /* ===== CASE FRAME VIEW ===== */
+  .case-frame {
+    display: none; width: 100%; height: calc(100vh - 65px);
+  }
+  .case-frame.active { display: block; }
+  .case-frame iframe {
+    width: 100%; height: 100%; border: 0; background: #fff;
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 900px) {
+    h1 { font-size: 36px; }
+    .case-grid { grid-template-columns: 1fr; }
+    .vn-grid { grid-template-columns: 1fr; }
+    .vn-col-old { border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
+    .vn-col-new { border-radius: 0 0 var(--radius-lg) var(--radius-lg); border-left: 1px solid var(--c-primary); border-top: 0; }
+    .vn-stats { grid-template-columns: 1fr 1fr; }
+    .hints { grid-template-columns: 1fr; }
+    .logo-tag { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     APP HEADER
+     ============================================================ -->
+<header class="app-header">
+  <div class="logo" onclick="backToIndex()">
+    <span class="b1">Wa</span><span class="b2">Bo</span>
+  </div>
+  <div class="logo-tag" data-de="Walter Bornmann GmbH<br>Präzisionsdrehteile aus Metall" data-en="Walter Bornmann GmbH<br>Precision turned metal parts">
+    Walter Bornmann GmbH<br>Präzisionsdrehteile aus Metall
+  </div>
+  <div class="header-actions">
+    <button class="back-btn" id="backBtn" onclick="backToIndex()" data-de="← Zurück zur Übersicht" data-en="← Back to overview">← Zurück zur Übersicht</button>
+    <div class="lang-switch">
+      <button class="active" data-lang="de">DE</button>
+      <button data-lang="en">EN</button>
+    </div>
+  </div>
+</header>
+
+<!-- ============================================================
+     INDEX VIEW
+     ============================================================ -->
+<main class="index-view" id="indexView">
+  <section class="hero">
+    <div class="eyebrow" data-de="Demo · WaBo Angebotsprozess" data-en="Demo · WaBo Quote Process">Demo · WaBo Angebotsprozess</div>
+    <h1 data-de="Drei Visionen unseres<br>neuen <span class='accent'>Angebotsprozesses</span>" data-en="Three visions of our<br>new <span class='accent'>quote process</span>">
+      Drei Visionen unseres<br>neuen <span class="accent">Angebotsprozesses</span>
+    </h1>
+    <p data-de="Wir zeigen Ihnen, wie der Prozess für Neukunden und Bestandskunden aussehen wird — und welchen Quick-Win wir in 12 Wochen live haben. Klicken Sie sich frei durch. Alle Daten sind anonymisiert." data-en="We show you how the process will look for new customers and existing customers — and which quick win we will have live in 12 weeks. Click through freely. All data is anonymised.">
+      Wir zeigen Ihnen, wie der Prozess für Neukunden und Bestandskunden aussehen wird — und welchen Quick-Win wir in 12 Wochen live haben. Klicken Sie sich frei durch. Alle Daten sind anonymisiert.
+    </p>
+  </section>
+
+  <!-- CASE CARDS -->
+  <section class="case-grid">
+    <article class="case-card new-customer" onclick="openCase('neu')">
+      <div class="case-num">01</div>
+      <span class="label" data-de="Vision · Neukunde" data-en="Vision · New customer">Vision · Neukunde</span>
+      <h3 data-de="Komplettes Erlebnis für neue Kunden" data-en="Full experience for new customers">Komplettes Erlebnis für neue Kunden</h3>
+      <p class="desc" data-de="9 Screens mit Voll-Vision: Anfrage über Wizard, Komplexitäts-Weiche, Indikation in 5 Minuten, Live-Status, zwei Angebote mit Optimierungs-Hebeln, Vorher/Nachher und Freigabe." data-en="9 screens with full vision: request via wizard, complexity switch, indication in 5 minutes, live status, two offers with optimization levers, before/after, and release.">9 Screens mit Voll-Vision: Anfrage über Wizard, Komplexitäts-Weiche, Indikation in 5 Minuten, Live-Status, zwei Angebote mit Optimierungs-Hebeln, Vorher/Nachher und Freigabe.</p>
+      <div class="specs">
+        <span class="spec" data-de="9 Screens" data-en="9 screens">9 Screens</span>
+        <span class="spec" data-de="ebm-papst-Beispiel" data-en="ebm-papst example">ebm-papst-Beispiel</span>
+        <span class="spec" data-de="DE / EN" data-en="DE / EN">DE / EN</span>
+      </div>
+      <button class="btn-open" data-de="Demo öffnen →" data-en="Open demo →">Demo öffnen →</button>
+    </article>
+
+    <article class="case-card existing-customer" onclick="openCase('bk')">
+      <div class="case-num">02</div>
+      <span class="label" data-de="Vision · Bestandskunde" data-en="Vision · Existing customer">Vision · Bestandskunde</span>
+      <h3 data-de="Schnellzugang mit Historien-Vorteil" data-en="Fast access with history advantage">Schnellzugang mit Historien-Vorteil</h3>
+      <p class="desc" data-de="10 Screens mit Login + Dashboard: Lieferhistorie, Liefertreue-Score, vorausgefüllte Stammdaten, Optimierungs-Hebel auf Basis Ihrer Auftragshistorie, Privileg-Prototyp am Ende." data-en="10 screens with login + dashboard: delivery history, on-time score, pre-filled master data, optimization levers based on your order history, prototype privilege at the end.">10 Screens mit Login + Dashboard: Lieferhistorie, Liefertreue-Score, vorausgefüllte Stammdaten, Optimierungs-Hebel auf Basis Ihrer Auftragshistorie, Privileg-Prototyp am Ende.</p>
+      <div class="specs">
+        <span class="spec" data-de="10 Screens" data-en="10 screens">10 Screens</span>
+        <span class="spec" data-de="Viega-Beispiel" data-en="Viega example">Viega-Beispiel</span>
+        <span class="spec" data-de="DE / EN" data-en="DE / EN">DE / EN</span>
+      </div>
+      <button class="btn-open" data-de="Demo öffnen →" data-en="Open demo →">Demo öffnen →</button>
+    </article>
+
+    <article class="case-card quick-win" onclick="openCase('v1')">
+      <div class="case-num">03</div>
+      <span class="label" data-de="Version 1 · Quick Win" data-en="Version 1 · Quick win">Version 1 · Quick Win</span>
+      <h3 data-de="Was wir in 12 Wochen live haben" data-en="What we'll have live in 12 weeks">Was wir in 12 Wochen live haben</h3>
+      <p class="desc" data-de="Single-Page-Landingversion für Phase 1: Anfrage online oder per E-Mail, Slot-Picker für Telefontermin, direkter Kontakt zum Vertrieb, Status-Link-Versprechen. In 2 Werktagen zur Antwort." data-en="Single-page landing version for Phase 1: request online or by email, slot picker for phone appointment, direct contact to sales, status link promise. Answer in 2 business days.">Single-Page-Landingversion für Phase 1: Anfrage online oder per E-Mail, Slot-Picker für Telefontermin, direkter Kontakt zum Vertrieb, Status-Link-Versprechen. In 2 Werktagen zur Antwort.</p>
+      <div class="specs">
+        <span class="spec" data-de="Single Page" data-en="Single page">Single Page</span>
+        <span class="spec" data-de="Production-ready" data-en="Production-ready">Production-ready</span>
+        <span class="spec" data-de="DE / EN" data-en="DE / EN">DE / EN</span>
+      </div>
+      <button class="btn-open" data-de="Demo öffnen →" data-en="Open demo →">Demo öffnen →</button>
+    </article>
+  </section>
+
+  <!-- VORHER/NACHHER -->
+  <section class="vn-section">
+    <div class="vn-intro">
+      <div class="label" data-de="Was sich ändert" data-en="What changes">Was sich ändert</div>
+      <h2 data-de="So wandelt sich das Erlebnis" data-en="How the experience changes">So wandelt sich das Erlebnis</h2>
+      <p data-de="An zwei echten Kunden-Anfragen zeigen wir, was sich konkret verbessert — Tag für Tag. Wählen Sie eine der beiden Stories." data-en="Using two real customer requests, we show what improves concretely — day by day. Choose one of the two stories.">An zwei echten Kunden-Anfragen zeigen wir, was sich konkret verbessert — Tag für Tag. Wählen Sie eine der beiden Stories.</p>
+    </div>
+
+    <!-- Tabs -->
+    <div class="vn-tabs">
+      <button class="vn-tab active" data-tab="neu">
+        <span class="tab-label" data-de="Neukunde · ebm-papst" data-en="New customer · ebm-papst">Neukunde · ebm-papst</span>
+        <span data-de="15 Tage Mail-Pingpong → 2 Werktage" data-en="15 days of email pingpong → 2 business days">15 Tage Mail-Pingpong → 2 Werktage</span>
+      </button>
+      <button class="vn-tab" data-tab="bk">
+        <span class="tab-label" data-de="Bestandskunde · Viega" data-en="Existing customer · Viega">Bestandskunde · Viega</span>
+        <span data-de="33 Tage und unvollständig → 2 Werktage" data-en="33 days incomplete → 2 business days">33 Tage und unvollständig → 2 Werktage</span>
+      </button>
+    </div>
+
+    <!-- Content: Neukunde -->
+    <div class="vn-content vn-content-neu active">
+    <div class="vn-grid">
+      <div class="vn-col vn-col-old">
+        <div class="topline" data-de="So lief es bisher" data-en="How it ran so far">So lief es bisher</div>
+        <h3 data-de="15 Tage Mail-Pingpong, dann ein unvollständiges Angebot" data-en="15 days of email back-and-forth, then an incomplete offer">15 Tage Mail-Pingpong, dann ein unvollständiges Angebot</h3>
+        <div class="vn-row">
+          <div class="vn-day" data-de="Tag 0" data-en="Day 0">Tag 0</div>
+          <div class="vn-text" data-de="Anfrage per Mail mit 9 PDF-Zeichnungen. Verteilt an 4 Lieferanten parallel." data-en="Request by email with 9 PDF drawings. Sent to 4 suppliers in parallel.">Anfrage per Mail mit 9 PDF-Zeichnungen. Verteilt an 4 Lieferanten parallel.</div>
+        </div>
+        <div class="vn-row">
+          <div class="vn-day" data-de="Tag 1–14" data-en="Day 1–14">Tag 1–14</div>
+          <div class="vn-text" data-de="<strong>Stille.</strong> Keine Sichtbarkeit, ob die Anfrage bearbeitet wird. Mehrfaches Nachhaken per Mail nötig." data-en="<strong>Silence.</strong> No visibility whether the request is being processed. Multiple follow-ups by email needed."><strong>Stille.</strong> Keine Sichtbarkeit, ob die Anfrage bearbeitet wird. Mehrfaches Nachhaken per Mail nötig.</div>
+        </div>
+        <div class="vn-row">
+          <div class="vn-day" data-de="Tag 15" data-en="Day 15">Tag 15</div>
+          <div class="vn-text" data-de="Angebot trifft ein. <strong>7 von 9 Teilen.</strong> Standard-Einweg-Verpackung. Lieferzeit für Erstbemusterung „muss nachgereicht werden". Anschluss-Telefonat in Folgewoche angekündigt." data-en="Offer arrives. <strong>7 of 9 parts.</strong> Standard single-use packaging. Delivery time for first samples 'to be supplied later'. Follow-up call announced for next week.">Angebot trifft ein. <strong>7 von 9 Teilen.</strong> Standard-Einweg-Verpackung. Lieferzeit für Erstbemusterung „muss nachgereicht werden". Anschluss-Telefonat in Folgewoche angekündigt.</div>
+        </div>
+        <div class="vn-row">
+          <div class="vn-day" data-de="Tag 16–25" data-en="Day 16–25">Tag 16–25</div>
+          <div class="vn-text" data-de="Excel-Vergleichstabelle mit 4 Lieferantenangeboten manuell aufbauen. Telefonate für Klärung der fehlenden Daten." data-en="Build manual Excel comparison sheet with 4 supplier offers. Phone calls to clarify missing data.">Excel-Vergleichstabelle mit 4 Lieferantenangeboten manuell aufbauen. Telefonate für Klärung der fehlenden Daten.</div>
+        </div>
+        <div class="vn-row">
+          <div class="vn-day" data-de="Tag 30+" data-en="Day 30+">Tag 30+</div>
+          <div class="vn-text" data-de="Entscheidung in der Einkaufsleitung. Erst dann nachreichendes Detail-Telefonat zu offenen Punkten." data-en="Decision at procurement leadership. Only afterwards a follow-up call on open points.">Entscheidung in der Einkaufsleitung. Erst dann nachreichendes Detail-Telefonat zu offenen Punkten.</div>
+        </div>
+      </div>
+
+      <div class="vn-col vn-col-new">
+        <div class="topline" data-de="So läuft es bei WaBo" data-en="How it runs at WaBo">So läuft es bei WaBo</div>
+        <h3 data-de="2 Tage zur Entscheidung — vollständig, transparent, mit Ersparnis" data-en="2 days to decision — complete, transparent, with savings">2 Tage zur Entscheidung — vollständig, transparent, mit Ersparnis</h3>
+        <div class="vn-row">
+          <div class="vn-day" data-de="Tag 0 · 0 Min" data-en="Day 0 · 0 min">Tag 0 · 0 Min</div>
+          <div class="vn-text" data-de="Zeichnungen hochgeladen. Sofort erkannt: <strong>9 Teile, 7 Standard, 2 Klärungsbedarf.</strong> Eckdaten ausgelesen." data-en="Drawings uploaded. Instantly recognised: <strong>9 parts, 7 standard, 2 need clarification.</strong> Key data extracted.">Zeichnungen hochgeladen. Sofort erkannt: <strong>9 Teile, 7 Standard, 2 Klärungsbedarf.</strong> Eckdaten ausgelesen.</div>
+        </div>
+        <div class="vn-row">
+          <div class="vn-day" data-de="Tag 0 · 5 Min" data-en="Day 0 · 5 min">Tag 0 · 5 Min</div>
+          <div class="vn-text" data-de="Indikative Preisspanne für 7 Teile sichtbar. <strong>Slot-Buchung</strong> für die 2 Sonderfälle." data-en="Indicative price range for 7 parts visible. <strong>Slot booking</strong> for the 2 special cases.">Indikative Preisspanne für 7 Teile sichtbar. <strong>Slot-Buchung</strong> für die 2 Sonderfälle.</div>
+        </div>
+        <div class="vn-row">
+          <div class="vn-day" data-de="Tag 0 · laufend" data-en="Day 0 · ongoing">Tag 0 · laufend</div>
+          <div class="vn-text" data-de="Status live: AV ✓ → Einkauf ✓ → QS ✓ → Angebot in Vorbereitung. Kein Nachhaken, kein Mailen." data-en="Status live: WP ✓ → Procurement ✓ → QA ✓ → Offer in preparation. No chasing, no emailing.">Status live: AV ✓ → Einkauf ✓ → QS ✓ → Angebot in Vorbereitung. Kein Nachhaken, kein Mailen.</div>
+        </div>
+        <div class="vn-row">
+          <div class="vn-day" data-de="Tag 1 · 14:00" data-en="Day 1 · 2 PM">Tag 1 · 14:00</div>
+          <div class="vn-text" data-de="<strong>Beide Angebote vollständig.</strong> Original + Optimierung mit 4 Stellhebeln, jeder begründet." data-en="<strong>Both offers complete.</strong> Original + optimisation with 4 levers, each justified."><strong>Beide Angebote vollständig.</strong> Original + Optimierung mit 4 Stellhebeln, jeder begründet.</div>
+        </div>
+        <div class="vn-row">
+          <div class="vn-day" data-de="Tag 2" data-en="Day 2">Tag 2</div>
+          <div class="vn-text" data-de="<strong>Freigabe per Klick.</strong> Auftragsbestätigung sofort. Produktions-Tracking aktiviert." data-en="<strong>Release with one click.</strong> Order confirmation immediately. Production tracking activated."><strong>Freigabe per Klick.</strong> Auftragsbestätigung sofort. Produktions-Tracking aktiviert.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="vn-stats">
+      <div class="stat-box">
+        <div class="stat-num">−93 %</div>
+        <div class="stat-label" data-de="Zeit bis zur Entscheidung" data-en="Time to decision">Zeit bis zur Entscheidung</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">73.400 €</div>
+        <div class="stat-label" data-de="Ersparnis im 1. Vertragsjahr" data-en="Savings in year 1">Ersparnis im 1. Vertragsjahr</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">−4 Tage</div>
+        <div class="stat-label" data-de="Lieferzeit ab Bemusterung" data-en="Delivery from sampling">Lieferzeit ab Bemusterung</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">−1,2 t</div>
+        <div class="stat-label" data-de="Verpackungsmüll / Jahr" data-en="Packaging waste / year">Verpackungsmüll / Jahr</div>
+      </div>
+    </div>
+
+    <p class="vn-footer" data-de="Echte Anfrage von ebm-papst, 25.03.2026 · Personen anonymisiert · Stückpreise plausibilisierte Beispielzahlen für Demo-Zwecke." data-en="Real request from ebm-papst, 25 March 2026 · persons anonymised · unit prices plausibilised demo figures.">
+      Echte Anfrage von ebm-papst, 25.03.2026 · Personen anonymisiert · Stückpreise plausibilisierte Beispielzahlen für Demo-Zwecke.
+    </p>
+    </div>
+    <!-- /vn-content-neu -->
+
+    <!-- Content: Bestandskunde -->
+    <div class="vn-content vn-content-bk">
+      <div class="vn-grid">
+        <div class="vn-col vn-col-old">
+          <div class="topline" data-de="So lief es bisher" data-en="How it ran so far">So lief es bisher</div>
+          <h3 data-de="33 Tage Mail-Pingpong und ein unvollständiges Angebot" data-en="33 days of email back-and-forth and an incomplete offer">33 Tage Mail-Pingpong und ein unvollständiges Angebot</h3>
+          <div class="vn-row">
+            <div class="vn-day" data-de="Tag 0" data-en="Day 0">Tag 0</div>
+            <div class="vn-text" data-de="Anfrage per E-Mail mit 7 Zeichnungen — verteilt an mehrere Lieferanten parallel." data-en="Request by email with 7 drawings — sent to several suppliers in parallel.">Anfrage per E-Mail mit 7 Zeichnungen — verteilt an mehrere Lieferanten parallel.</div>
+          </div>
+          <div class="vn-row">
+            <div class="vn-day" data-de="Tag 1–32" data-en="Day 1–32">Tag 1–32</div>
+            <div class="vn-text" data-de="<strong>Stille.</strong> Keine Sichtbarkeit, ob die Anfrage bearbeitet wird. Mehrfaches Nachhaken nötig." data-en="<strong>Silence.</strong> No visibility whether the request is being processed. Multiple follow-ups needed."><strong>Stille.</strong> Keine Sichtbarkeit, ob die Anfrage bearbeitet wird. Mehrfaches Nachhaken nötig.</div>
+          </div>
+          <div class="vn-row">
+            <div class="vn-day" data-de="Tag 33" data-en="Day 33">Tag 33</div>
+            <div class="vn-text" data-de="Angebot trifft ein. <strong>5 von 7 Positionen.</strong> Für 2 Bauteile „leider kein geeignetes Vormaterialangebot". Liefertermine fehlen. Standard-Verpackung — obwohl Mehrweg auf der Linie HRG-3 etabliert ist." data-en="Offer arrives. <strong>5 of 7 positions.</strong> For 2 parts 'unfortunately no suitable raw-material offer'. Delivery dates missing. Standard packaging — although reusable is already established on line HRG-3.">Angebot trifft ein. <strong>5 von 7 Positionen.</strong> Für 2 Bauteile „leider kein geeignetes Vormaterialangebot". Liefertermine fehlen. Standard-Verpackung — obwohl Mehrweg auf der Linie HRG-3 etabliert ist.</div>
+          </div>
+          <div class="vn-row">
+            <div class="vn-day" data-de="Tag 34–45" data-en="Day 34–45">Tag 34–45</div>
+            <div class="vn-text" data-de="Excel-Vergleichstabelle mit mehreren Lieferantenangeboten aufbauen. Telefonate zur Klärung der fehlenden 6 Gewichtsangaben und der 2 fehlenden Bauteile." data-en="Build Excel comparison sheet with multiple supplier offers. Phone calls to clarify 6 missing weights and 2 missing parts.">Excel-Vergleichstabelle mit mehreren Lieferantenangeboten aufbauen. Telefonate zur Klärung der fehlenden 6 Gewichtsangaben und der 2 fehlenden Bauteile.</div>
+          </div>
+          <div class="vn-row">
+            <div class="vn-day" data-de="Tag 50+" data-en="Day 50+">Tag 50+</div>
+            <div class="vn-text" data-de="Entscheidung in der Einkaufsleitung. Erst dann nachreichendes Telefonat zu offenen Punkten." data-en="Decision in procurement leadership. Only then a follow-up call on open points.">Entscheidung in der Einkaufsleitung. Erst dann nachreichendes Telefonat zu offenen Punkten.</div>
+          </div>
+        </div>
+
+        <div class="vn-col vn-col-new">
+          <div class="topline" data-de="So läuft es bei WaBo" data-en="How it runs at WaBo">So läuft es bei WaBo</div>
+          <h3 data-de="2 Werktage zur Entscheidung — mit Ersparnis durch Ihre Historie" data-en="2 business days to decision — with savings through your history">2 Werktage zur Entscheidung — mit Ersparnis durch Ihre Historie</h3>
+          <div class="vn-row">
+            <div class="vn-day" data-de="Tag 0 · 0 Min" data-en="Day 0 · 0 min">Tag 0 · 0 Min</div>
+            <div class="vn-text" data-de="Angemeldet als Viega. Zeichnungen hochgeladen. Sofort erkannt: <strong>7 Teile, 5 Standard, 2 Vormaterial-Klärung.</strong> 6 fehlende Gewichte aus Ihrer Historie ergänzt." data-en="Signed in as Viega. Drawings uploaded. Instantly recognised: <strong>7 parts, 5 standard, 2 raw-material clarification.</strong> 6 missing weights filled in from your history.">Angemeldet als Viega. Zeichnungen hochgeladen. Sofort erkannt: <strong>7 Teile, 5 Standard, 2 Vormaterial-Klärung.</strong> 6 fehlende Gewichte aus Ihrer Historie ergänzt.</div>
+          </div>
+          <div class="vn-row">
+            <div class="vn-day" data-de="Tag 0 · 5 Min" data-en="Day 0 · 5 min">Tag 0 · 5 Min</div>
+            <div class="vn-text" data-de="Indikative Preisspanne für 5 Teile sichtbar — enger als für Neukunden, weil wir Ihre Spezifikationen kennen. Slot-Buchung oder E-Mail-Klärung für die 2 Sonderfälle." data-en="Indicative price range for 5 parts visible — tighter than for new customers because we know your specifications. Slot booking or email clarification for the 2 special cases.">Indikative Preisspanne für 5 Teile sichtbar — enger als für Neukunden, weil wir Ihre Spezifikationen kennen. Slot-Buchung oder E-Mail-Klärung für die 2 Sonderfälle.</div>
+          </div>
+          <div class="vn-row">
+            <div class="vn-day" data-de="Tag 0 · laufend" data-en="Day 0 · ongoing">Tag 0 · laufend</div>
+            <div class="vn-text" data-de="Status live: AV ✓ → Einkauf ✓ → QS ✓ → Angebot in Vorbereitung. Sie kennen den Prozess." data-en="Status live: WP ✓ → Procurement ✓ → QA ✓ → Offer in preparation. You know the process.">Status live: AV ✓ → Einkauf ✓ → QS ✓ → Angebot in Vorbereitung. Sie kennen den Prozess.</div>
+          </div>
+          <div class="vn-row">
+            <div class="vn-day" data-de="Tag 1 · 11:00" data-en="Day 1 · 11:00">Tag 1 · 11:00</div>
+            <div class="vn-text" data-de="<strong>Beide Angebote vollständig.</strong> Vier Hebel — drei davon mit konkretem Bezug zu Ihren letzten Aufträgen." data-en="<strong>Both offers complete.</strong> Four levers — three of them with concrete reference to your past orders."><strong>Beide Angebote vollständig.</strong> Vier Hebel — drei davon mit konkretem Bezug zu Ihren letzten Aufträgen.</div>
+          </div>
+          <div class="vn-row">
+            <div class="vn-day" data-de="Tag 2" data-en="Day 2">Tag 2</div>
+            <div class="vn-text" data-de="<strong>Freigabe per Klick.</strong> Auftragsbestätigung sofort. Optional: Prototyp parallel anfordern." data-en="<strong>Release with one click.</strong> Order confirmation immediately. Optional: prototype in parallel."><strong>Freigabe per Klick.</strong> Auftragsbestätigung sofort. Optional: prototype in parallel.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="vn-stats">
+        <div class="stat-box">
+          <div class="stat-num">−96 %</div>
+          <div class="stat-label" data-de="Zeit bis zur Entscheidung" data-en="Time to decision">Zeit bis zur Entscheidung</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num">7.000 €</div>
+          <div class="stat-label" data-de="Ersparnis im 1. Vertragsjahr" data-en="Savings in year 1">Ersparnis im 1. Vertragsjahr</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num">−4 Tage</div>
+          <div class="stat-label" data-de="Lieferzeit" data-en="Delivery time">Lieferzeit</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num">3 / 4</div>
+          <div class="stat-label" data-de="Hebel aus Ihrer Historie" data-en="Levers from your history">Hebel aus Ihrer Historie</div>
+        </div>
+      </div>
+
+      <p class="vn-footer" data-de="Echte Anfrage von Viega, 19.03.2026 · Personen anonymisiert · Stückpreise plausibilisierte Beispielzahlen für Demo-Zwecke." data-en="Real request from Viega, 19 March 2026 · persons anonymised · unit prices plausibilised demo figures.">
+        Echte Anfrage von Viega, 19.03.2026 · Personen anonymisiert · Stückpreise plausibilisierte Beispielzahlen für Demo-Zwecke.
+      </p>
+    </div>
+    <!-- /vn-content-bk -->
+  </section>
+
+  <!-- PDF DIRECT ACCESS -->
+  <section class="pdf-cta">
+    <div class="icon">PDF</div>
+    <div>
+      <div class="label" data-de="Anschauen" data-en="View">Anschauen</div>
+      <h3 data-de="So sieht das fertige Angebot aus" data-en="This is what the finished offer looks like">So sieht das fertige Angebot aus</h3>
+      <p data-de="Sechsseitiges PDF mit Original-Angebot, Optimierungs-Vorschlag, vier Stellhebeln, Vergleichstabelle und QR-Code zum Status-Link." data-en="Six-page PDF with original offer, optimisation proposal, four levers, comparison table and QR code to the status link.">Sechsseitiges PDF mit Original-Angebot, Optimierungs-Vorschlag, vier Stellhebeln, Vergleichstabelle und QR-Code zum Status-Link.</p>
+    </div>
+    <a class="btn" href="wabo-angebot-beispiel.pdf" target="_blank" data-de="Beispiel-Angebot ansehen →" data-en="View sample offer →">Beispiel-Angebot ansehen →</a>
+  </section>
+
+  <!-- HINTS -->
+  <section class="hints">
+    <div>
+      <div class="hint-label" data-de="Demo-Hinweise" data-en="Demo notes">Demo-Hinweise</div>
+      <h3 style="margin-top:8px;" data-de="Klicken Sie sich frei durch" data-en="Click through freely">Klicken Sie sich frei durch</h3>
+    </div>
+    <ul>
+      <li data-de="Alle Aktionen sind sicher — kein echter Login, keine echten Bestellungen." data-en="All actions are safe — no real login, no real orders.">Alle Aktionen sind sicher — kein echter Login, keine echten Bestellungen.</li>
+      <li data-de="Daten sind anonymisiert. Echte Anfragen, fiktive Personen." data-en="Data is anonymised. Real requests, fictional people.">Daten sind anonymisiert. Echte Anfragen, fiktive Personen.</li>
+      <li data-de="In den Demos finden Sie oben eine Sprung-Navigation zwischen den Screens." data-en="Inside each demo, there's a jump navigation between screens at the top.">In den Demos finden Sie oben eine Sprung-Navigation zwischen den Screens.</li>
+      <li data-de="Mit „Zurück zur Übersicht" oben links springen Sie jederzeit hierher zurück." data-en="With „Back to overview" at the top left, you can return here at any time.">Mit „Zurück zur Übersicht" oben links springen Sie jederzeit hierher zurück.</li>
+    </ul>
+  </section>
+
+  <footer class="index-footer">
+    Walter Bornmann GmbH · Hagener Str. 168 b · 58256 Ennepetal · HRB 10984
+  </footer>
+</main>
+
+<!-- ============================================================
+     CASE FRAME VIEW (iframe target)
+     ============================================================ -->
+<div class="case-frame" id="caseFrame">
+  <iframe id="caseIframe" src="" title="WaBo Demo Case"></iframe>
+</div>
+
+<script>
+const CASE_FILES = {
+  'neu': 'wabo-quotes-vision-prototyp.html',
+  'bk':  'wabo-vision-bestandskunde.html',
+  'v1':  'wabo-quotes-phase1.html'
+};
+
+let currentLang = 'de';
+let currentCase = null;
+
+function applyLang() {
+  document.querySelectorAll('[data-de]').forEach(el => {
+    const txt = el.getAttribute('data-' + currentLang);
+    if (txt !== null) el.innerHTML = txt;
+  });
+  document.documentElement.lang = currentLang;
+  // Re-load iframe if open, to propagate language
+  if (currentCase) {
+    loadCaseInIframe(currentCase);
+  }
+}
+
+function openCase(caseKey) {
+  if (!CASE_FILES[caseKey]) return;
+  currentCase = caseKey;
+  document.getElementById('indexView').classList.add('hidden');
+  document.getElementById('caseFrame').classList.add('active');
+  document.getElementById('backBtn').classList.add('visible');
+  loadCaseInIframe(caseKey);
+  window.scrollTo({ top: 0 });
+}
+
+function loadCaseInIframe(caseKey) {
+  const file = CASE_FILES[caseKey];
+  const url = file + '?lang=' + currentLang;
+  document.getElementById('caseIframe').src = url;
+}
+
+function backToIndex() {
+  currentCase = null;
+  document.getElementById('caseFrame').classList.remove('active');
+  document.getElementById('indexView').classList.remove('hidden');
+  document.getElementById('backBtn').classList.remove('visible');
+  document.getElementById('caseIframe').src = '';
+  window.scrollTo({ top: 0 });
+}
+
+// VN tabs
+document.querySelectorAll('.vn-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const tab = btn.dataset.tab;
+    document.querySelectorAll('.vn-tab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.vn-content').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    const target = document.querySelector('.vn-content-' + tab);
+    if (target) target.classList.add('active');
+  });
+});
+
+// Language switch
+document.querySelectorAll('.lang-switch button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.lang-switch button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentLang = btn.dataset.lang;
+    applyLang();
+  });
+});
+
+// ESC key returns to index
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && currentCase) {
+    backToIndex();
+  }
+});
+
+// Init
+applyLang();
+</script>
+
+</body>
+</html>

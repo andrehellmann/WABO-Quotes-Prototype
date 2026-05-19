@@ -1,0 +1,1965 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WaBo — Prozess formt Präzision · Angebotsprozess Prototyp</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%232DBCB6'/%3E%3Ctext x='16' y='23' text-anchor='middle' font-family='-apple-system,Arial,sans-serif' font-size='22' font-weight='900' fill='white'%3EB%3C/text%3E%3C/svg%3E">
+<style>
+  /* ============================================================
+     WaBo Angebotsprozess — Demo-Prototyp
+     Single-File HTML, 9 Screens, DE/EN, Live-Logik
+     ============================================================ */
+
+  :root {
+    --c-primary: #2DBCB6;
+    --c-primary-dark: #21948F;
+    --c-primary-light: #E8F7F6;
+    --c-ink: #1F2A2D;
+    --c-text: #2C3E40;
+    --c-mute: #6B7280;
+    --c-line: #E5E7EB;
+    --c-bg: #F4F6F7;
+    --c-bg-soft: #FAFBFB;
+    --c-white: #FFFFFF;
+    --c-warn: #2C3E40;
+    --c-warn-bg: #F0F2F3;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,.04);
+    --shadow-md: 0 4px 14px rgba(0,0,0,.06);
+    --shadow-lg: 0 12px 32px rgba(0,0,0,.10);
+    --radius-sm: 6px;
+    --radius: 10px;
+    --radius-lg: 16px;
+    --font: 'Open Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: var(--font);
+    color: var(--c-text);
+    background: var(--c-bg);
+    line-height: 1.55;
+    font-size: 15px;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, h4 { color: var(--c-ink); font-weight: 700; line-height: 1.2; }
+  h1 { font-size: 44px; letter-spacing: -.5px; }
+  h2 { font-size: 28px; }
+  h3 { font-size: 20px; }
+  h4 { font-size: 16px; }
+  p { color: var(--c-text); }
+  a { color: var(--c-primary-dark); text-decoration: none; }
+
+  /* ---------- Demo-Bar (top) ---------- */
+  .demo-bar {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--c-ink); color: #fff;
+    padding: 8px 16px;
+    display: flex; align-items: center; gap: 12px;
+    font-size: 12px;
+    border-bottom: 1px solid #000;
+  }
+  .demo-bar .demo-label {
+    background: var(--c-primary); color: var(--c-ink);
+    padding: 3px 8px; border-radius: 4px; font-weight: 700; letter-spacing: .5px;
+  }
+  .demo-bar .jumps {
+    display: flex; gap: 4px; flex-wrap: wrap; flex: 1;
+  }
+  .demo-bar .jumps button {
+    background: transparent; color: #fff; border: 1px solid #3a4a4d;
+    width: 26px; height: 26px; border-radius: 4px; cursor: pointer;
+    font-size: 11px; font-weight: 700; font-family: var(--font);
+    transition: all .15s;
+  }
+  .demo-bar .jumps button:hover { background: #3a4a4d; }
+  .demo-bar .jumps button.active {
+    background: var(--c-primary); color: var(--c-ink); border-color: var(--c-primary);
+  }
+  .demo-bar .toggle-bar {
+    background: transparent; color: #aaa; border: 1px solid #3a4a4d;
+    padding: 3px 8px; border-radius: 4px; cursor: pointer; font-size: 11px;
+  }
+  .demo-bar.collapsed .jumps,
+  .demo-bar.collapsed .demo-label,
+  .demo-bar.collapsed .step-label { display: none; }
+  .step-label { color: #ccc; }
+
+  /* ---------- App Header ---------- */
+  .app-header {
+    background: var(--c-white);
+    border-bottom: 1px solid var(--c-line);
+    padding: 18px 40px;
+    display: flex; align-items: center; gap: 24px;
+  }
+  body.in-iframe .app-header { display: none; }
+  .logo {
+    display: flex; align-items: center; gap: 0;
+    font-weight: 800; font-size: 26px; color: var(--c-ink);
+    letter-spacing: -1px;
+  }
+  .logo .b1 { color: var(--c-ink); }
+  .logo .b2 { background: var(--c-primary); color: #fff; padding: 2px 8px; border-radius: 4px; margin-left: 1px; }
+  .logo-tag {
+    margin-left: 14px; padding-left: 14px; border-left: 1px solid var(--c-line);
+    color: var(--c-mute); font-size: 13px; line-height: 1.3;
+  }
+  .header-actions {
+    margin-left: auto; display: flex; align-items: center; gap: 12px;
+  }
+  .lang-switch {
+    display: flex; gap: 0; border: 1px solid var(--c-line); border-radius: 6px; overflow: hidden;
+  }
+  .lang-switch button {
+    background: transparent; border: 0; padding: 6px 12px;
+    font-family: var(--font); font-size: 12px; font-weight: 700; color: var(--c-mute);
+    cursor: pointer;
+  }
+  .lang-switch button.active { background: var(--c-primary); color: #fff; }
+  .header-login {
+    background: transparent; border: 1px solid var(--c-line);
+    padding: 8px 16px; border-radius: 6px; font-family: var(--font);
+    font-size: 13px; font-weight: 600; color: var(--c-ink); cursor: pointer;
+    transition: all .15s;
+  }
+  .header-login:hover { border-color: var(--c-primary); color: var(--c-primary-dark); }
+
+  /* ---------- Main ---------- */
+  main { min-height: calc(100vh - 130px); }
+  .screen {
+    display: none;
+    padding: 48px 40px 80px;
+    max-width: 1280px; margin: 0 auto;
+  }
+  .screen.active { display: block; animation: fadeIn .3s ease; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ---------- Buttons ---------- */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    background: var(--c-primary); color: #fff; border: 0;
+    padding: 14px 28px; border-radius: var(--radius);
+    font-family: var(--font); font-size: 15px; font-weight: 700;
+    cursor: pointer; transition: all .15s;
+    box-shadow: var(--shadow-sm);
+  }
+  .btn:hover { background: var(--c-primary-dark); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+  .btn-lg { padding: 18px 36px; font-size: 17px; }
+  .btn-secondary {
+    background: #fff; color: var(--c-ink); border: 1px solid var(--c-line);
+  }
+  .btn-secondary:hover { background: var(--c-bg); border-color: var(--c-mute); }
+  .btn-ghost {
+    background: transparent; color: var(--c-text); border: 0; padding: 10px 16px;
+  }
+  .btn-ghost:hover { color: var(--c-primary-dark); }
+
+  /* ---------- Cards ---------- */
+  .card {
+    background: #fff; border: 1px solid var(--c-line); border-radius: var(--radius);
+    padding: 24px;
+  }
+  .card-elevated {
+    background: #fff; border-radius: var(--radius-lg); padding: 32px;
+    box-shadow: var(--shadow-md); border: 1px solid var(--c-line);
+  }
+
+  /* ============================================================
+     SCREEN 1 — Landing
+     ============================================================ */
+  .hero {
+    display: grid; grid-template-columns: 1.2fr 1fr; gap: 48px; align-items: center;
+    margin-bottom: 64px;
+  }
+  .hero-claim {
+    color: var(--c-primary-dark); font-weight: 700; font-size: 14px;
+    letter-spacing: 2px; text-transform: uppercase; margin-bottom: 16px;
+  }
+  .hero h1 { margin-bottom: 20px; }
+  .hero h1 .accent { color: var(--c-primary); }
+  .hero-sub {
+    color: var(--c-mute); font-size: 18px; margin-bottom: 32px; max-width: 520px;
+  }
+  .hero-ctas { display: flex; gap: 12px; align-items: center; }
+  .hero-side {
+    background: linear-gradient(135deg, var(--c-primary) 0%, var(--c-primary-dark) 100%);
+    border-radius: var(--radius-lg); padding: 36px; color: #fff;
+    box-shadow: var(--shadow-lg);
+  }
+  .hero-side h3 { color: #fff; margin-bottom: 18px; font-size: 18px; }
+  .hero-side ul { list-style: none; }
+  .hero-side li {
+    padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,.18);
+    display: flex; gap: 12px; align-items: flex-start; font-size: 14px;
+  }
+  .hero-side li:last-child { border: 0; }
+  .hero-side .num {
+    background: rgba(255,255,255,.18); border-radius: 4px; padding: 2px 8px;
+    font-weight: 700; min-width: 26px; text-align: center; font-size: 12px;
+  }
+
+  /* Process Graphic */
+  .process-section {
+    background: #fff; border-radius: var(--radius-lg); padding: 40px;
+    box-shadow: var(--shadow-sm); border: 1px solid var(--c-line);
+    margin-bottom: 48px;
+  }
+  .process-section h2 { text-align: center; margin-bottom: 8px; }
+  .process-section .subtitle {
+    text-align: center; color: var(--c-mute); margin-bottom: 36px;
+  }
+  .process-flow {
+    display: grid; grid-template-columns: repeat(7, 1fr); gap: 0; position: relative;
+  }
+  .process-step {
+    text-align: center; padding: 0 8px; position: relative;
+  }
+  .process-step:not(:last-child)::after {
+    content: ''; position: absolute; top: 26px; right: -18px; width: 36px; height: 2px;
+    background: var(--c-line);
+    z-index: 0;
+  }
+  .process-step.done:not(:last-child)::after { background: var(--c-primary); }
+  .process-num {
+    width: 52px; height: 52px; border-radius: 50%;
+    background: #fff; border: 2px solid var(--c-line);
+    color: var(--c-mute); font-weight: 700; font-size: 18px;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 12px; position: relative; z-index: 1;
+    transition: all .3s;
+  }
+  .process-step.active .process-num {
+    background: var(--c-primary); border-color: var(--c-primary); color: #fff;
+    box-shadow: 0 0 0 6px var(--c-primary-light);
+  }
+  .process-step.done .process-num {
+    background: var(--c-primary); border-color: var(--c-primary); color: #fff;
+  }
+  .process-step h4 { font-size: 14px; margin-bottom: 4px; }
+  .process-step .time {
+    font-size: 11px; color: var(--c-mute); font-weight: 600;
+  }
+  .process-step.active .time { color: var(--c-primary-dark); }
+
+  /* Trust strip */
+  .trust-strip {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-top: 32px;
+  }
+  .trust-item {
+    text-align: center; padding: 20px; border-right: 1px solid var(--c-line);
+  }
+  .trust-item:last-child { border-right: 0; }
+  .trust-num {
+    font-size: 32px; font-weight: 800; color: var(--c-primary); line-height: 1;
+  }
+  .trust-label {
+    font-size: 12px; color: var(--c-mute); margin-top: 6px;
+    text-transform: uppercase; letter-spacing: 1px;
+  }
+
+  /* ---------- Promise-Section (Landing) ---------- */
+  .promise-section {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 48px;
+  }
+  .promise-card {
+    background: #fff; border: 1px solid var(--c-line); border-radius: var(--radius-lg);
+    padding: 32px; display: flex; gap: 20px; align-items: flex-start;
+    transition: all .15s;
+  }
+  .promise-card:hover { border-color: var(--c-primary); box-shadow: var(--shadow-md); }
+  .promise-card .ico {
+    width: 52px; height: 52px; border-radius: var(--radius);
+    background: var(--c-primary-light); color: var(--c-primary-dark);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .promise-card .body { flex: 1; }
+  .promise-card h3 { margin-bottom: 8px; font-size: 18px; }
+  .promise-card p { color: var(--c-text); font-size: 14px; line-height: 1.55; margin-bottom: 14px; }
+  .promise-card .mail-input {
+    display: flex; gap: 8px; margin-top: 12px;
+  }
+  .promise-card .mail-input input {
+    flex: 1; padding: 10px 12px; border: 1px solid var(--c-line);
+    border-radius: var(--radius-sm); font-family: var(--font); font-size: 13px;
+  }
+  .promise-card .mail-input button {
+    padding: 10px 16px; font-size: 13px; white-space: nowrap;
+  }
+  .mail-target {
+    background: var(--c-bg-soft); border-radius: var(--radius-sm);
+    padding: 10px 14px; font-family: 'SF Mono', Consolas, monospace; font-size: 13px;
+    color: var(--c-ink); margin-bottom: 12px;
+    display: inline-block;
+  }
+  .promise-list { list-style: none; margin-top: 8px; }
+  .promise-list li {
+    padding: 6px 0; font-size: 13px; color: var(--c-text);
+    display: flex; gap: 8px; align-items: flex-start;
+  }
+  .promise-list li::before {
+    content: '✓'; color: var(--c-primary); font-weight: 700; flex-shrink: 0;
+  }
+
+  /* ---------- E-Mail-Sidebar (Wizard 2) ---------- */
+  .wizard-3-grid {
+    display: grid; grid-template-columns: 2fr 1fr; gap: 32px;
+  }
+  .email-sidebar {
+    background: var(--c-primary-light); border-radius: var(--radius-lg); padding: 28px;
+    border: 1px solid var(--c-primary); align-self: flex-start;
+    position: sticky; top: 100px;
+  }
+  .email-sidebar h3 { margin-bottom: 8px; font-size: 17px; }
+  .email-sidebar p { color: var(--c-text); font-size: 13px; margin-bottom: 16px; }
+  .email-sidebar .field { margin-bottom: 12px; }
+  .email-sidebar input[type=text], .email-sidebar input[type=email] {
+    width: 100%; padding: 10px 12px; border: 1px solid var(--c-line);
+    border-radius: var(--radius-sm); font-family: var(--font); font-size: 13px;
+    background: #fff;
+  }
+  .email-sidebar .check {
+    display: flex; gap: 8px; align-items: flex-start;
+    font-size: 13px; color: var(--c-text); margin-top: 8px;
+  }
+  .email-sidebar .check input { margin-top: 3px; }
+
+  /* ============================================================
+     SCREEN 2 — Wizard: Zeichnungen
+     ============================================================ */
+  .wizard-header {
+    margin-bottom: 32px;
+  }
+  .wizard-progress {
+    display: flex; gap: 8px; margin-bottom: 24px;
+  }
+  .wizard-progress .step {
+    flex: 1; height: 4px; background: var(--c-line); border-radius: 2px;
+  }
+  .wizard-progress .step.active { background: var(--c-primary); }
+  .wizard-step-num {
+    color: var(--c-primary-dark); font-weight: 700; font-size: 13px;
+    letter-spacing: 1px; text-transform: uppercase;
+  }
+  .wizard-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 32px; }
+
+  .upload-zone {
+    background: #fff; border: 2px dashed var(--c-primary); border-radius: var(--radius-lg);
+    padding: 32px; text-align: center; margin-bottom: 24px;
+    background: var(--c-primary-light);
+  }
+  .upload-zone .icon {
+    width: 56px; height: 56px; background: #fff; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;
+    color: var(--c-primary); font-size: 24px;
+  }
+  .upload-zone h3 { margin-bottom: 6px; }
+  .upload-zone p { color: var(--c-mute); font-size: 13px; }
+
+  .parts-list { display: flex; flex-direction: column; gap: 12px; }
+  .part-item {
+    background: #fff; border: 1px solid var(--c-line); border-radius: var(--radius);
+    padding: 16px 20px; display: grid;
+    grid-template-columns: 32px 1.4fr 1fr 1fr 200px; gap: 16px; align-items: center;
+    transition: all .15s;
+  }
+  .part-item:hover { border-color: var(--c-primary); box-shadow: var(--shadow-sm); }
+  .part-item .file-icon {
+    width: 32px; height: 32px; background: var(--c-bg); border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--c-mute); font-weight: 700; font-size: 10px;
+  }
+  .part-item .meta { font-size: 12px; color: var(--c-mute); }
+  .part-item .name { font-weight: 600; color: var(--c-ink); font-size: 14px; }
+  .part-item .qty { font-weight: 600; color: var(--c-ink); }
+  .part-item .qty span { font-weight: 400; color: var(--c-mute); font-size: 12px; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border-radius: 100px; font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .5px;
+  }
+  .badge-ok { background: var(--c-primary-light); color: var(--c-primary-dark); }
+  .badge-warn { background: var(--c-warn-bg); color: var(--c-warn); }
+  .badge-info { background: #eef0f1; color: var(--c-mute); }
+  .badge::before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%;
+    background: currentColor; flex-shrink: 0;
+  }
+  .badge { white-space: nowrap; }
+
+  .sidebar-msg {
+    background: var(--c-ink); color: #fff;
+    border-radius: var(--radius-lg); padding: 28px;
+  }
+  .sidebar-msg .label {
+    font-size: 11px; color: var(--c-primary); font-weight: 700;
+    text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px;
+  }
+  .sidebar-msg h3 { color: #fff; margin-bottom: 12px; }
+  .sidebar-msg p { color: rgba(255,255,255,.85); font-size: 14px; }
+  .sidebar-msg .quote {
+    font-style: italic; border-left: 3px solid var(--c-primary);
+    padding-left: 16px; margin-top: 20px; font-size: 13px;
+  }
+
+  /* ============================================================
+     SCREEN 3 — Wizard: Eckdaten
+     ============================================================ */
+  .customer-toggle {
+    display: flex; gap: 0; background: #fff; border: 1px solid var(--c-line);
+    border-radius: var(--radius); padding: 4px; max-width: 480px; margin-bottom: 24px;
+  }
+  .customer-toggle button {
+    flex: 1; background: transparent; border: 0; padding: 12px;
+    font-family: var(--font); font-size: 14px; font-weight: 600; color: var(--c-mute);
+    cursor: pointer; border-radius: var(--radius-sm); transition: all .15s;
+  }
+  .customer-toggle button.active { background: var(--c-primary); color: #fff; }
+
+  .data-card {
+    background: #fff; border: 1px solid var(--c-line); border-radius: var(--radius);
+    padding: 20px; margin-bottom: 12px;
+  }
+  .data-card-header {
+    display: flex; align-items: center; gap: 12px; cursor: pointer;
+    user-select: none;
+  }
+  .data-card-header .title { flex: 1; }
+  .data-card-header .toggle-icon {
+    color: var(--c-mute); transition: transform .2s;
+  }
+  .data-card.expanded .toggle-icon { transform: rotate(180deg); }
+  .data-card .summary {
+    font-size: 13px; color: var(--c-mute); margin-top: 4px;
+  }
+  .data-card-body {
+    display: none; margin-top: 20px; padding-top: 20px;
+    border-top: 1px solid var(--c-line);
+  }
+  .data-card.expanded .data-card-body { display: block; }
+  .data-grid {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;
+  }
+  .field label {
+    display: block; font-size: 12px; color: var(--c-mute); font-weight: 600;
+    margin-bottom: 4px; text-transform: uppercase; letter-spacing: .5px;
+  }
+  .field input, .field select {
+    width: 100%; padding: 10px 12px; border: 1px solid var(--c-line);
+    border-radius: var(--radius-sm); font-family: var(--font); font-size: 14px;
+    background: #fff; color: var(--c-ink);
+  }
+  .field input:focus, .field select:focus {
+    outline: 0; border-color: var(--c-primary); box-shadow: 0 0 0 3px var(--c-primary-light);
+  }
+  .field .auto-tag {
+    background: var(--c-primary-light); color: var(--c-primary-dark);
+    font-size: 10px; padding: 2px 6px; border-radius: 3px; margin-left: 6px;
+    font-weight: 700; text-transform: uppercase;
+  }
+
+  /* ============================================================
+     SCREEN 4 — Komplexitäts-Weiche
+     ============================================================ */
+  .switch-intro {
+    background: linear-gradient(135deg, var(--c-primary-light) 0%, #fff 100%);
+    border-radius: var(--radius-lg); padding: 40px; margin-bottom: 32px;
+    border: 1px solid var(--c-line);
+  }
+  .switch-intro h2 { margin-bottom: 8px; }
+  .switch-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .switch-col {
+    background: #fff; border-radius: var(--radius-lg); padding: 28px;
+    border: 1px solid var(--c-line);
+  }
+  .switch-col-standard { border-top: 4px solid var(--c-primary); }
+  .switch-col-personal { border-top: 4px solid var(--c-ink); }
+  .switch-col h3 { margin-bottom: 6px; }
+  .switch-col .count {
+    background: var(--c-primary-light); color: var(--c-primary-dark);
+    padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: 700;
+    display: inline-block; margin-bottom: 16px;
+  }
+  .switch-col-personal .count { background: var(--c-warn-bg); color: var(--c-warn); }
+  .switch-col p { color: var(--c-mute); font-size: 14px; margin-bottom: 16px; }
+  .switch-list {
+    list-style: none; display: flex; flex-direction: column; gap: 8px;
+    padding: 16px 0; border-top: 1px solid var(--c-line);
+  }
+  .switch-list li {
+    padding: 10px 14px; background: var(--c-bg-soft); border-radius: var(--radius-sm);
+    display: flex; align-items: center; gap: 10px; font-size: 13px;
+  }
+  .switch-list li::before {
+    content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--c-primary);
+  }
+  .switch-col-personal .switch-list li::before { background: var(--c-ink); }
+  .switch-list li .reason {
+    margin-left: auto; color: var(--c-mute); font-size: 12px;
+  }
+
+  .slot-picker {
+    background: var(--c-bg-soft); padding: 20px; border-radius: var(--radius);
+    margin-top: 16px;
+  }
+  .slot-picker h4 { margin-bottom: 12px; }
+  .slot-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+  }
+  .slot-btn {
+    background: #fff; border: 1px solid var(--c-line); border-radius: var(--radius-sm);
+    padding: 12px 8px; font-family: var(--font); font-size: 12px; font-weight: 600;
+    cursor: pointer; text-align: center; color: var(--c-ink);
+    transition: all .15s;
+  }
+  .slot-btn:hover { border-color: var(--c-primary); }
+  .slot-btn.selected {
+    background: var(--c-primary); border-color: var(--c-primary); color: #fff;
+  }
+  .slot-btn .day { font-weight: 800; display: block; }
+  .slot-btn .time { font-weight: 400; color: var(--c-mute); font-size: 11px; }
+  .slot-btn.selected .time { color: rgba(255,255,255,.9); }
+
+  .or-divider {
+    display: flex; align-items: center; gap: 12px;
+    margin: 16px 0; color: var(--c-mute); font-size: 12px;
+    font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px;
+  }
+  .or-divider::before, .or-divider::after {
+    content: ''; flex: 1; height: 1px; background: var(--c-line);
+  }
+
+  .email-alt {
+    background: #fff; border: 1px solid var(--c-line);
+    border-radius: var(--radius); padding: 18px 20px;
+  }
+  .email-alt h4 { margin-bottom: 6px; font-size: 14px; }
+  .email-alt p {
+    color: var(--c-mute); font-size: 13px; margin-bottom: 14px; line-height: 1.5;
+  }
+  .email-alt input[type=email] {
+    width: 100%; padding: 10px 12px; border: 1px solid var(--c-line);
+    border-radius: var(--radius-sm); font-family: var(--font); font-size: 13px;
+    background: #fff;
+  }
+  .email-alt input[type=email]:focus {
+    outline: 0; border-color: var(--c-primary); box-shadow: 0 0 0 3px var(--c-primary-light);
+  }
+
+  /* ============================================================
+     SCREEN 5 — Sofort-Indikation
+     ============================================================ */
+  .indication-list {
+    display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px;
+  }
+  .ind-row {
+    background: #fff; border: 1px solid var(--c-line); border-radius: var(--radius);
+    padding: 18px 24px; display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 16px; align-items: center;
+  }
+  .ind-row .label { font-size: 11px; color: var(--c-mute); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
+  .ind-row .value { font-weight: 700; color: var(--c-ink); }
+  .ind-row .price-range { color: var(--c-primary-dark); font-size: 16px; }
+  .contact-form {
+    background: #fff; border: 1px solid var(--c-line); border-radius: var(--radius-lg);
+    padding: 32px; margin-bottom: 32px;
+  }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+  /* ============================================================
+     SCREEN 6 — Status Dashboard
+     ============================================================ */
+  .status-banner {
+    background: var(--c-ink); color: #fff; border-radius: var(--radius-lg);
+    padding: 24px 32px; margin-bottom: 24px;
+    display: flex; align-items: center; gap: 24px;
+  }
+  .status-banner .url-info {
+    flex: 1;
+  }
+  .status-banner .label {
+    color: var(--c-primary); font-size: 11px; font-weight: 700;
+    letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px;
+  }
+  .status-banner .url {
+    font-family: 'SF Mono', Consolas, monospace; font-size: 13px; color: rgba(255,255,255,.8);
+  }
+  .status-banner .eta {
+    text-align: right;
+  }
+  .status-banner .eta .time {
+    font-size: 22px; font-weight: 800; color: var(--c-primary);
+  }
+
+  .status-grid {
+    display: grid; grid-template-columns: 2fr 1fr; gap: 24px;
+  }
+  .status-detail {
+    background: #fff; border-radius: var(--radius-lg); padding: 28px;
+    border: 1px solid var(--c-line);
+  }
+  .status-detail h3 { margin-bottom: 20px; }
+  .substatus-list { display: flex; flex-direction: column; gap: 12px; }
+  .substatus {
+    display: grid; grid-template-columns: 28px 1fr auto; gap: 14px; align-items: center;
+    padding: 14px; border-radius: var(--radius-sm); background: var(--c-bg-soft);
+  }
+  .substatus.active { background: var(--c-primary-light); }
+  .substatus.done { opacity: .8; }
+  .substatus .check {
+    width: 28px; height: 28px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--c-line); color: var(--c-mute); font-weight: 700;
+  }
+  .substatus.done .check { background: var(--c-primary); color: #fff; }
+  .substatus.active .check { background: #fff; border: 2px solid var(--c-primary); color: var(--c-primary); }
+  .substatus .text { font-weight: 600; color: var(--c-ink); }
+  .substatus .meta { color: var(--c-mute); font-size: 12px; margin-top: 2px; }
+  .substatus .time { color: var(--c-mute); font-size: 12px; }
+  .substatus.active .time { color: var(--c-primary-dark); font-weight: 600; }
+
+  .contact-card {
+    background: #fff; border-radius: var(--radius-lg); padding: 28px;
+    border: 1px solid var(--c-line);
+  }
+  .avatar {
+    width: 56px; height: 56px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--c-primary) 0%, var(--c-primary-dark) 100%);
+    color: #fff; display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 20px;
+  }
+  .contact-card .head { display: flex; gap: 14px; align-items: center; margin-bottom: 16px; }
+  .contact-card h4 { margin: 0; }
+  .contact-card .role { font-size: 12px; color: var(--c-mute); }
+  .contact-card .phone, .contact-card .mail {
+    font-size: 13px; color: var(--c-text); padding: 6px 0;
+    border-top: 1px solid var(--c-line);
+  }
+  .chat-box {
+    background: #fff; border-radius: var(--radius-lg); padding: 20px;
+    border: 1px solid var(--c-line); margin-top: 16px;
+  }
+  .chat-box textarea {
+    width: 100%; border: 1px solid var(--c-line); border-radius: var(--radius-sm);
+    padding: 10px; font-family: var(--font); font-size: 13px; resize: vertical;
+    min-height: 60px;
+  }
+
+  /* ============================================================
+     SCREEN 7 — Zwei Angebote
+     ============================================================ */
+  .offers-header {
+    text-align: center; margin-bottom: 32px;
+  }
+  .offers-header .label {
+    color: var(--c-primary-dark); font-weight: 700; font-size: 13px;
+    letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px;
+  }
+  .offers-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+  }
+  .offer-card {
+    background: #fff; border-radius: var(--radius-lg); border: 1px solid var(--c-line);
+    overflow: hidden;
+  }
+  .offer-card .head {
+    padding: 24px 28px; border-bottom: 1px solid var(--c-line);
+  }
+  .offer-card.b .head {
+    background: linear-gradient(135deg, var(--c-primary) 0%, var(--c-primary-dark) 100%);
+    color: #fff; border-bottom: 0;
+  }
+  .offer-card .head .badge-offer {
+    display: inline-block; background: var(--c-bg); padding: 4px 10px;
+    border-radius: 4px; font-size: 11px; font-weight: 700;
+    color: var(--c-mute); letter-spacing: 1px; margin-bottom: 12px;
+  }
+  .offer-card.b .head .badge-offer {
+    background: rgba(255,255,255,.2); color: #fff;
+  }
+  .offer-card.b .head h3, .offer-card.b .head .sub { color: #fff; }
+  .offer-card .sub { color: var(--c-mute); font-size: 13px; margin-top: 4px; }
+  .offer-body { padding: 24px 28px; }
+  .lever-list { display: flex; flex-direction: column; gap: 14px; margin-bottom: 20px; }
+  .lever {
+    background: var(--c-bg-soft); border: 1px solid var(--c-line);
+    border-radius: var(--radius); padding: 16px;
+  }
+  .lever-head {
+    display: flex; align-items: flex-start; gap: 12px;
+  }
+  .lever-toggle {
+    appearance: none; width: 40px; height: 22px; background: var(--c-line);
+    border-radius: 100px; position: relative; cursor: pointer; flex-shrink: 0;
+    transition: background .2s;
+  }
+  .lever-toggle::after {
+    content: ''; position: absolute; top: 2px; left: 2px; width: 18px; height: 18px;
+    background: #fff; border-radius: 50%; transition: transform .2s;
+  }
+  .lever-toggle:checked { background: var(--c-primary); }
+  .lever-toggle:checked::after { transform: translateX(18px); }
+  .lever-info { flex: 1; }
+  .lever-title { font-weight: 700; color: var(--c-ink); font-size: 14px; }
+  .lever-desc { color: var(--c-mute); font-size: 12px; margin-top: 4px; }
+  .lever-effect {
+    margin-top: 8px; display: flex; gap: 12px; flex-wrap: wrap;
+  }
+  .effect-tag {
+    background: #fff; border: 1px solid var(--c-line); border-radius: 4px;
+    padding: 3px 8px; font-size: 11px; font-weight: 700; color: var(--c-primary-dark);
+  }
+  .effect-tag.neutral { color: var(--c-mute); }
+
+  .offer-summary {
+    background: #fff; border-top: 1px solid var(--c-line);
+    padding: 20px 28px;
+  }
+  .offer-card.b .offer-summary {
+    background: var(--c-primary-light);
+  }
+  .offer-summary .sum-row {
+    display: flex; justify-content: space-between; padding: 4px 0;
+    font-size: 14px;
+  }
+  .offer-summary .sum-row.total {
+    border-top: 2px solid var(--c-line); padding-top: 12px; margin-top: 8px;
+    font-size: 18px; font-weight: 800; color: var(--c-ink);
+  }
+  .offer-summary .delta {
+    background: var(--c-primary); color: #fff; border-radius: var(--radius-sm);
+    padding: 12px 16px; margin-top: 14px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .offer-summary .delta strong { font-size: 18px; }
+
+  .offer-actions {
+    display: flex; gap: 12px; padding: 0 28px 24px;
+  }
+
+  .offer-positions {
+    margin-top: 16px; max-height: 0; overflow: hidden; transition: max-height .3s;
+  }
+  .offer-positions.open { max-height: 800px; }
+  .pos-table {
+    width: 100%; border-collapse: collapse; font-size: 12px;
+  }
+  .pos-table th {
+    background: var(--c-bg); text-align: left; padding: 8px 10px;
+    color: var(--c-mute); font-weight: 700; text-transform: uppercase;
+    letter-spacing: .5px; font-size: 10px; border-bottom: 1px solid var(--c-line);
+  }
+  .pos-table td {
+    padding: 8px 10px; border-bottom: 1px solid var(--c-line);
+  }
+  .pos-table tr:last-child td { border-bottom: 0; }
+  .pos-toggle {
+    background: transparent; border: 0; color: var(--c-primary-dark);
+    font-family: var(--font); font-size: 12px; font-weight: 700;
+    cursor: pointer; padding: 8px 0;
+  }
+
+  /* ============================================================
+     SCREEN 8 — Vorher / Nachher
+     ============================================================ */
+  .vn-intro { text-align: center; margin-bottom: 36px; }
+  .vn-intro .label {
+    color: var(--c-primary-dark); font-weight: 700; font-size: 13px;
+    letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px;
+  }
+  .vn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+  .vn-col {
+    background: #fff; padding: 32px;
+  }
+  .vn-col-old {
+    background: var(--c-bg-soft); border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+    border: 1px solid var(--c-line);
+  }
+  .vn-col-new {
+    background: linear-gradient(135deg, #fff 0%, var(--c-primary-light) 100%);
+    border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+    border: 1px solid var(--c-primary); border-left: 0;
+  }
+  .vn-col h3 {
+    font-size: 18px; padding-bottom: 16px; border-bottom: 2px solid var(--c-line);
+    margin-bottom: 20px;
+  }
+  .vn-col-new h3 { color: var(--c-primary-dark); border-bottom-color: var(--c-primary); }
+  .vn-col .topline {
+    font-size: 12px; color: var(--c-mute); text-transform: uppercase;
+    letter-spacing: 1px; margin-bottom: 8px;
+  }
+  .vn-row { display: flex; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--c-line); }
+  .vn-row:last-child { border: 0; }
+  .vn-day {
+    background: var(--c-bg); color: var(--c-ink); border-radius: 4px;
+    padding: 4px 10px; font-size: 11px; font-weight: 700;
+    flex-shrink: 0; height: fit-content; min-width: 70px; text-align: center;
+  }
+  .vn-col-new .vn-day { background: var(--c-primary); color: #fff; }
+  .vn-text { font-size: 14px; line-height: 1.5; }
+  .vn-text strong { color: var(--c-ink); }
+  .vn-footer {
+    text-align: center; margin-top: 24px; color: var(--c-mute);
+    font-size: 12px; font-style: italic;
+  }
+  .vn-stats {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+    margin-top: 32px;
+  }
+  .stat-box {
+    background: #fff; border: 1px solid var(--c-line); border-radius: var(--radius);
+    padding: 20px; text-align: center;
+  }
+  .stat-num { font-size: 28px; font-weight: 800; color: var(--c-primary); line-height: 1; }
+  .stat-label { font-size: 12px; color: var(--c-mute); margin-top: 6px; }
+
+  /* ============================================================
+     SCREEN 9 — Freigabe & Ausblick
+     ============================================================ */
+  .confirm-hero {
+    background: linear-gradient(135deg, var(--c-primary) 0%, var(--c-primary-dark) 100%);
+    color: #fff; border-radius: var(--radius-lg); padding: 48px;
+    text-align: center; margin-bottom: 32px;
+  }
+  .confirm-hero h2 { color: #fff; font-size: 32px; margin-bottom: 8px; }
+  .confirm-hero p { color: rgba(255,255,255,.9); font-size: 16px; }
+  .confirm-hero .order-id {
+    background: rgba(255,255,255,.2); display: inline-block;
+    padding: 6px 14px; border-radius: 6px; font-family: 'SF Mono', monospace;
+    font-size: 13px; margin-top: 16px;
+  }
+  .next-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px; }
+  .next-card {
+    background: #fff; border: 1px solid var(--c-line); border-radius: var(--radius-lg);
+    padding: 28px;
+  }
+  .next-card h3 { margin-bottom: 12px; }
+  .next-card .badge { margin-bottom: 12px; }
+
+  .teaser-section {
+    background: var(--c-ink); color: #fff;
+    border-radius: var(--radius-lg); padding: 40px;
+  }
+  .teaser-section h3 { color: #fff; margin-bottom: 8px; }
+  .teaser-section .sub { color: rgba(255,255,255,.7); margin-bottom: 24px; }
+  .teaser-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .teaser-item {
+    background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1);
+    border-radius: var(--radius); padding: 18px;
+  }
+  .teaser-item h4 { color: var(--c-primary); font-size: 14px; margin-bottom: 6px; }
+  .teaser-item p { color: rgba(255,255,255,.7); font-size: 12px; }
+
+  /* ---------- Modal: Bestandskunden-Login ---------- */
+  .modal-backdrop {
+    position: fixed; inset: 0; background: rgba(31,42,45,.6); z-index: 200;
+    display: none; align-items: center; justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+  .modal-backdrop.open { display: flex; }
+  .modal {
+    background: #fff; border-radius: var(--radius-lg); padding: 36px;
+    max-width: 540px; width: 90%; box-shadow: var(--shadow-lg);
+  }
+  .modal h3 { margin-bottom: 8px; }
+  .modal p { color: var(--c-mute); margin-bottom: 24px; }
+  .modal .features { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+  .modal .features div {
+    padding: 12px 14px; background: var(--c-bg-soft); border-radius: var(--radius-sm);
+    border-left: 3px solid var(--c-primary); font-size: 13px;
+  }
+  .modal .actions { display: flex; gap: 8px; justify-content: flex-end; }
+  .modal .close { background: transparent; border: 0; cursor: pointer; color: var(--c-mute); }
+
+  /* ---------- Footer Nav ---------- */
+  .nav-footer {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: #fff; border-top: 1px solid var(--c-line);
+    padding: 12px 40px; display: flex; align-items: center; gap: 16px;
+    box-shadow: 0 -4px 12px rgba(0,0,0,.04); z-index: 90;
+  }
+  .nav-footer .info {
+    flex: 1; font-size: 13px; color: var(--c-mute);
+  }
+  .nav-footer .info strong { color: var(--c-ink); }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 960px) {
+    .hero { grid-template-columns: 1fr; }
+    .wizard-grid, .switch-grid, .status-grid, .offers-grid, .next-grid, .vn-grid { grid-template-columns: 1fr; }
+    .process-flow { grid-template-columns: 1fr; gap: 12px; }
+    .process-step:not(:last-child)::after { display: none; }
+    .data-grid, .form-grid { grid-template-columns: 1fr; }
+    .ind-row { grid-template-columns: 1fr; gap: 8px; }
+    .vn-stats, .teaser-grid { grid-template-columns: 1fr 1fr; }
+    .trust-strip { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* ---------- Print ---------- */
+  @media print {
+    .demo-bar, .nav-footer, .app-header { display: none; }
+    .screen { display: block !important; padding: 20px; page-break-after: always; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     DEMO-BAR
+     ============================================================ -->
+<div class="demo-bar" id="demoBar">
+  <span class="demo-label">DEMO</span>
+  <span class="step-label" id="stepLabel">Screen 1 · Landing</span>
+  <div class="jumps" id="jumps">
+    <button data-jump="1" class="active">1</button>
+    <button data-jump="2">2</button>
+    <button data-jump="3">3</button>
+    <button data-jump="4">4</button>
+    <button data-jump="5">5</button>
+    <button data-jump="6">6</button>
+    <button data-jump="7">7</button>
+    <button data-jump="8">8</button>
+    <button data-jump="9">9</button>
+  </div>
+  <button class="toggle-bar" onclick="document.getElementById('demoBar').classList.toggle('collapsed')">↕ ausblenden</button>
+</div>
+
+<!-- ============================================================
+     APP HEADER
+     ============================================================ -->
+<header class="app-header">
+  <div class="logo">
+    <span class="b1">Wa</span><span class="b2">Bo</span>
+  </div>
+  <div class="logo-tag" data-de="Walter Bornmann GmbH<br>Präzisionsdrehteile aus Metall" data-en="Walter Bornmann GmbH<br>Precision turned metal parts">
+    Walter Bornmann GmbH<br>Präzisionsdrehteile aus Metall
+  </div>
+  <div class="header-actions">
+    <div class="lang-switch">
+      <button class="active" data-lang="de">DE</button>
+      <button data-lang="en">EN</button>
+    </div>
+    <button class="header-login" onclick="document.getElementById('loginModal').classList.add('open')" data-de="Anmelden — Bestandskunden" data-en="Login — Existing Customers">Anmelden — Bestandskunden</button>
+  </div>
+</header>
+
+<main>
+
+<!-- ============================================================
+     SCREEN 1 — LANDING
+     ============================================================ -->
+<section class="screen active" data-screen="1">
+  <div class="hero">
+    <div>
+      <div class="hero-claim" data-de="Prozess formt Präzision" data-en="Process shapes precision">Prozess formt Präzision</div>
+      <h1 data-de="Ihre Anfrage. Unsere Vorschläge. <span class='accent'>In 48 Stunden.</span>" data-en="Your request. Our proposals. <span class='accent'>In 48 hours.</span>">
+        Ihre Anfrage. Unsere Vorschläge. <span class="accent">In 48 Stunden.</span>
+      </h1>
+      <p class="hero-sub" data-de="Übermitteln Sie uns Ihre Anfrage nach Präzisionsdrehteilen. Wir erstellen Ihnen immer zwei Vorschläge — genau passend auf Ihre Anfrage und eine Idee, wie es wirtschaftlicher geht. Transparent und interaktiv in jedem Schritt." data-en="Send us your request for precision turned parts. We always provide two proposals — one matching your request exactly and one with an idea how to make it more economical. Transparent and interactive at every step.">
+        Übermitteln Sie uns Ihre Anfrage nach Präzisionsdrehteilen. Wir erstellen Ihnen immer zwei Vorschläge — genau passend auf Ihre Anfrage und eine Idee, wie es wirtschaftlicher geht. Transparent und interaktiv in jedem Schritt.
+      </p>
+      <div class="hero-ctas">
+        <button class="btn btn-lg" onclick="goToScreen(2)" data-de="Anfrage starten →" data-en="Start request →">Anfrage starten →</button>
+        <button class="btn-ghost" onclick="goToScreen(8)" data-de="Vorher / Nachher ansehen" data-en="See Before / After">Vorher / Nachher ansehen</button>
+      </div>
+    </div>
+    <div class="hero-side">
+      <h3 data-de="Was wir Ihnen versprechen" data-en="Our promises to you">Was wir Ihnen versprechen</h3>
+      <ul>
+        <li><span class="num">1</span><span data-de="<strong>Indikation in 5 Minuten</strong> — Preisspanne und Lieferfenster sofort." data-en="<strong>Indication in 5 minutes</strong> — price range and delivery window immediately."><strong>Indikation in 5 Minuten</strong> — Preisspanne und Lieferfenster sofort.</span></li>
+        <li><span class="num">2</span><span data-de="<strong>Live-Status</strong> — keine Stille, jeder Schritt sichtbar." data-en="<strong>Live status</strong> — no silence, every step visible."><strong>Live-Status</strong> — keine Stille, jeder Schritt sichtbar.</span></li>
+        <li><span class="num">3</span><span data-de="<strong>Zwei Angebote</strong> — Original + Optimierung mit Begründung." data-en="<strong>Two offers</strong> — original + optimisation with rationale."><strong>Zwei Angebote</strong> — Original + Optimierung mit Begründung.</span></li>
+        <li><span class="num">4</span><span data-de="<strong>Eine Entscheidung</strong> — sofort vergleichbar, freigabefähig." data-en="<strong>One decision</strong> — instantly comparable, ready to release."><strong>Eine Entscheidung</strong> — sofort vergleichbar, freigabefähig.</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="process-section">
+    <h2 data-de="So läuft Ihre Anfrage bei WaBo" data-en="How your request runs at WaBo">So läuft Ihre Anfrage bei WaBo</h2>
+    <p class="subtitle" data-de="Sieben Schritte, jeder mit klarer Zeitangabe — keine Blackbox." data-en="Seven steps, each with a clear time — no black box.">
+      Sieben Schritte, jeder mit klarer Zeitangabe — keine Blackbox.
+    </p>
+    <div class="process-flow" id="processFlow">
+      <div class="process-step" data-step="1">
+        <div class="process-num">1</div>
+        <h4 data-de="Hochladen<br>Zeichnung &amp; Spezifikationen" data-en="Upload<br>drawing &amp; specs">Hochladen<br>Zeichnung &amp; Spezifikationen</h4>
+        <div class="time" data-de="30 Sekunden" data-en="30 seconds">30 Sekunden</div>
+      </div>
+      <div class="process-step" data-step="2">
+        <div class="process-num">2</div>
+        <h4 data-de="Feedback &amp;<br>Optimierung der Anfrage" data-en="Feedback &amp;<br>request optimisation">Feedback &amp;<br>Optimierung der Anfrage</h4>
+        <div class="time" data-de="2 Minuten" data-en="2 minutes">2 Minuten</div>
+      </div>
+      <div class="process-step" data-step="3">
+        <div class="process-num">3</div>
+        <h4 data-de="Erste Angebots-<br>Indikation" data-en="Initial quote<br>indication">Erste Angebots-<br>Indikation</h4>
+        <div class="time" data-de="5 Minuten" data-en="5 minutes">5 Minuten</div>
+      </div>
+      <div class="process-step" data-step="4">
+        <div class="process-num">4</div>
+        <h4 data-de="Detail-Prüfung &amp;<br>Kundenberatung" data-en="Detail review &amp;<br>customer consulting">Detail-Prüfung &amp;<br>Kundenberatung</h4>
+        <div class="time" data-de="bis 2 Werktage" data-en="up to 2 business days">bis 2 Werktage</div>
+      </div>
+      <div class="process-step" data-step="5">
+        <div class="process-num">5</div>
+        <h4 data-de="Zwei Angebots-<br>vorschläge" data-en="Two offer<br>proposals">Zwei Angebots-<br>vorschläge</h4>
+        <div class="time" data-de="bis 2 Werktage" data-en="up to 2 business days">bis 2 Werktage</div>
+      </div>
+      <div class="process-step" data-step="6">
+        <div class="process-num">6</div>
+        <h4 data-de="Freigabe<br>im System" data-en="Release<br>in the system">Freigabe<br>im System</h4>
+        <div class="time" data-de="Ihre Wahl" data-en="Your choice">Ihre Wahl</div>
+      </div>
+      <div class="process-step" data-step="7">
+        <div class="process-num">7</div>
+        <h4 data-de="Produktion<br>&amp; Lieferung" data-en="Production<br>&amp; delivery">Produktion<br>&amp; Lieferung</h4>
+        <div class="time" data-de="lt. Vereinbarung" data-en="as agreed">lt. Vereinbarung</div>
+      </div>
+    </div>
+
+    <div class="trust-strip">
+      <div class="trust-item">
+        <div class="trust-num">20+</div>
+        <div class="trust-label" data-de="Mio. Teile / Jahr" data-en="Million parts / year">Mio. Teile / Jahr</div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-num">60</div>
+        <div class="trust-label" data-de="Maschinen" data-en="Machines">Maschinen</div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-num">Ø 10–300</div>
+        <div class="trust-label" data-de="mm Drehteile" data-en="mm turned parts">mm Drehteile</div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-num">100 %</div>
+        <div class="trust-label" data-de="Eigenfertigung" data-en="In-house production">Eigenfertigung</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="promise-section">
+    <div class="promise-card">
+      <div class="ico">
+        <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="4" width="20" height="16" rx="2"/>
+          <path d="M2 7l10 7 10-7"/>
+        </svg>
+      </div>
+      <div class="body">
+        <h3 data-de="Lieber per E-Mail anfragen?" data-en="Prefer to request by email?">Lieber per E-Mail anfragen?</h3>
+        <p data-de="Senden Sie Zeichnungen und Eckdaten einfach per Mail. Wir bringen Ihre Unterlagen für Sie in den Prozess und schicken Ihnen Ihren persönlichen Status-Link." data-en="Send drawings and key data by email. We bring your documents into the process and send you your personal status link.">
+          Senden Sie Zeichnungen und Eckdaten einfach per Mail. Wir bringen Ihre Unterlagen für Sie in den Prozess und schicken Ihnen Ihren persönlichen Status-Link.
+        </p>
+        <div class="mail-target">anfrage@walter-bornmann.de</div>
+        <div class="mail-input">
+          <input type="email" placeholder="ihre@firma.de" />
+          <button class="btn btn-secondary" data-de="Mail-Vorlage öffnen" data-en="Open mail template">Mail-Vorlage öffnen</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="promise-card">
+      <div class="ico">
+        <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="4" y="11" width="16" height="11" rx="2"/>
+          <path d="M8 11V7a4 4 0 018 0v4"/>
+        </svg>
+      </div>
+      <div class="body">
+        <h3 data-de="Sicher gespeichert. Voll nachverfolgbar." data-en="Securely stored. Fully trackable.">Sicher gespeichert. Voll nachverfolgbar.</h3>
+        <p data-de="Ihre Anfrage wird verschlüsselt und temporär gespeichert. Kein Login nötig — Sie verfolgen den Status über Ihren persönlichen Link." data-en="Your request is encrypted and stored temporarily. No login required — you track the status via your personal link.">
+          Ihre Anfrage wird verschlüsselt und temporär gespeichert. Kein Login nötig — Sie verfolgen den Status über Ihren persönlichen Link.
+        </p>
+        <ul class="promise-list">
+          <li data-de="E-Mail-Benachrichtigung bei jeder Status-Änderung" data-en="Email notification at every status change">E-Mail-Benachrichtigung bei jeder Status-Änderung</li>
+          <li data-de="Verschlüsselte Übertragung und Speicherung (DSGVO-konform)" data-en="Encrypted transmission and storage (GDPR-compliant)">Verschlüsselte Übertragung und Speicherung (DSGVO-konform)</li>
+          <li data-de="Automatische Löschung nach Abschluss oder auf Ihren Wunsch" data-en="Automatic deletion after completion or on your request">Automatische Löschung nach Abschluss oder auf Ihren Wunsch</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SCREEN 2 — Wizard 1: Zeichnungen
+     ============================================================ -->
+<section class="screen" data-screen="2">
+  <div class="wizard-header">
+    <div class="wizard-step-num" data-de="Schritt 1 von 3" data-en="Step 1 of 3">Schritt 1 von 3</div>
+    <div class="wizard-progress">
+      <div class="step active"></div><div class="step"></div><div class="step"></div>
+    </div>
+    <h2 data-de="Zeichnungen hochladen — wir verstehen Ihre Teile" data-en="Upload drawings — we understand your parts">Zeichnungen hochladen — wir verstehen Ihre Teile</h2>
+    <p style="color:var(--c-mute); margin-top:6px;" data-de="Ziehen Sie PDF-, STEP- oder DXF-Dateien direkt in das Feld. Wir lesen die Eckdaten automatisch ein." data-en="Drag PDF, STEP or DXF files directly into the field. We read out the key data automatically.">
+      Ziehen Sie PDF-, STEP- oder DXF-Dateien direkt in das Feld. Wir lesen die Eckdaten automatisch ein.
+    </p>
+  </div>
+
+  <div class="upload-zone">
+    <div class="icon">↑</div>
+    <h3 data-de="9 Zeichnungen erkannt" data-en="9 drawings detected">9 Zeichnungen erkannt</h3>
+    <p data-de="Voranalyse abgeschlossen — Sie können Eckdaten unten prüfen oder anpassen." data-en="Pre-analysis complete — you can review or adjust key data below.">Voranalyse abgeschlossen — Sie können Eckdaten unten prüfen oder anpassen.</p>
+  </div>
+
+  <div class="parts-list" id="partsList">
+    <!-- 9 Teile aus ebm-papst-Anfrage -->
+  </div>
+</section>
+
+<!-- ============================================================
+     SCREEN 3 — Wizard 2: Eckdaten
+     ============================================================ -->
+<section class="screen" data-screen="3">
+  <div class="wizard-header">
+    <div class="wizard-step-num" data-de="Schritt 2 von 3" data-en="Step 2 of 3">Schritt 2 von 3</div>
+    <div class="wizard-progress">
+      <div class="step active"></div><div class="step active"></div><div class="step"></div>
+    </div>
+    <h2 data-de="Eckdaten prüfen und ergänzen" data-en="Review and complete key data">Eckdaten prüfen und ergänzen</h2>
+    <p style="color:var(--c-mute); margin-top:6px;" data-de="Felder mit AUTO sind aus Ihren Zeichnungen ausgelesen. Sie können alles editieren." data-en="Fields marked AUTO are read out from your drawings. You can edit everything.">
+      Felder mit AUTO sind aus Ihren Zeichnungen ausgelesen. Sie können alles editieren.
+    </p>
+  </div>
+
+  <div class="customer-toggle">
+    <button class="active" data-de="Neukunde" data-en="New customer">Neukunde</button>
+    <button data-de="Bestandskunde" data-en="Existing customer">Bestandskunde</button>
+  </div>
+
+  <div id="dataCards"></div>
+
+  <div style="margin-top:24px;">
+    <div class="card" style="background:var(--c-primary-light); border-color:var(--c-primary);">
+      <div style="display:flex; align-items:center; gap:16px;">
+        <div style="font-size:32px;">⚙</div>
+        <div>
+          <strong style="color:var(--c-ink);" data-de="Bündelung erkannt" data-en="Bundling detected">Bündelung erkannt</strong>
+          <p style="font-size:13px; color:var(--c-text); margin-top:2px;" data-de="Pos. 99150-2-5111 und 99650-2-5111 lassen sich auf der gleichen Maschinengruppe fertigen. Wir berücksichtigen das im Angebot B." data-en="Pos. 99150-2-5111 and 99650-2-5111 can be produced on the same machine group. We will reflect this in offer B.">
+            Pos. 99150-2-5111 und 99650-2-5111 lassen sich auf der gleichen Maschinengruppe fertigen. Wir berücksichtigen das im Angebot B.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SCREEN 4 — Komplexitäts-Weiche
+     ============================================================ -->
+<section class="screen" data-screen="4">
+  <div class="switch-intro">
+    <div class="hero-claim" data-de="Wir haben Ihre Anfrage sortiert" data-en="We've sorted your request">Wir haben Ihre Anfrage sortiert</div>
+    <h2 data-de="7 Teile gehen den Standard-Weg. 2 Teile sind anspruchsvoll — genau dafür sind wir da." data-en="7 parts go the standard way. 2 parts are demanding — that's exactly what we're here for.">
+      7 Teile gehen den Standard-Weg. 2 Teile sind anspruchsvoll — genau dafür sind wir da.
+    </h2>
+  </div>
+
+  <div class="switch-grid">
+    <div class="switch-col switch-col-standard">
+      <h3 data-de="Standard-Pfad" data-en="Standard path">Standard-Pfad</h3>
+      <span class="count" data-de="7 Teile · automatisierte Indikation" data-en="7 parts · automated indication">7 Teile · automatisierte Indikation</span>
+      <p data-de="Diese Teile fallen in unser Standard-Profil. Sie erhalten in 5 Minuten eine indikative Preisspanne und in max. 48 Stunden das vollständige Angebot — beide Varianten." data-en="These parts fall within our standard profile. You will receive an indicative price range in 5 minutes and the full offer within max. 48 hours — both variants.">
+        Diese Teile fallen in unser Standard-Profil. Sie erhalten in 5 Minuten eine indikative Preisspanne und in max. 48 Stunden das vollständige Angebot — beide Varianten.
+      </p>
+      <ul class="switch-list">
+        <li>99000-2-5111 <span class="reason" data-de="225.000 / 300.000 Stk" data-en="225,000 / 300,000 pcs">225.000 / 300.000 Stk</span></li>
+        <li>99150-2-5111 <span class="reason" data-de="48.000 / 80.000 Stk" data-en="48,000 / 80,000 pcs">48.000 / 80.000 Stk</span></li>
+        <li>99650-2-5111 <span class="reason" data-de="37.200 / 62.000 Stk" data-en="37,200 / 62,000 pcs">37.200 / 62.000 Stk</span></li>
+        <li>68130-2-5113 <span class="reason" data-de="82.500 Stk" data-en="82,500 pcs">82.500 Stk</span></li>
+        <li>03960-2-5111 <span class="reason" data-de="53.550 Stk" data-en="53,550 pcs">53.550 Stk</span></li>
+        <li>6011054000 <span class="reason" data-de="207.500 Stk" data-en="207,500 pcs">207.500 Stk</span></li>
+        <li>8217100079 <span class="reason" data-de="200.000 Stk" data-en="200,000 pcs">200.000 Stk</span></li>
+      </ul>
+    </div>
+
+    <div class="switch-col switch-col-personal">
+      <h3 data-de="Persönlicher Pfad" data-en="Personal path">Persönlicher Pfad</h3>
+      <span class="count" data-de="2 Teile · Klärung mit Herrn Könen" data-en="2 parts · clarification with Mr. Könen">2 Teile · Klärung mit Herrn Könen</span>
+      <p data-de="Bei diesen Teilen prüfen wir Fertigungsmöglichkeiten und Material-Verfügbarkeit gemeinsam mit Ihnen. Wählen Sie ein Zeitfenster — Herr Könen ruft Sie an." data-en="For these parts we check manufacturing options and material availability with you. Pick a time slot — Mr. Könen will call you.">
+        Bei diesen Teilen prüfen wir Fertigungsmöglichkeiten und Material-Verfügbarkeit gemeinsam mit Ihnen. Wählen Sie ein Zeitfenster — Herr Könen ruft Sie an.
+      </p>
+      <ul class="switch-list">
+        <li>22115-2-5117 <span class="reason" data-de="Erstmusterung · PPAP" data-en="First sample · PPAP">Erstmusterung · PPAP</span></li>
+        <li>8217100080 <span class="reason" data-de="Vormaterial-Prüfung" data-en="Material availability">Vormaterial-Prüfung</span></li>
+      </ul>
+
+      <div class="slot-picker">
+        <h4 data-de="Telefontermin — wann passt es Ihnen?" data-en="Phone slot — when suits you?">Telefontermin — wann passt es Ihnen?</h4>
+        <div class="slot-grid" id="slotGrid">
+          <button class="slot-btn"><span class="day" data-de="Heute" data-en="Today">Heute</span><span class="time">14:00</span></button>
+          <button class="slot-btn"><span class="day" data-de="Heute" data-en="Today">Heute</span><span class="time">16:00</span></button>
+          <button class="slot-btn"><span class="day" data-de="Morgen" data-en="Tomorrow">Morgen</span><span class="time">09:30</span></button>
+          <button class="slot-btn"><span class="day" data-de="Morgen" data-en="Tomorrow">Morgen</span><span class="time">11:00</span></button>
+          <button class="slot-btn"><span class="day" data-de="Morgen" data-en="Tomorrow">Morgen</span><span class="time">14:30</span></button>
+          <button class="slot-btn"><span class="day" data-de="Übermorgen" data-en="Day after">Übermorgen</span><span class="time">10:00</span></button>
+        </div>
+        <div style="margin-top:10px; font-size:12px; color:var(--c-mute);" data-de="Oder anderen Termin vorschlagen — wir richten uns nach Ihnen." data-en="Or propose another time — we'll work around you.">
+          Oder anderen Termin vorschlagen — wir richten uns nach Ihnen.
+        </div>
+      </div>
+
+      <div class="or-divider">
+        <span data-de="oder" data-en="or">oder</span>
+      </div>
+
+      <div class="email-alt">
+        <h4 data-de="Fragen und Optionen per E-Mail erhalten" data-en="Receive questions and options by email">Fragen und Optionen per E-Mail erhalten</h4>
+        <p data-de="Wir senden Ihnen unsere offenen Fragen und möglichen Optionen direkt per E-Mail zu. Sie antworten in Ihrem Tempo — ohne Telefonat." data-en="We send our open questions and possible options directly to your inbox. You answer at your own pace — without a call.">
+          Wir senden Ihnen unsere offenen Fragen und möglichen Optionen direkt per E-Mail zu. Sie antworten in Ihrem Tempo — ohne Telefonat.
+        </p>
+        <div class="field" style="margin-bottom:10px;">
+          <label data-de="Ihre E-Mail-Adresse" data-en="Your email address">Ihre E-Mail-Adresse</label>
+          <input type="email" placeholder="ihre@firma.de" />
+        </div>
+        <div style="display:flex; gap:8px; align-items:center; margin-bottom:10px;">
+          <label style="font-size:12px; color:var(--c-mute); font-weight:600; text-transform:uppercase; letter-spacing:.5px;" data-de="Wir senden bis spätestens:" data-en="We'll send by:">Wir senden bis spätestens:</label>
+          <select style="padding:8px 10px; border:1px solid var(--c-line); border-radius:var(--radius-sm); font-family:var(--font); font-size:13px; background:#fff;">
+            <option data-de="Ende heute" data-en="End of today">Ende heute</option>
+            <option selected data-de="In 48 Stunden" data-en="Within 48 hours">In 48 Stunden</option>
+            <option data-de="Diese Woche" data-en="This week">Diese Woche</option>
+            <option data-de="Nächste Woche" data-en="Next week">Nächste Woche</option>
+          </select>
+        </div>
+        <button class="btn btn-secondary" style="width:100%;" data-de="Fragen per E-Mail anfordern" data-en="Request questions by email">Fragen per E-Mail anfordern</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SCREEN 5 — Sofort-Indikation
+     ============================================================ -->
+<section class="screen" data-screen="5">
+  <div class="wizard-header">
+    <div class="wizard-step-num" data-de="Schritt 3 von 3" data-en="Step 3 of 3">Schritt 3 von 3</div>
+    <div class="wizard-progress">
+      <div class="step active"></div><div class="step active"></div><div class="step active"></div>
+    </div>
+    <h2 data-de="Indikation für 7 Teile · in 5 Minuten erstellt" data-en="Indication for 7 parts · created in 5 minutes">Indikation für 7 Teile · in 5 Minuten erstellt</h2>
+    <p style="color:var(--c-mute); margin-top:6px;" data-de="Preisspanne und Lieferfenster auf Basis Ihrer Eckdaten. Verbindlich nach Detail-Prüfung." data-en="Price range and delivery window based on your key data. Binding after detail review.">
+      Preisspanne und Lieferfenster auf Basis Ihrer Eckdaten. Verbindlich nach Detail-Prüfung.
+    </p>
+  </div>
+
+  <div class="indication-list" id="indList"></div>
+
+  <div class="contact-form">
+    <h3 style="margin-bottom:16px;" data-de="Ihre Kontaktdaten" data-en="Your contact details">Ihre Kontaktdaten</h3>
+    <div class="form-grid">
+      <div class="field">
+        <label data-de="Firma" data-en="Company">Firma</label>
+        <input type="text" value="ebm-papst Mulfingen GmbH &amp; Co. KG" />
+      </div>
+      <div class="field">
+        <label data-de="Branche" data-en="Industry">Branche</label>
+        <input type="text" value="Industrie & Automation · Antriebstechnik" />
+      </div>
+      <div class="field">
+        <label data-de="Ihr Name" data-en="Your name">Ihr Name</label>
+        <input type="text" value="C. Z., Strategischer Einkauf" />
+      </div>
+      <div class="field">
+        <label data-de="E-Mail" data-en="Email">E-Mail</label>
+        <input type="text" value="c.z@ebmpapst.com" />
+      </div>
+      <div class="field">
+        <label data-de="Cc (optional)" data-en="Cc (optional)">Cc (optional)</label>
+        <input type="text" value="A. D., Einkauf Operations" />
+      </div>
+      <div class="field">
+        <label data-de="Telefon (für Rückfragen)" data-en="Phone (for queries)">Telefon (für Rückfragen)</label>
+        <input type="text" value="+49 7938 81-0" />
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align:center; padding:24px; background:var(--c-primary-light); border-radius:var(--radius-lg);">
+    <strong data-de="Mit dem Absenden erhalten Sie binnen max. 48 Stunden die beiden Detail-Angebote." data-en="When you submit, you will receive both detail offers within max. 48 hours.">
+      Mit dem Absenden erhalten Sie binnen max. 48 Stunden die beiden Detail-Angebote.
+    </strong>
+  </div>
+</section>
+
+<!-- ============================================================
+     SCREEN 6 — Status Dashboard
+     ============================================================ -->
+<section class="screen" data-screen="6">
+  <div class="wizard-header">
+    <div class="wizard-step-num" data-de="Status-Tracking" data-en="Status tracking">Status-Tracking</div>
+    <h2 data-de="Ihre Anfrage WB-2026000042 — wir sind dran" data-en="Your request WB-2026000042 — we're on it">Ihre Anfrage WB-2026000042 — wir sind dran</h2>
+    <p style="color:var(--c-mute); margin-top:6px;" data-de="Speichern Sie diesen Link. Sie sehen jeden Schritt — ohne Login, ohne Mail-Pingpong." data-en="Save this link. You see every step — without login, without email back-and-forth.">
+      Speichern Sie diesen Link. Sie sehen jeden Schritt — ohne Login, ohne Mail-Pingpong.
+    </p>
+  </div>
+
+  <div class="status-banner">
+    <div class="url-info">
+      <div class="label" data-de="Ihr persönlicher Status-Link" data-en="Your personal status link">Ihr persönlicher Status-Link</div>
+      <div class="url">walter-bornmann.de/status/WB-2026000042-x9k4n</div>
+    </div>
+    <div class="eta">
+      <div class="label" data-de="Voraussichtlich" data-en="Expected">Voraussichtlich</div>
+      <div class="time" data-de="Morgen · 14:00 Uhr" data-en="Tomorrow · 2:00 PM">Morgen · 14:00 Uhr</div>
+    </div>
+  </div>
+
+  <!-- Mini Process Flow inline -->
+  <div class="process-section" style="padding:24px; margin-bottom:24px;">
+    <div class="process-flow" id="statusFlow">
+      <div class="process-step done"><div class="process-num">1</div><h4 data-de="Hochladen<br>Zeichnung &amp; Spezifikationen" data-en="Upload<br>drawing &amp; specs">Hochladen<br>Zeichnung &amp; Spezifikationen</h4><div class="time">25.03. · 08:02</div></div>
+      <div class="process-step done"><div class="process-num">2</div><h4 data-de="Feedback &amp;<br>Optimierung der Anfrage" data-en="Feedback &amp;<br>request optimisation">Feedback &amp;<br>Optimierung der Anfrage</h4><div class="time">25.03. · 08:04</div></div>
+      <div class="process-step done"><div class="process-num">3</div><h4 data-de="Erste Angebots-<br>Indikation" data-en="Initial quote<br>indication">Erste Angebots-<br>Indikation</h4><div class="time">25.03. · 08:09</div></div>
+      <div class="process-step active"><div class="process-num">4</div><h4 data-de="Detail-Prüfung &amp;<br>Kundenberatung" data-en="Detail review &amp;<br>customer consulting">Detail-Prüfung &amp;<br>Kundenberatung</h4><div class="time" data-de="läuft" data-en="running">läuft</div></div>
+      <div class="process-step"><div class="process-num">5</div><h4 data-de="Zwei Angebots-<br>vorschläge" data-en="Two offer<br>proposals">Zwei Angebots-<br>vorschläge</h4><div class="time" data-de="morgen" data-en="tomorrow">morgen</div></div>
+      <div class="process-step"><div class="process-num">6</div><h4 data-de="Freigabe<br>im System" data-en="Release<br>in the system">Freigabe<br>im System</h4><div class="time">—</div></div>
+      <div class="process-step"><div class="process-num">7</div><h4 data-de="Produktion<br>&amp; Lieferung" data-en="Production<br>&amp; delivery">Produktion<br>&amp; Lieferung</h4><div class="time">—</div></div>
+    </div>
+  </div>
+
+  <div class="status-grid">
+    <div class="status-detail">
+      <h3 data-de="Detail-Prüfung läuft — Sie sehen jeden Teilschritt" data-en="Detail review running — you see every sub-step">Detail-Prüfung läuft — Sie sehen jeden Teilschritt</h3>
+      <div class="substatus-list">
+        <div class="substatus done">
+          <div class="check">✓</div>
+          <div>
+            <div class="text" data-de="Arbeitsvorbereitung" data-en="Work preparation">Arbeitsvorbereitung</div>
+            <div class="meta" data-de="Maschinen-Allokation, Rüstzeiten, Toleranz-Check geprüft" data-en="Machine allocation, setup times, tolerance check verified">Maschinen-Allokation, Rüstzeiten, Toleranz-Check geprüft</div>
+          </div>
+          <div class="time">25.03. · 11:30</div>
+        </div>
+        <div class="substatus done">
+          <div class="check">✓</div>
+          <div>
+            <div class="text" data-de="Einkauf · Vormaterial" data-en="Procurement · raw material">Einkauf · Vormaterial</div>
+            <div class="meta" data-de="Vormaterial verfügbar, Lieferanten-Bestätigung eingegangen" data-en="Raw material available, supplier confirmation received">Vormaterial verfügbar, Lieferanten-Bestätigung eingegangen</div>
+          </div>
+          <div class="time">25.03. · 15:45</div>
+        </div>
+        <div class="substatus done">
+          <div class="check">✓</div>
+          <div>
+            <div class="text" data-de="Qualitätssicherung" data-en="Quality assurance">Qualitätssicherung</div>
+            <div class="meta" data-de="PPAP-Anforderungen Teileklasse 3 freigegeben, Prüfumfang definiert" data-en="PPAP requirements class 3 approved, inspection scope defined">PPAP-Anforderungen Teileklasse 3 freigegeben, Prüfumfang definiert</div>
+          </div>
+          <div class="time">26.03. · 09:15</div>
+        </div>
+        <div class="substatus active">
+          <div class="check">●</div>
+          <div>
+            <div class="text" data-de="Angebots-Erstellung" data-en="Offer preparation">Angebots-Erstellung</div>
+            <div class="meta" data-de="Original + Optimierungs-Vorschläge werden zusammengestellt" data-en="Original + optimisation proposals being compiled">Original + Optimierungs-Vorschläge werden zusammengestellt</div>
+          </div>
+          <div class="time" data-de="läuft" data-en="running">läuft</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="contact-card">
+        <div class="head">
+          <div class="avatar">WK</div>
+          <div>
+            <h4>Wolfgang Könen</h4>
+            <div class="role" data-de="Vertrieb / Sales · WaBo" data-en="Sales · WaBo">Vertrieb / Sales · WaBo</div>
+          </div>
+        </div>
+        <div class="phone">📞 +49 2333 68943-12</div>
+        <div class="mail">✉ koenen@walter-bornmann.de</div>
+      </div>
+      <div class="chat-box">
+        <h4 style="margin-bottom:10px;" data-de="Frage stellen" data-en="Ask a question">Frage stellen</h4>
+        <textarea placeholder="z.B. Können Sie für Pos. 99150 die Mehrweg-Verpackung detailliert begründen?"></textarea>
+        <button class="btn btn-secondary" style="margin-top:10px; padding:8px 14px; font-size:13px;" data-de="Senden" data-en="Send">Senden</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SCREEN 7 — Zwei Angebote
+     ============================================================ -->
+<section class="screen" data-screen="7">
+  <div class="offers-header">
+    <div class="label" data-de="Ihre zwei Angebote · 26.03.2026 · 14:00" data-en="Your two offers · 26.03.2026 · 2:00 PM">Ihre zwei Angebote · 26.03.2026 · 14:00</div>
+    <h2 data-de="Ihr Angebot und unsere Vorschläge für mehr Wirtschaftlichkeit" data-en="Your offer and our proposals for greater economic efficiency">Ihr Angebot und unsere Vorschläge für mehr Wirtschaftlichkeit</h2>
+    <p style="color:var(--c-mute); margin-top:6px;" data-de="Sie können einzelne Optimierungen an- und abwählen. Die Summe rechnet live mit." data-en="You can toggle individual optimisations on and off. The total recalculates live.">
+      Sie können einzelne Optimierungen an- und abwählen. Die Summe rechnet live mit.
+    </p>
+  </div>
+
+  <div class="offers-grid">
+    <!-- Angebot A -->
+    <div class="offer-card a">
+      <div class="head">
+        <div class="badge-offer" data-de="Angebot A" data-en="Offer A">Angebot A</div>
+        <h3 data-de="Wie angefragt" data-en="As requested">Wie angefragt</h3>
+        <div class="sub" data-de="1:1 nach Ihrer Spezifikation · 7 Positionen · Standard-Verpackung" data-en="1:1 to your specification · 7 positions · standard packaging">1:1 nach Ihrer Spezifikation · 7 Positionen · Standard-Verpackung</div>
+      </div>
+      <div class="offer-body">
+        <button class="pos-toggle" onclick="document.getElementById('posA').classList.toggle('open')" data-de="Positionen anzeigen ↓" data-en="Show positions ↓">Positionen anzeigen ↓</button>
+        <div class="offer-positions" id="posA">
+          <table class="pos-table">
+            <thead><tr>
+              <th data-de="Position" data-en="Position">Position</th>
+              <th data-de="Menge" data-en="Qty">Menge</th>
+              <th data-de="Stückpreis" data-en="Unit price">Stückpreis</th>
+              <th data-de="Summe" data-en="Total">Summe</th>
+            </tr></thead>
+            <tbody>
+              <tr><td>99000-2-5111</td><td>225.000</td><td>1,80 €</td><td>405.000 €</td></tr>
+              <tr><td>99150-2-5111</td><td>48.000</td><td>2,40 €</td><td>115.200 €</td></tr>
+              <tr><td>99650-2-5111</td><td>37.200</td><td>1,95 €</td><td>72.540 €</td></tr>
+              <tr><td>68130-2-5113</td><td>82.500</td><td>1,15 €</td><td>94.875 €</td></tr>
+              <tr><td>03960-2-5111</td><td>53.550</td><td>2,10 €</td><td>112.455 €</td></tr>
+              <tr><td>6011054000</td><td>207.500</td><td>1,55 €</td><td>321.625 €</td></tr>
+              <tr><td>8217100079</td><td>200.000</td><td>1,65 €</td><td>330.000 €</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="offer-summary">
+        <div class="sum-row"><span data-de="7 Positionen" data-en="7 positions">7 Positionen</span><span>1.451.695 €</span></div>
+        <div class="sum-row"><span data-de="Verpackung (Einweg)" data-en="Packaging (single-use)">Verpackung (Einweg)</span><span>18.000 €</span></div>
+        <div class="sum-row total"><span data-de="Summe netto / Jahr" data-en="Total net / year">Summe netto / Jahr</span><span>1.469.695 €</span></div>
+        <div class="sum-row" style="margin-top:8px; font-size:12px; color:var(--c-mute);"><span data-de="Lieferzeit ab Bemusterung" data-en="Delivery from sampling">Lieferzeit ab Bemusterung</span><span data-de="14 Wochen" data-en="14 weeks">14 Wochen</span></div>
+      </div>
+      <div class="offer-actions">
+        <a class="btn btn-secondary" style="flex:1; text-decoration:none;" href="wabo-angebot-beispiel.pdf" target="_blank" data-de="Angebot als PDF" data-en="Offer as PDF">Angebot als PDF</a>
+        <button class="btn" style="flex:1;" data-de="Angebot A annehmen" data-en="Accept offer A">Angebot A annehmen</button>
+      </div>
+    </div>
+
+    <!-- Angebot B -->
+    <div class="offer-card b">
+      <div class="head">
+        <div class="badge-offer" data-de="Angebot B · WaBo-Empfehlung" data-en="Offer B · WaBo recommendation">Angebot B · WaBo-Empfehlung</div>
+        <h3 data-de="Mitgedacht & optimiert" data-en="Thought through & optimised">Mitgedacht & optimiert</h3>
+        <div class="sub" data-de="4 Stellhebel · jeden einzeln an-/abwählen · Begründungen offen gelegt" data-en="4 levers · toggle each · rationale disclosed">4 Stellhebel · jeden einzeln an-/abwählen · Begründungen offen gelegt</div>
+      </div>
+      <div class="offer-body">
+        <div class="lever-list" id="leverList">
+          <div class="lever">
+            <div class="lever-head">
+              <input type="checkbox" class="lever-toggle" data-saving="28000" data-days="0" data-co2="0" checked />
+              <div class="lever-info">
+                <div class="lever-title" data-de="Geometrie-Optimierung Pos. 99000-2-5111" data-en="Geometry optimisation pos. 99000-2-5111">Geometrie-Optimierung Pos. 99000-2-5111</div>
+                <div class="lever-desc" data-de="Wandstärke an unkritischer Stelle um 0,4 mm reduziert (FEM-belegt). Spart Material bei 225.000 Stück erheblich — Funktion identisch." data-en="Wall thickness reduced by 0.4 mm at non-critical location (FEM-verified). Significant material savings at 225,000 pcs — function identical.">Wandstärke an unkritischer Stelle um 0,4 mm reduziert (FEM-belegt). Spart Material bei 225.000 Stück erheblich — Funktion identisch.</div>
+                <div class="lever-effect">
+                  <span class="effect-tag">−28.000 € / Jahr</span>
+                  <span class="effect-tag neutral" data-de="FEM-Bericht beigefügt" data-en="FEM report attached">FEM-Bericht beigefügt</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="lever">
+            <div class="lever-head">
+              <input type="checkbox" class="lever-toggle" data-saving="22500" data-days="0" data-co2="0" checked />
+              <div class="lever-info">
+                <div class="lever-title" data-de="Lieferlos-Optimierung über alle 7 Positionen" data-en="Lot-size optimisation across all 7 positions">Lieferlos-Optimierung über alle 7 Positionen</div>
+                <div class="lever-desc" data-de="Lose abgestimmt auf Ihren Lagerumschlag und unsere Maschinen-Belegung. Weniger Rüstkosten, planbare Abrufe — kein zusätzliches Lagerrisiko bei Ihnen." data-en="Lots matched to your inventory turn and our machine load. Lower setup cost, plannable releases — no extra stock risk at your end.">Lose abgestimmt auf Ihren Lagerumschlag und unsere Maschinen-Belegung. Weniger Rüstkosten, planbare Abrufe — kein zusätzliches Lagerrisiko bei Ihnen.</div>
+                <div class="lever-effect">
+                  <span class="effect-tag">−22.500 € / Jahr</span>
+                  <span class="effect-tag neutral" data-de="1,5 % Stückpreis-Effekt" data-en="1.5% unit price effect">1,5 % Stückpreis-Effekt</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="lever">
+            <div class="lever-head">
+              <input type="checkbox" class="lever-toggle" data-saving="15300" data-days="0" data-co2="1200" checked />
+              <div class="lever-info">
+                <div class="lever-title" data-de="Mehrweg-Verpackung im KLT-Pool" data-en="Reusable packaging in KLT pool">Mehrweg-Verpackung im KLT-Pool</div>
+                <div class="lever-desc" data-de="Standard-Behälter im Mehrweg-Kreislauf statt Einweg-Kartons. Spart Verpackungskosten und 1,2 t Material — passt zu Ihren ESG-Zielen." data-en="Standard reusable containers in pool system instead of single-use boxes. Saves packaging cost and 1.2 t of material — fits your ESG targets.">Standard-Behälter im Mehrweg-Kreislauf statt Einweg-Kartons. Spart Verpackungskosten und 1,2 t Material — passt zu Ihren ESG-Zielen.</div>
+                <div class="lever-effect">
+                  <span class="effect-tag">−15.300 € / Jahr</span>
+                  <span class="effect-tag neutral" data-de="−1,2 t Verpackungsmüll" data-en="−1.2 t packaging waste">−1,2 t Verpackungsmüll</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="lever">
+            <div class="lever-head">
+              <input type="checkbox" class="lever-toggle" data-saving="7600" data-days="4" data-co2="0" checked />
+              <div class="lever-info">
+                <div class="lever-title" data-de="Bündelung Pos. 99150 + 99650" data-en="Bundling pos. 99150 + 99650">Bündelung Pos. 99150 + 99650</div>
+                <div class="lever-desc" data-de="Beide Teile lassen sich auf der gleichen Maschinengruppe fertigen. Spart Rüstzeit und verkürzt die Lieferzeit um 4 Tage." data-en="Both parts can be produced on the same machine group. Saves setup time and shortens delivery by 4 days.">Beide Teile lassen sich auf der gleichen Maschinengruppe fertigen. Spart Rüstzeit und verkürzt die Lieferzeit um 4 Tage.</div>
+                <div class="lever-effect">
+                  <span class="effect-tag">−7.600 € / Jahr</span>
+                  <span class="effect-tag">−4 Tage Lieferzeit</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="offer-summary">
+        <div class="sum-row"><span data-de="7 Positionen (Original)" data-en="7 positions (original)">7 Positionen (Original)</span><span>1.451.695 €</span></div>
+        <div class="sum-row"><span data-de="Verpackung" data-en="Packaging">Verpackung</span><span id="packLine">2.700 €</span></div>
+        <div class="sum-row"><span data-de="Optimierungen aktiv" data-en="Active optimisations">Optimierungen aktiv</span><span id="optLine">−73.400 €</span></div>
+        <div class="sum-row total"><span data-de="Summe netto / Jahr" data-en="Total net / year">Summe netto / Jahr</span><span id="totalB">1.396.295 €</span></div>
+        <div class="delta">
+          <span data-de="Ihre Ersparnis vs. Angebot A" data-en="Your savings vs. offer A">Ihre Ersparnis vs. Angebot A</span>
+          <strong id="savingTotal">73.400 €</strong>
+        </div>
+        <div class="sum-row" style="margin-top:8px; font-size:12px; color:var(--c-mute);"><span data-de="Lieferzeit ab Bemusterung" data-en="Delivery from sampling">Lieferzeit ab Bemusterung</span><span id="deliveryB" data-de="13 Wochen 3 Tage" data-en="13 weeks 3 days">13 Wochen 3 Tage</span></div>
+      </div>
+      <div class="offer-actions" style="flex-wrap:wrap;">
+        <a class="btn btn-secondary" style="flex:1; text-decoration:none; min-width:160px;" href="wabo-angebot-beispiel.pdf" target="_blank" data-de="Angebot als PDF" data-en="Offer as PDF">Angebot als PDF</a>
+        <button class="btn btn-secondary" style="flex:1; min-width:160px;" data-de="15-Min-Call buchen" data-en="Book 15-min call">15-Min-Call buchen</button>
+        <button class="btn" style="flex:1; min-width:160px;" onclick="goToScreen(9)" data-de="Angebot B annehmen →" data-en="Accept offer B →">Angebot B annehmen →</button>
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align:center; margin-top:32px;">
+    <button class="btn-ghost" onclick="goToScreen(8)" data-de="Vorher / Nachher anzeigen →" data-en="Show before / after →">Vorher / Nachher anzeigen →</button>
+  </div>
+</section>
+
+<!-- ============================================================
+     SCREEN 8 — Vorher / Nachher
+     ============================================================ -->
+<section class="screen" data-screen="8">
+  <div class="vn-intro">
+    <div class="label" data-de="Echte Anfrage. Echte Zahlen. Vom 25. März 2026." data-en="Real request. Real numbers. From 25 March 2026.">Echte Anfrage. Echte Zahlen. Vom 25. März 2026.</div>
+    <h2 data-de="Was sich für den Kunden ändert — Tag für Tag" data-en="What changes for the customer — day by day">Was sich für den Kunden ändert — Tag für Tag</h2>
+    <p style="color:var(--c-mute); margin-top:8px;" data-de="Anfrage von ebm-papst über 9 Präzisionsdrehteile · Personen anonymisiert" data-en="Request from ebm-papst for 9 precision turned parts · persons anonymised">
+      Anfrage von ebm-papst über 9 Präzisionsdrehteile · Personen anonymisiert
+    </p>
+  </div>
+
+  <div class="vn-grid">
+    <div class="vn-col vn-col-old">
+      <div class="topline" data-de="So lief es bisher" data-en="How it ran so far">So lief es bisher</div>
+      <h3 data-de="15 Tage Mail-Pingpong, dann ein unvollständiges Angebot" data-en="15 days of email back-and-forth, then an incomplete offer">15 Tage Mail-Pingpong, dann ein unvollständiges Angebot</h3>
+      <div class="vn-row">
+        <div class="vn-day" data-de="Tag 0" data-en="Day 0">Tag 0</div>
+        <div class="vn-text" data-de="Anfrage per Mail mit 9 PDF-Zeichnungen. Verteilt an 4 Lieferanten parallel." data-en="Request by email with 9 PDF drawings. Sent to 4 suppliers in parallel.">Anfrage per Mail mit 9 PDF-Zeichnungen. Verteilt an 4 Lieferanten parallel.</div>
+      </div>
+      <div class="vn-row">
+        <div class="vn-day" data-de="Tag 1–14" data-en="Day 1–14">Tag 1–14</div>
+        <div class="vn-text" data-de="<strong>Stille.</strong> Keine Sichtbarkeit, ob die Anfrage bearbeitet wird. Mehrfaches Nachhaken per Mail nötig." data-en="<strong>Silence.</strong> No visibility whether the request is being processed. Multiple follow-ups by email needed."><strong>Stille.</strong> Keine Sichtbarkeit, ob die Anfrage bearbeitet wird. Mehrfaches Nachhaken per Mail nötig.</div>
+      </div>
+      <div class="vn-row">
+        <div class="vn-day" data-de="Tag 15" data-en="Day 15">Tag 15</div>
+        <div class="vn-text" data-de="Angebot trifft ein. <strong>7 von 9 Teilen.</strong> Standard-Einweg-Verpackung. Lieferzeit für Erstbemusterung „muss nachgereicht werden". Anschluss-Telefonat in Folgewoche angekündigt." data-en="Offer arrives. <strong>7 of 9 parts.</strong> Standard single-use packaging. Delivery time for first samples 'to be supplied later'. Follow-up call announced for next week.">Angebot trifft ein. <strong>7 von 9 Teilen.</strong> Standard-Einweg-Verpackung. Lieferzeit für Erstbemusterung „muss nachgereicht werden". Anschluss-Telefonat in Folgewoche angekündigt.</div>
+      </div>
+      <div class="vn-row">
+        <div class="vn-day" data-de="Tag 16–25" data-en="Day 16–25">Tag 16–25</div>
+        <div class="vn-text" data-de="Excel-Vergleichstabelle mit 4 Lieferantenangeboten manuell aufbauen. Telefonate für Klärung der fehlenden Daten." data-en="Build manual Excel comparison sheet with 4 supplier offers. Phone calls to clarify missing data.">Excel-Vergleichstabelle mit 4 Lieferantenangeboten manuell aufbauen. Telefonate für Klärung der fehlenden Daten.</div>
+      </div>
+      <div class="vn-row">
+        <div class="vn-day" data-de="Tag 30+" data-en="Day 30+">Tag 30+</div>
+        <div class="vn-text" data-de="Entscheidung in der Einkaufsleitung. Erst dann nachreichendes Detail-Telefonat zu offenen Punkten." data-en="Decision at procurement leadership. Only afterwards a follow-up call on open points.">Entscheidung in der Einkaufsleitung. Erst dann nachreichendes Detail-Telefonat zu offenen Punkten.</div>
+      </div>
+    </div>
+
+    <div class="vn-col vn-col-new">
+      <div class="topline" data-de="So läuft es bei WaBo" data-en="How it runs at WaBo">So läuft es bei WaBo</div>
+      <h3 data-de="2 Tage zur Entscheidung — vollständig, transparent, mit Ersparnis-Vorschlag" data-en="2 days to decision — complete, transparent, with savings proposal">2 Tage zur Entscheidung — vollständig, transparent, mit Ersparnis-Vorschlag</h3>
+      <div class="vn-row">
+        <div class="vn-day" data-de="Tag 0 · 0 Min" data-en="Day 0 · 0 min">Tag 0 · 0 Min</div>
+        <div class="vn-text" data-de="Zeichnungen hochgeladen. Sofort erkannt: <strong>9 Teile, 7 Standard, 2 Klärungsbedarf.</strong> Eckdaten ausgelesen." data-en="Drawings uploaded. Instantly recognised: <strong>9 parts, 7 standard, 2 need clarification.</strong> Key data extracted.">Zeichnungen hochgeladen. Sofort erkannt: <strong>9 Teile, 7 Standard, 2 Klärungsbedarf.</strong> Eckdaten ausgelesen.</div>
+      </div>
+      <div class="vn-row">
+        <div class="vn-day" data-de="Tag 0 · 5 Min" data-en="Day 0 · 5 min">Tag 0 · 5 Min</div>
+        <div class="vn-text" data-de="Indikative Preisspanne für 7 Teile sichtbar. <strong>Slot-Buchung</strong> für die 2 Sonderfälle mit Herrn Könen." data-en="Indicative price range for 7 parts visible. <strong>Slot booking</strong> for the 2 special cases with Mr. Könen.">Indikative Preisspanne für 7 Teile sichtbar. <strong>Slot-Buchung</strong> für die 2 Sonderfälle mit Herrn Könen.</div>
+      </div>
+      <div class="vn-row">
+        <div class="vn-day" data-de="Tag 0 · laufend" data-en="Day 0 · ongoing">Tag 0 · laufend</div>
+        <div class="vn-text" data-de="Status live: AV ✓ → Einkauf ✓ → QS ✓ → Angebot in Vorbereitung. Kein Nachhaken, kein Mailen." data-en="Status live: WP ✓ → Procurement ✓ → QA ✓ → Offer in preparation. No chasing, no emailing.">Status live: AV ✓ → Einkauf ✓ → QS ✓ → Angebot in Vorbereitung. Kein Nachhaken, kein Mailen.</div>
+      </div>
+      <div class="vn-row">
+        <div class="vn-day" data-de="Tag 1 · 14:00" data-en="Day 1 · 2 PM">Tag 1 · 14:00</div>
+        <div class="vn-text" data-de="<strong>Beide Angebote vollständig.</strong> Original (Angebot A) + Optimierung (Angebot B) mit 4 Stellhebeln, jeder begründet, einzeln an-/abwählbar." data-en="<strong>Both offers complete.</strong> Original (Offer A) + optimisation (Offer B) with 4 levers, each justified, individually toggleable."><strong>Beide Angebote vollständig.</strong> Original (Angebot A) + Optimierung (Angebot B) mit 4 Stellhebeln, jeder begründet, einzeln an-/abwählbar.</div>
+      </div>
+      <div class="vn-row">
+        <div class="vn-day" data-de="Tag 1–2" data-en="Day 1–2">Tag 1–2</div>
+        <div class="vn-text" data-de="Side-by-side direkt im System. Inline-Kommentare. Ersparnis-Vorschau live." data-en="Side-by-side directly in system. Inline comments. Live savings preview.">Side-by-side direkt im System. Inline-Kommentare. Ersparnis-Vorschau live.</div>
+      </div>
+      <div class="vn-row">
+        <div class="vn-day" data-de="Tag 2" data-en="Day 2">Tag 2</div>
+        <div class="vn-text" data-de="<strong>Freigabe per Klick.</strong> Auftragsbestätigung sofort. Produktions-Tracking aktiviert." data-en="<strong>Release with one click.</strong> Order confirmation immediately. Production tracking activated."><strong>Freigabe per Klick.</strong> Auftragsbestätigung sofort. Produktions-Tracking aktiviert.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="vn-stats">
+    <div class="stat-box">
+      <div class="stat-num">−93%</div>
+      <div class="stat-label" data-de="Zeit bis zur Entscheidung" data-en="Time to decision">Zeit bis zur Entscheidung</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num">73.400 €</div>
+      <div class="stat-label" data-de="Ersparnis im 1. Vertragsjahr" data-en="Savings in year 1">Ersparnis im 1. Vertragsjahr</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num">−4 Tage</div>
+      <div class="stat-label" data-de="Lieferzeit ab Bemusterung" data-en="Delivery from sampling">Lieferzeit ab Bemusterung</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num">−1,2 t</div>
+      <div class="stat-label" data-de="Verpackungsmüll / Jahr" data-en="Packaging waste / year">Verpackungsmüll / Jahr</div>
+    </div>
+  </div>
+
+  <p class="vn-footer" data-de="Echte Anfrage von ebm-papst, 25.03.2026 · Personen anonymisiert · Stückpreise plausibilisierte Beispielzahlen für Demo-Zwecke." data-en="Real request from ebm-papst, 25 March 2026 · persons anonymised · unit prices plausibilised demo figures.">
+    Echte Anfrage von ebm-papst, 25.03.2026 · Personen anonymisiert · Stückpreise plausibilisierte Beispielzahlen für Demo-Zwecke.
+  </p>
+</section>
+
+<!-- ============================================================
+     SCREEN 9 — Freigabe & Ausblick
+     ============================================================ -->
+<section class="screen" data-screen="9">
+  <div class="confirm-hero">
+    <div style="font-size:48px; margin-bottom:8px;">✓</div>
+    <h2 data-de="Auftrag bestätigt — wir liefern ab" data-en="Order confirmed — we deliver">Auftrag bestätigt — wir liefern ab</h2>
+    <p data-de="Sie erhalten in wenigen Minuten die Auftragsbestätigung. Produktions-Tracking ist aktiv." data-en="You'll receive the order confirmation in a few minutes. Production tracking is active.">
+      Sie erhalten in wenigen Minuten die Auftragsbestätigung. Produktions-Tracking ist aktiv.
+    </p>
+    <div class="order-id">Auftrag · WB-2026000042-A</div>
+  </div>
+
+  <div class="next-grid">
+    <div class="next-card">
+      <span class="badge badge-ok" data-de="Was als nächstes passiert" data-en="What happens next">Was als nächstes passiert</span>
+      <h3 data-de="Erstbemusterung gemäß PPAP Klasse 3" data-en="First sampling per PPAP class 3">Erstbemusterung gemäß PPAP Klasse 3</h3>
+      <ul style="list-style:none; margin-top:12px;">
+        <li style="padding:8px 0; border-bottom:1px solid var(--c-line);" data-de="✓ Vormaterial-Bestellung ausgelöst" data-en="✓ Raw material order triggered">✓ Vormaterial-Bestellung ausgelöst</li>
+        <li style="padding:8px 0; border-bottom:1px solid var(--c-line);" data-de="○ Werkzeug-Vorbereitung · KW 14" data-en="○ Tool preparation · CW 14">○ Werkzeug-Vorbereitung · KW 14</li>
+        <li style="padding:8px 0; border-bottom:1px solid var(--c-line);" data-de="○ Erstbemusterung · KW 17 · 200 Stk." data-en="○ First sampling · CW 17 · 200 pcs.">○ Erstbemusterung · KW 17 · 200 Stk.</li>
+        <li style="padding:8px 0;" data-de="○ Serien-Freigabe · KW 19" data-en="○ Series release · CW 19">○ Serien-Freigabe · KW 19</li>
+      </ul>
+    </div>
+
+    <div class="next-card">
+      <span class="badge badge-info" data-de="Ihre Vereinbarung" data-en="Your agreement">Ihre Vereinbarung</span>
+      <h3 data-de="Angebot B mit allen 4 Optimierungen" data-en="Offer B with all 4 optimisations">Angebot B mit allen 4 Optimierungen</h3>
+      <div style="background:var(--c-bg-soft); padding:14px; border-radius:var(--radius-sm); margin-top:12px;">
+        <div style="display:flex; justify-content:space-between; padding:6px 0;"><span data-de="Volumen / Jahr" data-en="Volume / year">Volumen / Jahr</span><strong>1.396.295 €</strong></div>
+        <div style="display:flex; justify-content:space-between; padding:6px 0; color:var(--c-primary-dark);"><span data-de="Ersparnis" data-en="Savings">Ersparnis</span><strong>73.400 €</strong></div>
+        <div style="display:flex; justify-content:space-between; padding:6px 0;"><span data-de="Lieferzeit" data-en="Delivery">Lieferzeit</span><strong data-de="13 Wochen 3 Tage" data-en="13 weeks 3 days">13 Wochen 3 Tage</strong></div>
+        <div style="display:flex; justify-content:space-between; padding:6px 0;"><span data-de="Verpackung" data-en="Packaging">Verpackung</span><strong data-de="Mehrweg KLT-Pool" data-en="Reusable KLT pool">Mehrweg KLT-Pool</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="teaser-section">
+    <h3 data-de="Beim nächsten Mal noch schneller" data-en="Even faster next time">Beim nächsten Mal noch schneller</h3>
+    <p class="sub" data-de="Als Bestandskunde sehen Sie zusätzlich:" data-en="As an existing customer you also see:">Als Bestandskunde sehen Sie zusätzlich:</p>
+    <div class="teaser-grid">
+      <div class="teaser-item">
+        <h4 data-de="Lieferhistorie" data-en="Delivery history">Lieferhistorie</h4>
+        <p data-de="Alle Aufträge, alle Status, alle Dokumente an einem Ort." data-en="All orders, all statuses, all documents in one place.">Alle Aufträge, alle Status, alle Dokumente an einem Ort.</p>
+      </div>
+      <div class="teaser-item">
+        <h4 data-de="Liefertreue-Score" data-en="Delivery reliability score">Liefertreue-Score</h4>
+        <p data-de="Echte Kennzahl Ihrer Lieferungen — keine Marketing-Versprechen." data-en="Real KPI of your deliveries — no marketing promises.">Echte Kennzahl Ihrer Lieferungen — keine Marketing-Versprechen.</p>
+      </div>
+      <div class="teaser-item">
+        <h4 data-de="Wiederbestellung" data-en="Reorder">Wiederbestellung</h4>
+        <p data-de="Ein Klick. Konditionen aus Rahmenvereinbarung. Sofort terminiert." data-en="One click. Terms from master agreement. Instantly scheduled.">Ein Klick. Konditionen aus Rahmenvereinbarung. Sofort terminiert.</p>
+      </div>
+      <div class="teaser-item">
+        <h4 data-de="Privileg Prototyp" data-en="Prototype privilege">Privileg Prototyp</h4>
+        <p data-de="Prototypen-Fertigung als exklusive Leistung für Bestandskunden." data-en="Prototype manufacturing as exclusive service for existing customers.">Prototypen-Fertigung als exklusive Leistung für Bestandskunden.</p>
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align:center; margin-top:32px;">
+    <button class="btn btn-secondary" onclick="goToScreen(1)" data-de="Demo neu starten" data-en="Restart demo">Demo neu starten</button>
+  </div>
+</section>
+
+</main>
+
+<!-- ============================================================
+     MODAL: Bestandskunden-Login
+     ============================================================ -->
+<div class="modal-backdrop" id="loginModal">
+  <div class="modal">
+    <h3 data-de="Bestandskunden-Bereich" data-en="Existing customer area">Bestandskunden-Bereich</h3>
+    <p data-de="In der Vollversion sehen Sie hier:" data-en="In the full version you'll see here:">In der Vollversion sehen Sie hier:</p>
+    <div class="features">
+      <div data-de="<strong>Lieferhistorie & Wiederbestell-Button</strong> — alle Aufträge, ein Klick zur Wiederholung." data-en="<strong>Delivery history & reorder button</strong> — all orders, one click to repeat."><strong>Lieferhistorie & Wiederbestell-Button</strong> — alle Aufträge, ein Klick zur Wiederholung.</div>
+      <div data-de="<strong>Persönlicher Liefertreue-Score</strong> — echte Kennzahl Ihrer Lieferungen." data-en="<strong>Personal delivery reliability score</strong> — real KPI of your deliveries."><strong>Persönlicher Liefertreue-Score</strong> — echte Kennzahl Ihrer Lieferungen.</div>
+      <div data-de="<strong>Direkt-Kontakt zu Herrn Könen</strong> — Foto, Telefon, Chat." data-en="<strong>Direct contact to Mr. Könen</strong> — photo, phone, chat."><strong>Direkt-Kontakt zu Herrn Könen</strong> — Foto, Telefon, Chat.</div>
+      <div data-de="<strong>Rahmenkonditionen sichtbar</strong> — Preise, Mengen-Staffeln, Laufzeiten." data-en="<strong>Master conditions visible</strong> — prices, volume tiers, terms."><strong>Rahmenkonditionen sichtbar</strong> — Preise, Mengen-Staffeln, Laufzeiten.</div>
+      <div data-de="<strong>Privileg Prototypen-Fertigung</strong> — exklusive Leistung." data-en="<strong>Prototype privilege</strong> — exclusive service."><strong>Privileg Prototypen-Fertigung</strong> — exklusive Leistung.</div>
+    </div>
+    <div class="actions">
+      <button class="btn-ghost" onclick="document.getElementById('loginModal').classList.remove('open')" data-de="Schließen" data-en="Close">Schließen</button>
+      <button class="btn" onclick="document.getElementById('loginModal').classList.remove('open')" data-de="Verstanden" data-en="Got it">Verstanden</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     FOOTER NAV
+     ============================================================ -->
+<footer class="nav-footer">
+  <div class="info">
+    <strong data-de="WaBo Angebotsprozess · Demo-Prototyp" data-en="WaBo offer process · demo prototype">WaBo Angebotsprozess · Demo-Prototyp</strong>
+    · <span id="footInfo" data-de="Live-Demo für Geschäftsführung" data-en="Live demo for management">Live-Demo für Geschäftsführung</span>
+  </div>
+  <button class="btn btn-secondary" id="prevBtn" data-de="← Zurück" data-en="← Back">← Zurück</button>
+  <button class="btn" id="nextBtn" data-de="Weiter →" data-en="Next →">Weiter →</button>
+</footer>
+
+<script>
+/* ============================================================
+   STATE & I18N
+   ============================================================ */
+let currentScreen = 1;
+let currentLang = 'de';
+
+// Detect iframe (master wrapper) — hide redundant chrome
+try {
+  if (window.self !== window.top) {
+    document.documentElement.classList.add('in-iframe');
+    document.addEventListener('DOMContentLoaded', () => {
+      document.body.classList.add('in-iframe');
+    });
+  }
+} catch (e) {}
+
+// Pick up language from URL param (used by master wrapper)
+try {
+  const urlLang = new URLSearchParams(window.location.search).get('lang');
+  if (urlLang === 'de' || urlLang === 'en') {
+    currentLang = urlLang;
+    // Update lang-switch buttons after DOM ready
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.lang-switch button').forEach(b => {
+        b.classList.toggle('active', b.dataset.lang === currentLang);
+      });
+    });
+  }
+} catch (e) {}
+const totalScreens = 9;
+
+const screenLabels = {
+  de: ['Landing', 'Wizard · Zeichnungen', 'Wizard · Eckdaten', 'Komplexitäts-Weiche', 'Sofort-Indikation', 'Status-Dashboard', 'Zwei Angebote', 'Vorher / Nachher', 'Freigabe & Ausblick'],
+  en: ['Landing', 'Wizard · Drawings', 'Wizard · Data', 'Complexity Switch', 'Instant Indication', 'Status Dashboard', 'Two Offers', 'Before / After', 'Release & Outlook']
+};
+
+function applyLang() {
+  document.querySelectorAll('[data-de]').forEach(el => {
+    const txt = el.getAttribute('data-' + currentLang);
+    if (txt !== null) el.innerHTML = txt;
+  });
+  document.documentElement.lang = currentLang;
+  updateStepLabel();
+}
+
+function updateStepLabel() {
+  document.getElementById('stepLabel').textContent =
+    'Screen ' + currentScreen + ' · ' + screenLabels[currentLang][currentScreen - 1];
+}
+
+/* ============================================================
+   SCREEN NAVIGATION
+   ============================================================ */
+function goToScreen(n) {
+  if (n < 1) n = 1;
+  if (n > totalScreens) n = totalScreens;
+  currentScreen = n;
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const target = document.querySelector('.screen[data-screen="' + n + '"]');
+  if (target) target.classList.add('active');
+  document.querySelectorAll('.jumps button').forEach(b => {
+    b.classList.toggle('active', parseInt(b.dataset.jump) === n);
+  });
+  updateStepLabel();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+document.getElementById('prevBtn').addEventListener('click', () => goToScreen(currentScreen - 1));
+document.getElementById('nextBtn').addEventListener('click', () => goToScreen(currentScreen + 1));
+document.querySelectorAll('.jumps button').forEach(btn => {
+  btn.addEventListener('click', () => goToScreen(parseInt(btn.dataset.jump)));
+});
+
+// Keyboard nav
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  if (e.key === 'ArrowRight') goToScreen(currentScreen + 1);
+  if (e.key === 'ArrowLeft') goToScreen(currentScreen - 1);
+});
+
+// Lang switch
+document.querySelectorAll('.lang-switch button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.lang-switch button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentLang = btn.dataset.lang;
+    applyLang();
+  });
+});
+
+/* ============================================================
+   PARTS LIST (Screen 2)
+   ============================================================ */
+const parts = [
+  { nr: '99000-2-5111', idx: 'Index 10 vom 24.11.2025', qty: '225.000 / 300.000', mat: 'C45 / Stahl', dia: 'Ø 22 mm', tol: 'IT8', status: 'ok' },
+  { nr: '99150-2-5111', idx: 'Index 11 vom 11.11.2025', qty: '48.000 / 80.000', mat: 'C45 / Stahl', dia: 'Ø 18 mm', tol: 'IT8', status: 'ok' },
+  { nr: '99650-2-5111', idx: 'Index 1 vom 22.10.2024', qty: '37.200 / 62.000', mat: 'C45 / Stahl', dia: 'Ø 16 mm', tol: 'IT8', status: 'ok' },
+  { nr: '68130-2-5113', idx: 'Index 7 vom 06.10.2009', qty: '82.500', mat: 'Automatenstahl', dia: 'Ø 12 mm', tol: 'IT9', status: 'ok' },
+  { nr: '22115-2-5117', idx: 'Index 0', qty: '4.000', mat: '1.4305 (Edelstahl)', dia: 'Ø 28 mm', tol: 'IT7', status: 'warn', warn: 'Erstbemusterung · PPAP' },
+  { nr: '03960-2-5111', idx: 'Index 9 vom 08.07.2025', qty: '53.550', mat: 'C45 / Stahl', dia: 'Ø 14 mm', tol: 'IT8', status: 'ok' },
+  { nr: '8217100080', idx: 'Index 0', qty: '207.500', mat: 'Messing CuZn39Pb3', dia: 'Ø 10 mm', tol: 'IT9', status: 'warn', warn: 'Vormaterial-Prüfung' },
+  { nr: '6011054000', idx: 'Index D', qty: '207.500', mat: 'C45 / Stahl', dia: 'Ø 11 mm', tol: 'IT9', status: 'ok' },
+  { nr: '8217100079', idx: 'Index 0', qty: '200.000', mat: 'Messing CuZn39Pb3', dia: 'Ø 10 mm', tol: 'IT9', status: 'ok' }
+];
+
+const partsList = document.getElementById('partsList');
+parts.forEach(p => {
+  const badge = p.status === 'ok'
+    ? '<span class="badge badge-ok">erkannt</span>'
+    : '<span class="badge badge-warn">' + p.warn + '</span>';
+  partsList.insertAdjacentHTML('beforeend',
+    '<div class="part-item">' +
+      '<div class="file-icon">PDF</div>' +
+      '<div><div class="name">' + p.nr + '</div><div class="meta">' + p.idx + '</div></div>' +
+      '<div class="meta">' + p.dia + ' · ' + p.tol + '</div>' +
+      '<div class="meta">' + p.mat + '</div>' +
+      '<div>' + badge + '</div>' +
+    '</div>'
+  );
+});
+
+/* ============================================================
+   DATA CARDS (Screen 3)
+   ============================================================ */
+const dataCards = document.getElementById('dataCards');
+parts.forEach((p, i) => {
+  const expanded = i === 0 ? 'expanded' : '';
+  dataCards.insertAdjacentHTML('beforeend',
+    '<div class="data-card ' + expanded + '">' +
+      '<div class="data-card-header" onclick="this.parentElement.classList.toggle(\'expanded\')">' +
+        '<div class="title">' +
+          '<strong>' + p.nr + '</strong> · ' + p.dia + ' · ' + p.mat +
+          '<div class="summary">' + p.qty + ' Stk · ' + p.tol + (p.warn ? ' · ' + p.warn : '') + '</div>' +
+        '</div>' +
+        '<div class="toggle-icon">▾</div>' +
+      '</div>' +
+      '<div class="data-card-body">' +
+        '<div class="data-grid">' +
+          '<div class="field"><label>Material <span class="auto-tag">AUTO</span></label><input type="text" value="' + p.mat + '" /></div>' +
+          '<div class="field"><label>Durchmesser <span class="auto-tag">AUTO</span></label><input type="text" value="' + p.dia + '" /></div>' +
+          '<div class="field"><label>Toleranzklasse <span class="auto-tag">AUTO</span></label><input type="text" value="' + p.tol + '" /></div>' +
+          '<div class="field"><label>Stückzahl</label><input type="text" value="' + p.qty + '" /></div>' +
+          '<div class="field"><label>Liefertermin</label><input type="text" value="Erstmuster KW 17 · Serie KW 22" /></div>' +
+          '<div class="field"><label>Norm / Beschichtung</label><input type="text" value="ebm-papst Teileklasse 3 · keine Beschichtung" /></div>' +
+        '</div>' +
+      '</div>' +
+    '</div>'
+  );
+});
+
+/* ============================================================
+   SLOT PICKER (Screen 4)
+   ============================================================ */
+document.querySelectorAll('.slot-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.slot-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+  });
+});
+
+/* ============================================================
+   INDICATION LIST (Screen 5)
+   ============================================================ */
+const inds = [
+  { nr: '99000-2-5111', qty: '225.000 / 300.000', range: '1,65 € – 1,95 €', delivery: '13–15 Wochen' },
+  { nr: '99150-2-5111', qty: '48.000 / 80.000', range: '2,20 € – 2,55 €', delivery: '12–14 Wochen' },
+  { nr: '99650-2-5111', qty: '37.200 / 62.000', range: '1,80 € – 2,10 €', delivery: '12–14 Wochen' },
+  { nr: '68130-2-5113', qty: '82.500', range: '1,05 € – 1,25 €', delivery: '11–13 Wochen' },
+  { nr: '03960-2-5111', qty: '53.550', range: '1,90 € – 2,25 €', delivery: '12–14 Wochen' },
+  { nr: '6011054000', qty: '207.500', range: '1,40 € – 1,65 €', delivery: '13–15 Wochen' },
+  { nr: '8217100079', qty: '200.000', range: '1,50 € – 1,75 €', delivery: '13–15 Wochen' }
+];
+const indList = document.getElementById('indList');
+inds.forEach(i => {
+  indList.insertAdjacentHTML('beforeend',
+    '<div class="ind-row">' +
+      '<div><div class="label">Position</div><div class="value">' + i.nr + '</div></div>' +
+      '<div><div class="label">Menge</div><div class="value">' + i.qty + '</div></div>' +
+      '<div><div class="label">Stückpreis (Spanne)</div><div class="value price-range">' + i.range + '</div></div>' +
+      '<div><div class="label">Lieferzeit ab Bemusterung</div><div class="value">' + i.delivery + '</div></div>' +
+    '</div>'
+  );
+});
+
+/* ============================================================
+   OFFER B — LIVE CALCULATION (Screen 7)
+   ============================================================ */
+const baseSum = 1451695;       // 7 Positionen
+const packStandard = 18000;    // Einweg
+const packReuse = 2700;        // Mehrweg
+
+function recalcOfferB() {
+  let saving = 0;
+  let days = 0;
+  let usePackReuse = false;
+  document.querySelectorAll('.lever-toggle').forEach((cb, idx) => {
+    if (cb.checked) {
+      saving += parseInt(cb.dataset.saving || 0);
+      days += parseInt(cb.dataset.days || 0);
+      if (idx === 2) usePackReuse = true; // Mehrweg = 3. Hebel
+    }
+  });
+
+  // Adjust: if Mehrweg-Hebel is toggled, remove its saving from the saving line (it sits in pack line)
+  // For clarity show: saving WITHOUT packaging effect on the saving line
+  const packageDelta = usePackReuse ? (packStandard - packReuse) : 0; // 15300
+  const otherSavings = saving - packageDelta; // = 28000+22500+7600 if all on
+  const packLine = usePackReuse ? packReuse : packStandard;
+  const totalB = baseSum + packLine - otherSavings;
+  const totalA = baseSum + packStandard; // 1.469.695
+  const totalSaving = totalA - totalB;
+
+  document.getElementById('packLine').textContent = formatEUR(packLine);
+  document.getElementById('optLine').textContent = '−' + formatEUR(otherSavings);
+  document.getElementById('totalB').textContent = formatEUR(totalB);
+  document.getElementById('savingTotal').textContent = formatEUR(totalSaving);
+
+  // Lieferzeit
+  const baseWeeks = 14;
+  const totalDaysOff = days; // 4 Tage wenn Bündelung an
+  const newWeeks = Math.floor((baseWeeks * 7 - totalDaysOff) / 7);
+  const newDays = (baseWeeks * 7 - totalDaysOff) % 7;
+  const txtDe = newWeeks + ' Wochen' + (newDays ? ' ' + newDays + ' Tage' : '');
+  const txtEn = newWeeks + ' weeks' + (newDays ? ' ' + newDays + ' days' : '');
+  const dlEl = document.getElementById('deliveryB');
+  dlEl.setAttribute('data-de', txtDe);
+  dlEl.setAttribute('data-en', txtEn);
+  dlEl.textContent = currentLang === 'de' ? txtDe : txtEn;
+}
+
+function formatEUR(n) {
+  return n.toLocaleString('de-DE') + ' €';
+}
+
+document.querySelectorAll('.lever-toggle').forEach(cb => {
+  cb.addEventListener('change', recalcOfferB);
+});
+recalcOfferB();
+
+/* ============================================================
+   INIT
+   ============================================================ */
+applyLang();
+updateStepLabel();
+</script>
+
+</body>
+</html>
