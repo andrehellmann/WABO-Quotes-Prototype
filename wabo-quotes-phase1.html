@@ -99,6 +99,30 @@
   .field input:focus, .field textarea:focus, .field select:focus { outline: 0; border-color: var(--c-primary); box-shadow: 0 0 0 3px var(--c-primary-light); }
   .field textarea { resize: vertical; min-height: 100px; font-family: inherit; }
   .field .hint { font-size: 12px; color: var(--c-mute); margin-top: 4px; }
+  /* Quantity repeater */
+  .qty-list { display: flex; flex-direction: column; gap: 8px; }
+  .qty-item { display: flex; gap: 8px; align-items: center; }
+  .qty-item input { flex: 1; }
+  .qty-remove {
+    background: transparent; border: 1px solid var(--c-line);
+    color: var(--c-mute); width: 40px; height: 40px;
+    border-radius: 6px; cursor: pointer;
+    font-size: 18px; line-height: 1;
+    display: flex; align-items: center; justify-content: center;
+    transition: all .15s; flex-shrink: 0;
+  }
+  .qty-remove:hover { color: var(--c-warn); border-color: var(--c-warn); }
+  .qty-list .qty-item:only-child .qty-remove { display: none; }
+  .qty-add {
+    background: transparent; border: 1px dashed var(--c-line);
+    color: var(--c-primary-dark); padding: 8px 14px;
+    border-radius: 6px; cursor: pointer;
+    font-family: var(--font); font-size: 13px; font-weight: 600;
+    margin-top: 8px; display: inline-flex; align-items: center; gap: 6px;
+    align-self: flex-start; transition: all .15s;
+  }
+  .qty-add:hover { border-color: var(--c-primary); background: var(--c-primary-light); }
+
   .upload-zone { border: 2px dashed var(--c-line); border-radius: var(--radius); padding: 22px; text-align: center; background: var(--c-bg); cursor: pointer; transition: all .15s; }
   .upload-zone:hover { border-color: var(--c-primary); background: var(--c-primary-light); }
   .upload-zone strong { color: var(--c-ink); display: block; }
@@ -265,7 +289,7 @@
 
         <form class="form-block" id="anfrageForm" onsubmit="onSubmit(event)">
           <div class="form-row">
-            <div class="field"><label data-de="Firma" data-en="Company">Firma</label><span class="req">*</span><input type="text" name="firma" required /></div>
+            <div class="field"><label data-de="Firma <span class='req'>*</span>" data-en="Company <span class='req'>*</span>">Firma <span class="req">*</span></label><input type="text" name="firma" required /></div>
             <div class="field"><label data-de="Branche" data-en="Industry">Branche</label>
               <select name="branche">
                 <option value="" data-de="— bitte wählen —" data-en="— please select —">— bitte wählen —</option>
@@ -279,23 +303,29 @@
             </div>
           </div>
           <div class="form-row">
-            <div class="field"><label data-de="Ihr Name" data-en="Your name">Ihr Name</label><span class="req">*</span><input type="text" name="name" required /></div>
+            <div class="field"><label data-de="Ihr Name <span class='req'>*</span>" data-en="Your name <span class='req'>*</span>">Ihr Name <span class="req">*</span></label><input type="text" name="name" required /></div>
             <div class="field"><label data-de="Funktion" data-en="Role">Funktion</label><input type="text" name="funktion" data-de-placeholder="z.B. Strategischer Einkauf" data-en-placeholder="e.g. Strategic procurement" placeholder="z.B. Strategischer Einkauf" /></div>
           </div>
           <div class="form-row">
-            <div class="field"><label data-de="E-Mail" data-en="Email">E-Mail</label><span class="req">*</span><input type="email" name="mail" required /></div>
+            <div class="field"><label data-de="E-Mail <span class='req'>*</span>" data-en="Email <span class='req'>*</span>">E-Mail <span class="req">*</span></label><input type="email" name="mail" required /></div>
             <div class="field"><label data-de="Telefon" data-en="Phone">Telefon</label><input type="tel" name="telefon" data-de-placeholder="für eventuelle Rückfragen" data-en-placeholder="for any queries" placeholder="für eventuelle Rückfragen" /></div>
           </div>
 
           <div class="field" style="margin-bottom: 16px;">
-            <label data-de="Beschreibung der Drehteile" data-en="Description of the parts">Beschreibung der Drehteile</label><span class="req">*</span>
+            <label data-de="Beschreibung der Drehteile <span class='req'>*</span>" data-en="Description of the parts <span class='req'>*</span>">Beschreibung der Drehteile <span class="req">*</span></label>
             <textarea name="beschreibung" required data-de-placeholder="z.B. Fluidführende Edelstahl-Drehteile, Ø 22 mm, Toleranz IT8, mehrere Bauteile aus einer Baureihe" data-en-placeholder="e.g. Fluid-carrying stainless-steel turned parts, Ø 22 mm, tolerance IT8, multiple parts from one series" placeholder="z.B. Fluidführende Edelstahl-Drehteile, Ø 22 mm, Toleranz IT8, mehrere Bauteile aus einer Baureihe"></textarea>
           </div>
 
           <div class="form-row">
             <div class="field">
               <label data-de="Stückzahl pro Position" data-en="Quantity per position">Stückzahl pro Position</label>
-              <input type="text" name="menge" data-de-placeholder="z.B. 10.000 / Jahr" data-en-placeholder="e.g. 10,000 / year" placeholder="z.B. 10.000 / Jahr" />
+              <div class="qty-list" id="qtyList">
+                <div class="qty-item">
+                  <input type="text" name="menge[]" data-de-placeholder="z.B. Pos. 1: 10.000 / Jahr" data-en-placeholder="e.g. pos. 1: 10,000 / year" placeholder="z.B. Pos. 1: 10.000 / Jahr" />
+                  <button type="button" class="qty-remove" onclick="removeQty(this)" aria-label="Entfernen">×</button>
+                </div>
+              </div>
+              <button type="button" class="qty-add" onclick="addQty()" data-de="+ Weitere Position hinzufügen" data-en="+ Add another position">+ Weitere Position hinzufügen</button>
               <span class="hint" data-de="Wir starten ab 200 Stück pro Auftrag." data-en="We start from 200 pieces per order.">Wir starten ab 200 Stück pro Auftrag.</span>
             </div>
             <div class="field">
@@ -445,6 +475,25 @@ document.querySelectorAll('.lang-switch button').forEach(btn => {
     applyLang();
   });
 });
+
+let qtyCounter = 1;
+function addQty() {
+  qtyCounter++;
+  const list = document.getElementById('qtyList');
+  const phDe = 'z.B. Pos. ' + qtyCounter + ': 5.000 / Jahr';
+  const phEn = 'e.g. pos. ' + qtyCounter + ': 5,000 / year';
+  const placeholder = currentLang === 'en' ? phEn : phDe;
+  list.insertAdjacentHTML('beforeend',
+    '<div class="qty-item">' +
+      '<input type="text" name="menge[]" data-de-placeholder="' + phDe + '" data-en-placeholder="' + phEn + '" placeholder="' + placeholder + '" />' +
+      '<button type="button" class="qty-remove" onclick="removeQty(this)" aria-label="Entfernen">×</button>' +
+    '</div>'
+  );
+}
+function removeQty(btn) {
+  const list = document.getElementById('qtyList');
+  if (list.children.length > 1) btn.parentElement.remove();
+}
 
 function updateFileList() {
   const files = document.getElementById('files').files;

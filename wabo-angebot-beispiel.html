@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>WaBo · Angebot 2026000042</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%232DBCB6'/%3E%3Ctext x='16' y='23' text-anchor='middle' font-family='-apple-system,Arial,sans-serif' font-size='22' font-weight='900' fill='white'%3EB%3C/text%3E%3C/svg%3E">
+<style>
+  :root {
+    --c-primary: #2DBCB6;
+    --c-primary-dark: #21948F;
+    --c-ink: #1F2A2D;
+    --c-text: #2C3E40;
+    --c-mute: #7A8186;
+    --c-line: #E1E4E6;
+    --c-line-soft: #F0F2F3;
+    --font: 'Open Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  @page {
+    size: A4;
+    margin: 15mm 16mm 14mm 16mm;
+  }
+
+  html, body {
+    background: #DDE0E2;
+    font-family: var(--font);
+    color: var(--c-text);
+    font-size: 10pt;
+    line-height: 1.5;
+  }
+
+  /* Print-Toolbar (browser only) */
+  .print-bar {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--c-ink); color: #fff;
+    padding: 10px 24px; display: flex; align-items: center; gap: 14px;
+    font-size: 12px;
+  }
+  .print-bar .label {
+    background: var(--c-primary); color: var(--c-ink);
+    padding: 3px 8px; border-radius: 4px; font-weight: 700;
+  }
+  .print-bar .info { flex: 1; color: #ccc; }
+  .print-bar button {
+    background: var(--c-primary); color: var(--c-ink); border: 0;
+    padding: 8px 16px; border-radius: 4px; font-family: var(--font);
+    font-size: 12px; font-weight: 700; cursor: pointer;
+  }
+  .print-bar button:hover { background: #fff; }
+  .print-bar .ghost {
+    background: transparent; color: #fff; border: 1px solid #555;
+  }
+
+  /* Sheet (DIN A4) */
+  .sheet {
+    background: #fff;
+    width: 210mm;
+    margin: 24px auto;
+    padding: 15mm 16mm 14mm 16mm;
+    box-shadow: 0 4px 24px rgba(0,0,0,.12);
+    page-break-after: always;
+    position: relative;
+  }
+  .sheet:last-child { page-break-after: auto; }
+
+  /* ==== TYPOGRAPHY ==== */
+  h1 { font-size: 20pt; color: var(--c-ink); line-height: 1.2; font-weight: 800; letter-spacing: -.3px; }
+  h2 { font-size: 13pt; color: var(--c-ink); font-weight: 700; line-height: 1.3; }
+  h3 { font-size: 10.5pt; color: var(--c-ink); font-weight: 700; line-height: 1.3; }
+  p { color: var(--c-text); }
+
+  .eyebrow {
+    font-size: 8.5pt; color: var(--c-primary-dark);
+    text-transform: uppercase; letter-spacing: 2px; font-weight: 700;
+  }
+  .mute { color: var(--c-mute); font-size: 9pt; }
+  .num { font-variant-numeric: tabular-nums; }
+
+  /* ==== SHEET HEADER ==== */
+  .sheet-header {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    padding-bottom: 10px; margin-bottom: 20px;
+    border-bottom: 1px solid var(--c-line);
+  }
+  .logo {
+    font-weight: 800; font-size: 26px; color: var(--c-ink);
+    letter-spacing: -1px; line-height: 1;
+  }
+  .logo .b1 { color: var(--c-ink); }
+  .logo .b2 { background: var(--c-primary); color: #fff; padding: 2px 8px; border-radius: 4px; margin-left: 1px; }
+  .logo-line {
+    color: var(--c-mute); font-size: 8.5pt; margin-top: 6px;
+  }
+  .sheet-meta {
+    text-align: right; font-size: 9pt; color: var(--c-mute);
+    line-height: 1.6;
+  }
+  .sheet-meta strong { color: var(--c-ink); display: block; margin-bottom: 2px; font-size: 10.5pt; }
+
+  /* ==== SHEET FOOTER ==== */
+  .sheet-footer {
+    margin-top: 18px; padding-top: 8px;
+    border-top: 1px solid var(--c-line);
+    display: flex; justify-content: space-between;
+    font-size: 7.5pt; color: var(--c-mute);
+  }
+
+  /* Section spacing */
+  section.block { margin-bottom: 28px; }
+  section.block:last-child { margin-bottom: 0; }
+
+  /* ==== SHEET 1 — Letter ==== */
+  .recipient-row {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 28px;
+    margin-bottom: 22px; font-size: 9.5pt; line-height: 1.5;
+  }
+  .recipient-row .col .label {
+    font-size: 8pt; text-transform: uppercase; letter-spacing: 1.2px;
+    color: var(--c-mute); font-weight: 700; margin-bottom: 8px;
+  }
+  .recipient-row .col strong { color: var(--c-ink); }
+
+  .letter {
+    font-size: 10pt; line-height: 1.6; margin: 18px 0;
+    max-width: 155mm;
+  }
+  .letter p { margin-bottom: 10px; }
+
+  .summary-box {
+    border: 1px solid var(--c-line); border-radius: 6px;
+    padding: 14px 20px; margin: 16px 0;
+  }
+  .summary-box .row {
+    display: flex; justify-content: space-between; padding: 6px 0;
+    font-size: 10pt;
+  }
+  .summary-box .row + .row { border-top: 1px solid var(--c-line-soft); }
+  .summary-box .row strong { color: var(--c-ink); font-size: 10.5pt; }
+  .summary-box .saving {
+    margin-top: 10px; padding: 10px 16px;
+    background: var(--c-primary); color: #fff;
+    border-radius: 4px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .summary-box .saving strong { color: #fff; font-size: 13pt; }
+
+  .signature {
+    margin-top: 18px; display: grid; grid-template-columns: 46px 1fr;
+    gap: 14px; align-items: center;
+  }
+  .avatar {
+    width: 46px; height: 46px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--c-primary) 0%, var(--c-primary-dark) 100%);
+    color: #fff; display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 14pt;
+  }
+  .signature .name { font-weight: 700; color: var(--c-ink); font-size: 11pt; line-height: 1.3; }
+  .signature .role { color: var(--c-mute); font-size: 9pt; }
+  .signature .contact { font-size: 9pt; color: var(--c-text); margin-top: 4px; }
+
+  /* ==== TABLES ==== */
+  table.pos {
+    width: 100%; border-collapse: collapse; font-size: 9pt;
+    margin-top: 12px;
+  }
+  table.pos th {
+    text-align: left;
+    padding: 8px 10px;
+    border-bottom: 2px solid var(--c-ink);
+    font-size: 7.5pt; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 1px; color: var(--c-ink);
+  }
+  table.pos th.r, table.pos td.r { text-align: right; font-variant-numeric: tabular-nums; }
+  table.pos td {
+    padding: 8px 10px; border-bottom: 1px solid var(--c-line-soft);
+    vertical-align: top;
+  }
+  table.pos td .sub {
+    font-size: 8.5pt; color: var(--c-mute); margin-top: 2px;
+  }
+  table.pos tfoot td {
+    padding: 12px;
+    border-top: 2px solid var(--c-ink); border-bottom: 0;
+    font-weight: 700; color: var(--c-ink);
+  }
+  table.pos tfoot .sub-row td {
+    border-top: 0; padding: 6px 12px;
+    font-weight: 400; color: var(--c-text);
+  }
+  table.pos tfoot .total td {
+    border-top: 1px solid var(--c-line);
+    font-size: 11pt; padding-top: 10px;
+  }
+
+  /* ==== CONDITIONS ==== */
+  .conditions {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px 24px;
+    margin-top: 4px;
+  }
+  .cond-item .label {
+    font-size: 8pt; text-transform: uppercase; letter-spacing: 1.2px;
+    color: var(--c-mute); font-weight: 700; margin-bottom: 4px;
+  }
+  .cond-item .value { font-size: 10pt; color: var(--c-ink); }
+
+  /* ==== LEVERS ==== */
+  .lever {
+    border-left: 3px solid var(--c-primary);
+    padding: 6px 0 6px 14px;
+    margin-bottom: 10px;
+    page-break-inside: avoid;
+  }
+  .lever:last-child { margin-bottom: 0; }
+  .lever-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    gap: 14px; margin-bottom: 2px;
+  }
+  .lever-head .title {
+    font-weight: 700; color: var(--c-ink); font-size: 10.5pt;
+  }
+  .lever-head .num-tag {
+    color: var(--c-primary-dark); font-weight: 800;
+    font-size: 8.5pt; letter-spacing: 1px;
+  }
+  .lever-head .effect {
+    color: var(--c-primary-dark); font-weight: 800;
+    font-size: 10.5pt; white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+  .lever .desc {
+    font-size: 9.5pt; color: var(--c-text); margin-bottom: 2px;
+    line-height: 1.45;
+  }
+  .lever .meta { font-size: 8pt; color: var(--c-mute); }
+
+  /* ==== COMPARE / STATS ==== */
+  .compare-row {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+    margin-bottom: 32px;
+  }
+  .compare-card {
+    padding: 22px 26px;
+    border: 1px solid var(--c-line); border-radius: 6px;
+  }
+  .compare-card.b { border-color: var(--c-primary); border-width: 1px 1px 1px 4px; }
+  .compare-card .label {
+    font-size: 8pt; text-transform: uppercase; letter-spacing: 1.5px;
+    color: var(--c-mute); font-weight: 700; margin-bottom: 10px;
+  }
+  .compare-card .sum {
+    font-size: 22pt; font-weight: 800; color: var(--c-ink); line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .compare-card.b .sum { color: var(--c-primary-dark); }
+  .compare-card .meta {
+    font-size: 9pt; color: var(--c-mute); margin-top: 10px; line-height: 1.5;
+  }
+
+  .stats {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    margin: 28px 0;
+    border-top: 1px solid var(--c-line);
+    border-bottom: 1px solid var(--c-line);
+  }
+  .stat {
+    padding: 18px 14px; text-align: center;
+    border-right: 1px solid var(--c-line);
+  }
+  .stat:last-child { border-right: 0; }
+  .stat .num {
+    font-size: 18pt; font-weight: 800; color: var(--c-primary-dark);
+    line-height: 1; font-variant-numeric: tabular-nums;
+  }
+  .stat .label {
+    font-size: 8pt; color: var(--c-mute); margin-top: 6px;
+    text-transform: uppercase; letter-spacing: 1px;
+  }
+
+  /* ==== BENEFITS LIST ==== */
+  .benefits-list {
+    list-style: none;
+  }
+  .benefit-item {
+    display: grid; grid-template-columns: 24px 1fr;
+    gap: 14px; padding: 10px 0;
+    border-bottom: 1px solid var(--c-line-soft);
+    page-break-inside: avoid;
+  }
+  .benefit-item:last-child { border-bottom: 0; }
+  .benefit-item .ico {
+    color: var(--c-primary); font-weight: 800; font-size: 14pt;
+    line-height: 1.2;
+  }
+  .benefit-item .title {
+    font-weight: 700; color: var(--c-ink); font-size: 10.5pt;
+    margin-bottom: 2px;
+  }
+  .benefit-item .text {
+    font-size: 10pt; color: var(--c-text); line-height: 1.55;
+  }
+
+  /* ==== QR CODE ==== */
+  .qr-box {
+    border: 1px solid var(--c-line); border-radius: 6px;
+    padding: 14px 18px;
+    display: grid; grid-template-columns: 26mm 1fr; gap: 16px; align-items: center;
+    margin: 16px 0;
+  }
+  .qr-svg {
+    width: 26mm; height: 26mm; display: block;
+  }
+  .qr-info .label {
+    font-size: 7.5pt; text-transform: uppercase; letter-spacing: 1.5px;
+    color: var(--c-primary-dark); font-weight: 700; margin-bottom: 3px;
+  }
+  .qr-info h3 { margin-bottom: 3px; font-size: 10.5pt; }
+  .qr-info p {
+    font-size: 9pt; color: var(--c-mute); margin-bottom: 5px; line-height: 1.4;
+  }
+  .qr-info .url {
+    font-family: 'SF Mono', Consolas, monospace; font-size: 8pt;
+    color: var(--c-ink); padding: 3px 8px; background: var(--c-line-soft);
+    border-radius: 3px; display: inline-block;
+  }
+
+  /* ==== TERMS / NOTE ==== */
+  .terms {
+    font-size: 8.5pt; color: var(--c-mute); line-height: 1.6;
+    margin-top: 24px; padding-top: 14px; border-top: 1px solid var(--c-line);
+  }
+  .note {
+    font-size: 9.5pt; color: var(--c-mute); margin-top: 18px;
+    font-style: italic;
+  }
+
+  /* ==== PRINT ==== */
+  @media print {
+    body { background: #fff; }
+    .print-bar { display: none !important; }
+    .sheet {
+      box-shadow: none; margin: 0;
+      width: auto; min-height: auto;
+      padding: 0;
+    }
+  }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute; visibility:hidden;">
+  <symbol id="qr" viewBox="0 0 33 33">
+    <path d="M0,0H1V1H0zM1,0H2V1H1zM2,0H3V1H2zM3,0H4V1H3zM4,0H5V1H4zM5,0H6V1H5zM6,0H7V1H6zM8,0H9V1H8zM12,0H13V1H12zM13,0H14V1H13zM16,0H17V1H16zM17,0H18V1H17zM18,0H19V1H18zM19,0H20V1H19zM20,0H21V1H20zM22,0H23V1H22zM23,0H24V1H23zM26,0H27V1H26zM27,0H28V1H27zM28,0H29V1H28zM29,0H30V1H29zM30,0H31V1H30zM31,0H32V1H31zM32,0H33V1H32zM0,1H1V2H0zM6,1H7V2H6zM8,1H9V2H8zM10,1H11V2H10zM11,1H12V2H11zM13,1H14V2H13zM18,1H19V2H18zM22,1H23V2H22zM23,1H24V2H23zM24,1H25V2H24zM26,1H27V2H26zM32,1H33V2H32zM0,2H1V3H0zM2,2H3V3H2zM3,2H4V3H3zM4,2H5V3H4zM6,2H7V3H6zM10,2H11V3H10zM11,2H12V3H11zM12,2H13V3H12zM17,2H18V3H17zM19,2H20V3H19zM24,2H25V3H24zM26,2H27V3H26zM28,2H29V3H28zM29,2H30V3H29zM30,2H31V3H30zM32,2H33V3H32zM0,3H1V4H0zM2,3H3V4H2zM3,3H4V4H3zM4,3H5V4H4zM6,3H7V4H6zM8,3H9V4H8zM10,3H11V4H10zM14,3H15V4H14zM15,3H16V4H15zM16,3H17V4H16zM20,3H21V4H20zM22,3H23V4H22zM24,3H25V4H24zM26,3H27V4H26zM28,3H29V4H28zM29,3H30V4H29zM30,3H31V4H30zM32,3H33V4H32zM0,4H1V5H0zM2,4H3V5H2zM3,4H4V5H3zM4,4H5V5H4zM6,4H7V5H6zM14,4H15V5H14zM20,4H21V5H20zM22,4H23V5H22zM26,4H27V5H26zM28,4H29V5H28zM29,4H30V5H29zM30,4H31V5H30zM32,4H33V5H32zM0,5H1V6H0zM6,5H7V6H6zM9,5H10V6H9zM10,5H11V6H10zM11,5H12V6H11zM13,5H14V6H13zM17,5H18V6H17zM18,5H19V6H18zM19,5H20V6H19zM20,5H21V6H20zM21,5H22V6H21zM22,5H23V6H22zM26,5H27V6H26zM32,5H33V6H32zM0,6H1V7H0zM1,6H2V7H1zM2,6H3V7H2zM3,6H4V7H3zM4,6H5V7H4zM5,6H6V7H5zM6,6H7V7H6zM8,6H9V7H8zM10,6H11V7H10zM12,6H13V7H12zM14,6H15V7H14zM16,6H17V7H16zM18,6H19V7H18zM20,6H21V7H20zM22,6H23V7H22zM24,6H25V7H24zM26,6H27V7H26zM27,6H28V7H27zM28,6H29V7H28zM29,6H30V7H29zM30,6H31V7H30zM31,6H32V7H31zM32,6H33V7H32zM8,7H9V8H8zM9,7H10V8H9zM10,7H11V8H10zM12,7H13V8H12zM17,7H18V8H17zM20,7H21V8H20zM0,8H1V9H0zM2,8H3V9H2zM3,8H4V9H3zM5,8H6V9H5zM6,8H7V9H6zM7,8H8V9H7zM9,8H10V9H9zM10,8H11V9H10zM11,8H12V9H11zM12,8H13V9H12zM14,8H15V9H14zM17,8H18V9H17zM18,8H19V9H18zM19,8H20V9H19zM21,8H22V9H21zM22,8H23V9H22zM26,8H27V9H26zM29,8H30V9H29zM31,8H32V9H31zM32,8H33V9H32zM1,9H2V10H1zM3,9H4V10H3zM4,9H5V10H4zM8,9H9V10H8zM10,9H11V10H10zM12,9H13V10H12zM14,9H15V10H14zM16,9H17V10H16zM18,9H19V10H18zM19,9H20V10H19zM20,9H21V10H20zM23,9H24V10H23zM26,9H27V10H26zM27,9H28V10H27zM29,9H30V10H29zM30,9H31V10H30zM32,9H33V10H32zM0,10H1V11H0zM1,10H2V11H1zM2,10H3V11H2zM4,10H5V11H4zM6,10H7V11H6zM7,10H8V11H7zM10,10H11V11H10zM14,10H15V11H14zM16,10H17V11H16zM17,10H18V11H17zM23,10H24V11H23zM26,10H27V11H26zM27,10H28V11H27zM28,10H29V11H28zM29,10H30V11H29zM32,10H33V11H32zM2,11H3V12H2zM4,11H5V12H4zM5,11H6V12H5zM7,11H8V12H7zM8,11H9V12H8zM10,11H11V12H10zM12,11H13V12H12zM13,11H14V12H13zM14,11H15V12H14zM15,11H16V12H15zM16,11H17V12H16zM18,11H19V12H18zM19,11H20V12H19zM20,11H21V12H20zM22,11H23V12H22zM24,11H25V12H24zM25,11H26V12H25zM27,11H28V12H27zM29,11H30V12H29zM32,11H33V12H32zM2,12H3V13H2zM6,12H7V13H6zM7,12H8V13H7zM10,12H11V13H10zM11,12H12V13H11zM15,12H16V13H15zM18,12H19V13H18zM19,12H20V13H19zM28,12H29V13H28zM29,12H30V13H29zM0,13H1V14H0zM1,13H2V14H1zM2,13H3V14H2zM5,13H6V14H5zM7,13H8V14H7zM8,13H9V14H8zM9,13H10V14H9zM11,13H12V14H11zM13,13H14V14H13zM16,13H17V14H16zM18,13H19V14H18zM21,13H22V14H21zM22,13H23V14H22zM25,13H26V14H25zM30,13H31V14H30zM31,13H32V14H31zM0,14H1V15H0zM3,14H4V15H3zM4,14H5V15H4zM6,14H7V15H6zM7,14H8V15H7zM8,14H9V15H8zM9,14H10V15H9zM10,14H11V15H10zM12,14H13V15H12zM13,14H14V15H13zM15,14H16V15H15zM16,14H17V15H16zM17,14H18V15H17zM18,14H19V15H18zM26,14H27V15H26zM29,14H30V15H29zM30,14H31V15H30zM0,15H1V16H0zM1,15H2V16H1zM5,15H6V16H5zM7,15H8V16H7zM9,15H10V16H9zM11,15H12V16H11zM12,15H13V16H12zM16,15H17V16H16zM18,15H19V16H18zM19,15H20V16H19zM20,15H21V16H20zM21,15H22V16H21zM22,15H23V16H22zM25,15H26V16H25zM26,15H27V16H26zM30,15H31V16H30zM6,16H7V17H6zM7,16H8V17H7zM8,16H9V17H8zM11,16H12V17H11zM12,16H13V17H12zM14,16H15V17H14zM15,16H16V17H15zM16,16H17V17H16zM19,16H20V17H19zM20,16H21V17H20zM21,16H22V17H21zM22,16H23V17H22zM23,16H24V17H23zM24,16H25V17H24zM25,16H26V17H25zM26,16H27V17H26zM28,16H29V17H28zM30,16H31V17H30zM1,17H2V18H1zM3,17H4V18H3zM4,17H5V18H4zM7,17H8V18H7zM8,17H9V18H8zM9,17H10V18H9zM10,17H11V18H10zM11,17H12V18H11zM12,17H13V18H12zM13,17H14V18H13zM14,17H15V18H14zM15,17H16V18H15zM17,17H18V18H17zM20,17H21V18H20zM21,17H22V18H21zM22,17H23V18H22zM23,17H24V18H23zM24,17H25V18H24zM26,17H27V18H26zM28,17H29V18H28zM29,17H30V18H29zM32,17H33V18H32zM0,18H1V19H0zM1,18H2V19H1zM3,18H4V19H3zM4,18H5V19H4zM6,18H7V19H6zM15,18H16V19H15zM16,18H17V19H16zM17,18H18V19H17zM21,18H22V19H21zM24,18H25V19H24zM27,18H28V19H27zM28,18H29V19H28zM30,18H31V19H30zM31,18H32V19H31zM1,19H2V20H1zM3,19H4V20H3zM7,19H8V20H7zM8,19H9V20H8zM9,19H10V20H9zM10,19H11V20H10zM13,19H14V20H13zM15,19H16V20H15zM16,19H17V20H16zM19,19H20V20H19zM22,19H23V20H22zM23,19H24V20H23zM24,19H25V20H24zM26,19H27V20H26zM28,19H29V20H28zM31,19H32V20H31zM32,19H33V20H32zM0,20H1V21H0zM2,20H3V21H2zM3,20H4V21H3zM4,20H5V21H4zM6,20H7V21H6zM7,20H8V21H7zM8,20H9V21H8zM9,20H10V21H9zM10,20H11V21H10zM11,20H12V21H11zM12,20H13V21H12zM13,20H14V21H13zM14,20H15V21H14zM15,20H16V21H15zM18,20H19V21H18zM21,20H22V21H21zM23,20H24V21H23zM24,20H25V21H24zM25,20H26V21H25zM27,20H28V21H27zM29,20H30V21H29zM30,20H31V21H30zM0,21H1V22H0zM2,21H3V22H2zM3,21H4V22H3zM4,21H5V22H4zM5,21H6V22H5zM10,21H11V22H10zM11,21H12V22H11zM12,21H13V22H12zM14,21H15V22H14zM15,21H16V22H15zM17,21H18V22H17zM18,21H19V22H18zM21,21H22V22H21zM23,21H24V22H23zM24,21H25V22H24zM25,21H26V22H25zM26,21H27V22H26zM27,21H28V22H27zM30,21H31V22H30zM32,21H33V22H32zM2,22H3V23H2zM3,22H4V23H3zM4,22H5V23H4zM5,22H6V23H5zM6,22H7V23H6zM9,22H10V23H9zM10,22H11V23H10zM13,22H14V23H13zM16,22H17V23H16zM18,22H19V23H18zM20,22H21V23H20zM21,22H22V23H21zM23,22H24V23H23zM25,22H26V23H25zM26,22H27V23H26zM28,22H29V23H28zM29,22H30V23H29zM30,22H31V23H30zM31,22H32V23H31zM32,22H33V23H32zM1,23H2V24H1zM4,23H5V24H4zM12,23H13V24H12zM14,23H15V24H14zM16,23H17V24H16zM20,23H21V24H20zM22,23H23V24H22zM26,23H27V24H26zM28,23H29V24H28zM31,23H32V24H31zM32,23H33V24H32zM0,24H1V25H0zM2,24H3V25H2zM4,24H5V25H4zM5,24H6V25H5zM6,24H7V25H6zM8,24H9V25H8zM10,24H11V25H10zM11,24H12V25H11zM13,24H14V25H13zM15,24H16V25H15zM17,24H18V25H17zM19,24H20V25H19zM22,24H23V25H22zM24,24H25V25H24zM25,24H26V25H25zM26,24H27V25H26zM27,24H28V25H27zM28,24H29V25H28zM29,24H30V25H29zM8,25H9V26H8zM10,25H11V26H10zM11,25H12V26H11zM13,25H14V26H13zM15,25H16V26H15zM17,25H18V26H17zM19,25H20V26H19zM21,25H22V26H21zM23,25H24V26H23zM24,25H25V26H24zM28,25H29V26H28zM29,25H30V26H29zM31,25H32V26H31zM0,26H1V27H0zM1,26H2V27H1zM2,26H3V27H2zM3,26H4V27H3zM4,26H5V27H4zM5,26H6V27H5zM6,26H7V27H6zM8,26H9V27H8zM9,26H10V27H9zM10,26H11V27H10zM11,26H12V27H11zM13,26H14V27H13zM14,26H15V27H14zM19,26H20V27H19zM21,26H22V27H21zM22,26H23V27H22zM23,26H24V27H23zM24,26H25V27H24zM26,26H27V27H26zM28,26H29V27H28zM0,27H1V28H0zM6,27H7V28H6zM8,27H9V28H8zM9,27H10V28H9zM13,27H14V28H13zM15,27H16V28H15zM16,27H17V28H16zM19,27H20V28H19zM21,27H22V28H21zM22,27H23V28H22zM23,27H24V28H23zM24,27H25V28H24zM28,27H29V28H28zM29,27H30V28H29zM30,27H31V28H30zM0,28H1V29H0zM2,28H3V29H2zM3,28H4V29H3zM4,28H5V29H4zM6,28H7V29H6zM9,28H10V29H9zM14,28H15V29H14zM17,28H18V29H17zM20,28H21V29H20zM21,28H22V29H21zM23,28H24V29H23zM24,28H25V29H24zM25,28H26V29H25zM26,28H27V29H26zM27,28H28V29H27zM28,28H29V29H28zM30,28H31V29H30zM31,28H32V29H31zM32,28H33V29H32zM0,29H1V30H0zM2,29H3V30H2zM3,29H4V30H3zM4,29H5V30H4zM6,29H7V30H6zM8,29H9V30H8zM9,29H10V30H9zM11,29H12V30H11zM12,29H13V30H12zM18,29H19V30H18zM20,29H21V30H20zM21,29H22V30H21zM23,29H24V30H23zM27,29H28V30H27zM32,29H33V30H32zM0,30H1V31H0zM2,30H3V31H2zM3,30H4V31H3zM4,30H5V31H4zM6,30H7V31H6zM8,30H9V31H8zM9,30H10V31H9zM11,30H12V31H11zM13,30H14V31H13zM22,30H23V31H22zM24,30H25V31H24zM26,30H27V31H26zM27,30H28V31H27zM30,30H31V31H30zM0,31H1V32H0zM6,31H7V32H6zM12,31H13V32H12zM13,31H14V32H13zM15,31H16V32H15zM16,31H17V32H16zM17,31H18V32H17zM22,31H23V32H22zM24,31H25V32H24zM26,31H27V32H26zM27,31H28V32H27zM28,31H29V32H28zM29,31H30V32H29zM32,31H33V32H32zM0,32H1V33H0zM1,32H2V33H1zM2,32H3V33H2zM3,32H4V33H3zM4,32H5V33H4zM5,32H6V33H5zM6,32H7V33H6zM8,32H9V33H8zM9,32H10V33H9zM10,32H11V33H10zM11,32H12V33H11zM12,32H13V33H12zM13,32H14V33H13zM15,32H16V33H15zM16,32H17V33H16zM17,32H18V33H17zM18,32H19V33H18zM19,32H20V33H19zM20,32H21V33H20zM21,32H22V33H21zM25,32H26V33H25zM28,32H29V33H28zM29,32H30V33H29zM30,32H31V33H30z" fill="#1F2A2D"/>
+  </symbol>
+</svg>
+
+
+<div class="print-bar">
+  <span class="label">BEISPIEL-ANGEBOT</span>
+  <span class="info">WaBo · 2026000042 · ebm-papst (anonymisiert)</span>
+  <button onclick="window.print()">↓ Als PDF speichern</button>
+  <button class="ghost" onclick="window.close()">Schließen</button>
+</div>
+
+<!-- ============================================================
+     SHEET 1 — ANSCHREIBEN
+     ============================================================ -->
+<div class="sheet">
+  <div class="sheet-header">
+    <div>
+      <div class="logo"><span class="b1">Wa</span><span class="b2">Bo</span></div>
+      <div class="logo-line">Walter Bornmann GmbH · Präzisionsdrehteile aus Metall</div>
+    </div>
+    <div class="sheet-meta">
+      <strong>Angebot 2026000042</strong>
+      26. März 2026<br>
+      Gültig bis 26. April 2026
+    </div>
+  </div>
+
+  <div class="recipient-row">
+    <div class="col">
+      <div class="label">Empfänger</div>
+      <strong>ebm-papst Mulfingen GmbH &amp; Co. KG</strong><br>
+      z. Hd. C. Z., Strategischer Einkauf<br>
+      Cc: A. D., Einkauf Operations<br>
+      Bachmühle 2 · 74673 Mulfingen
+    </div>
+    <div class="col">
+      <div class="label">Ihre Anfrage</div>
+      <strong>vom 25. März 2026</strong><br>
+      9 Präzisionsdrehteile · Teileklasse 3<br>
+      Anwendung: Lüftermotoren-Baureihen<br>
+      Status-Link: <span class="mute">walter-bornmann.de/status/…x9k4n</span>
+    </div>
+  </div>
+
+  <div class="eyebrow">Prozess formt Präzision</div>
+  <h1 style="margin-top:6px;">Ihr Angebot und unsere Vorschläge<br>für mehr Wirtschaftlichkeit</h1>
+
+  <div class="letter">
+    <p>Sehr geehrte Frau Z.,</p>
+    <p>vielen Dank für Ihre Anfrage. <strong>Angebot A</strong> entspricht Ihrer Spezifikation 1:1. <strong>Angebot B</strong> enthält vier Optimierungs-Hebel mit konkreter Begründung — einzeln annehmbar, ohne Funktion oder Qualität zu verändern.</p>
+    <p>Für die Positionen 22115-2-5117 und 8217100080 melden wir uns persönlich, sobald die Vormaterial-Prüfung abgeschlossen ist.</p>
+  </div>
+
+  <div class="summary-box">
+    <div class="row"><span>Angebot A · 7 Positionen · netto / Jahr</span><strong class="num">1.469.695 €</strong></div>
+    <div class="row"><span>Angebot B · mit Optimierungen · netto / Jahr</span><strong class="num">1.396.295 €</strong></div>
+    <div class="row"><span>Lieferzeit ab Bemusterung (Angebot B)</span><strong>13 Wochen 3 Tage</strong></div>
+    <div class="saving">
+      <span>Ihre Ersparnis bei Angebot B</span>
+      <strong class="num">73.400 € / Jahr</strong>
+    </div>
+  </div>
+
+  <div class="qr-box">
+    <svg class="qr-svg"><use href="#qr"/></svg>
+    <div class="qr-info">
+      <div class="label">Live-Status &amp; Online-Annahme</div>
+      <h3>Ihr persönlicher Zugang — jederzeit, ohne Login</h3>
+      <p>Scannen oder Link öffnen: alle Schritte live verfolgen, Hebel an-/abwählen, Angebot online annehmen.</p>
+      <span class="url">walter-bornmann.de/status/2026000042-x9k4n</span>
+    </div>
+  </div>
+
+  <div class="signature">
+    <div class="avatar">WK</div>
+    <div>
+      <div class="name">Wolfgang Könen</div>
+      <div class="role">Vertrieb · Walter Bornmann GmbH</div>
+      <div class="contact">+49 2333 68943-12 · koenen@walter-bornmann.de</div>
+    </div>
+  </div>
+
+  <div class="sheet-footer">
+    <span>Walter Bornmann GmbH · Hagener Str. 168 b · 58256 Ennepetal · HRB 10984</span>
+    <span>1 / 6</span>
+  </div>
+</div>
+
+<!-- ============================================================
+     SHEET 2 — ANGEBOT A
+     ============================================================ -->
+<div class="sheet">
+  <div class="sheet-header">
+    <div>
+      <div class="logo"><span class="b1">Wa</span><span class="b2">Bo</span></div>
+      <div class="logo-line">Walter Bornmann GmbH · Präzisionsdrehteile aus Metall</div>
+    </div>
+    <div class="sheet-meta">
+      <strong>Angebot 2026000042</strong>
+      Angebot A · Wie angefragt
+    </div>
+  </div>
+
+  <div class="eyebrow">Angebot A</div>
+  <h1 style="margin-top:6px; margin-bottom:14px;">Wie angefragt</h1>
+  <p style="max-width:155mm;">Ihre Zeichnungen, Materialien, Toleranzen und Mengen unverändert übernommen. Standard-Konditionen für Verpackung und Bemusterung.</p>
+
+  <table class="pos">
+    <thead>
+      <tr>
+        <th style="width:34%;">Position</th>
+        <th>Material</th>
+        <th class="r">Menge / Jahr</th>
+        <th class="r">Stückpreis</th>
+        <th class="r">Summe</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>99000-2-5111</strong> <span class="mute">· Ø 22 · IT8</span></td><td>C45 / Stahl</td><td class="r">225.000</td><td class="r">1,80 €</td><td class="r">405.000,00 €</td></tr>
+      <tr><td><strong>99150-2-5111</strong> <span class="mute">· Ø 18 · IT8</span></td><td>C45 / Stahl</td><td class="r">48.000</td><td class="r">2,40 €</td><td class="r">115.200,00 €</td></tr>
+      <tr><td><strong>99650-2-5111</strong> <span class="mute">· Ø 16 · IT8</span></td><td>C45 / Stahl</td><td class="r">37.200</td><td class="r">1,95 €</td><td class="r">72.540,00 €</td></tr>
+      <tr><td><strong>68130-2-5113</strong> <span class="mute">· Ø 12 · IT9</span></td><td>Automatenstahl</td><td class="r">82.500</td><td class="r">1,15 €</td><td class="r">94.875,00 €</td></tr>
+      <tr><td><strong>03960-2-5111</strong> <span class="mute">· Ø 14 · IT8</span></td><td>C45 / Stahl</td><td class="r">53.550</td><td class="r">2,10 €</td><td class="r">112.455,00 €</td></tr>
+      <tr><td><strong>6011054000</strong> <span class="mute">· Ø 11 · IT9</span></td><td>C45 / Stahl</td><td class="r">207.500</td><td class="r">1,55 €</td><td class="r">321.625,00 €</td></tr>
+      <tr><td><strong>8217100079</strong> <span class="mute">· Ø 10 · IT9</span></td><td>Messing CuZn39Pb3</td><td class="r">200.000</td><td class="r">1,65 €</td><td class="r">330.000,00 €</td></tr>
+    </tbody>
+    <tfoot>
+      <tr class="sub-row"><td colspan="4" style="text-align:right;">Zwischensumme · 7 Positionen</td><td class="r">1.451.695,00 €</td></tr>
+      <tr class="sub-row"><td colspan="4" style="text-align:right;">Verpackung · Einweg-Karton</td><td class="r">18.000,00 €</td></tr>
+      <tr class="total"><td colspan="4" style="text-align:right;">Summe netto / Jahr</td><td class="r">1.469.695,00 €</td></tr>
+    </tfoot>
+  </table>
+
+  <h2 style="margin-top:24px; margin-bottom:12px;">Konditionen</h2>
+  <div class="conditions">
+    <div class="cond-item"><div class="label">Lieferzeit ab Bemusterung</div><div class="value">14 Wochen</div></div>
+    <div class="cond-item"><div class="label">Erstbemusterung</div><div class="value">PPAP Klasse 3</div></div>
+    <div class="cond-item"><div class="label">Verpackung</div><div class="value">Einweg-Karton</div></div>
+    <div class="cond-item"><div class="label">Lieferlos</div><div class="value">WaBo-Standard</div></div>
+    <div class="cond-item"><div class="label">Zahlung</div><div class="value">30 Tage netto · 14 Tage 2 % Skonto</div></div>
+    <div class="cond-item"><div class="label">Lieferung</div><div class="value">FCA Ennepetal · Incoterms 2020</div></div>
+  </div>
+
+  <p style="margin-top:14px; font-size:8.5pt; color:var(--c-mute);">Pos. 22115-2-5117 und 8217100080 sind nicht enthalten — Klärung im persönlichen Termin mit Herrn Könen.</p>
+
+  <div class="sheet-footer">
+    <span>Walter Bornmann GmbH · Angebot 2026000042 · 26.03.2026</span>
+    <span>2 / 6</span>
+  </div>
+</div>
+
+<!-- ============================================================
+     SHEET 3 — ANGEBOT B (Hebel)
+     ============================================================ -->
+<div class="sheet">
+  <div class="sheet-header">
+    <div>
+      <div class="logo"><span class="b1">Wa</span><span class="b2">Bo</span></div>
+      <div class="logo-line">Walter Bornmann GmbH · Präzisionsdrehteile aus Metall</div>
+    </div>
+    <div class="sheet-meta">
+      <strong>Angebot 2026000042</strong>
+      Angebot B · WaBo-Empfehlung
+    </div>
+  </div>
+
+  <div class="eyebrow">Angebot B · Mitgedacht und optimiert</div>
+  <h1 style="margin-top:6px; margin-bottom:14px;">Vier Hebel für mehr Wirtschaftlichkeit</h1>
+  <p style="max-width:155mm;">Wir haben Ihre Anfrage technisch und prozessual durchgearbeitet. Folgende Optimierungen schlagen wir vor — jeden Hebel können Sie einzeln annehmen oder verwerfen. Funktion und Qualität Ihrer Bauteile bleiben unverändert.</p>
+
+  <div style="margin-top:28px;">
+    <div class="lever">
+      <div class="lever-head">
+        <div><span class="num-tag">01</span> &nbsp; <span class="title">Geometrie-Optimierung Pos. 99000-2-5111</span></div>
+        <div class="effect">−28.000 € / Jahr</div>
+      </div>
+      <div class="desc">Wandstärke an einer unkritischen Stelle um 0,4 mm reduziert (FEM-belegt). Bei 225.000 Stück senkt das die Materialkosten erheblich.</div>
+      <div class="meta">FEM-Bericht beigefügt · Funktionsmaße unverändert · Bemusterung Klasse 3</div>
+    </div>
+
+    <div class="lever">
+      <div class="lever-head">
+        <div><span class="num-tag">02</span> &nbsp; <span class="title">Lieferlos-Optimierung über alle 7 Positionen</span></div>
+        <div class="effect">−22.500 € / Jahr</div>
+      </div>
+      <div class="desc">Lose abgestimmt auf Ihren Lagerumschlag und unsere Maschinenbelegung. Weniger Rüstkosten, planbarere Abrufe.</div>
+      <div class="meta">1,5 % Stückpreis-Effekt · keine MOQ-Erhöhung · kein zusätzliches Lagerrisiko</div>
+    </div>
+
+    <div class="lever">
+      <div class="lever-head">
+        <div><span class="num-tag">03</span> &nbsp; <span class="title">Mehrweg-Verpackung im KLT-Pool</span></div>
+        <div class="effect">−15.300 € / Jahr</div>
+      </div>
+      <div class="desc">Standard-Behälter im Mehrweg-Kreislauf statt Einweg-Kartons. Spart Verpackungskosten und 1,2 t Material pro Jahr.</div>
+      <div class="meta">−85 % Verpackungskosten · ESG-Reporting-Daten enthalten</div>
+    </div>
+
+    <div class="lever">
+      <div class="lever-head">
+        <div><span class="num-tag">04</span> &nbsp; <span class="title">Bündelung Pos. 99150 + 99650</span></div>
+        <div class="effect">−7.600 € / Jahr</div>
+      </div>
+      <div class="desc">Beide Positionen lassen sich auf der gleichen Maschinengruppe fertigen. Spart Rüstzeit und verkürzt die Lieferzeit.</div>
+      <div class="meta">−4 Tage Lieferzeit · gemeinsame Charge möglich · QS unverändert</div>
+    </div>
+  </div>
+
+  <div class="sheet-footer">
+    <span>Walter Bornmann GmbH · Angebot 2026000042 · 26.03.2026</span>
+    <span>3 / 6</span>
+  </div>
+</div>
+
+<!-- ============================================================
+     SHEET 4 — OPTIMIERTE STÜCKPREISE (Angebot B Tabelle)
+     ============================================================ -->
+<div class="sheet">
+  <div class="sheet-header">
+    <div>
+      <div class="logo"><span class="b1">Wa</span><span class="b2">Bo</span></div>
+      <div class="logo-line">Walter Bornmann GmbH · Präzisionsdrehteile aus Metall</div>
+    </div>
+    <div class="sheet-meta">
+      <strong>Angebot 2026000042</strong>
+      Angebot B · Stückpreise
+    </div>
+  </div>
+
+  <div class="eyebrow">Angebot B · Beauftragung</div>
+  <h1 style="margin-top:6px; margin-bottom:14px;">Optimierte Stückpreise pro Position</h1>
+  <p style="max-width:155mm;">Die Effekte aus den vier Hebeln auf der vorigen Seite, übersetzt in konkrete Stückpreise. Beauftragung mit dieser Konfiguration online (QR-Code) oder per Antwort an Wolfgang Könen.</p>
+
+  <table class="pos">
+    <thead>
+      <tr>
+        <th style="width:28%;">Position</th>
+        <th class="r">Menge / Jahr</th>
+        <th>Wirksame Hebel</th>
+        <th class="r">Original</th>
+        <th class="r">Optimiert</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>99000-2-5111</strong></td><td class="r">225.000</td><td><span class="mute">01 · 02</span></td><td class="r">1,80 €</td><td class="r"><strong>1,65 €</strong></td></tr>
+      <tr><td><strong>99150-2-5111</strong></td><td class="r">48.000</td><td><span class="mute">02 · 04</span></td><td class="r">2,40 €</td><td class="r"><strong>2,27 €</strong></td></tr>
+      <tr><td><strong>99650-2-5111</strong></td><td class="r">37.200</td><td><span class="mute">02 · 04</span></td><td class="r">1,95 €</td><td class="r"><strong>1,84 €</strong></td></tr>
+      <tr><td><strong>68130-2-5113</strong></td><td class="r">82.500</td><td><span class="mute">02</span></td><td class="r">1,15 €</td><td class="r"><strong>1,13 €</strong></td></tr>
+      <tr><td><strong>03960-2-5111</strong></td><td class="r">53.550</td><td><span class="mute">02</span></td><td class="r">2,10 €</td><td class="r"><strong>2,07 €</strong></td></tr>
+      <tr><td><strong>6011054000</strong></td><td class="r">207.500</td><td><span class="mute">02</span></td><td class="r">1,55 €</td><td class="r"><strong>1,53 €</strong></td></tr>
+      <tr><td><strong>8217100079</strong></td><td class="r">200.000</td><td><span class="mute">02</span></td><td class="r">1,65 €</td><td class="r"><strong>1,62 €</strong></td></tr>
+    </tbody>
+    <tfoot>
+      <tr class="sub-row"><td colspan="3">Verpackung · Einweg → Mehrweg-KLT (Hebel 03)</td><td class="r">18.000 €</td><td class="r">2.700 €</td></tr>
+      <tr class="total"><td colspan="3">Summe netto / Jahr</td><td class="r">1.469.695 €</td><td class="r"><strong>1.396.295 €</strong></td></tr>
+      <tr class="sub-row" style="color:var(--c-primary-dark); font-weight:700;"><td colspan="4" style="text-align:right;">Ihre Ersparnis</td><td class="r">−73.400 €</td></tr>
+    </tfoot>
+  </table>
+
+  <div class="qr-box">
+    <svg class="qr-svg"><use href="#qr"/></svg>
+    <div class="qr-info">
+      <div class="label">Online annehmen</div>
+      <h3>Beauftragung mit dieser Konfiguration</h3>
+      <p>QR-Code scannen und Hebel-Konfiguration bestätigen — oder einzelne Hebel nachverhandeln. Auftragsbestätigung kommt sofort.</p>
+      <span class="url">walter-bornmann.de/status/2026000042-x9k4n</span>
+    </div>
+  </div>
+
+  <div class="sheet-footer">
+    <span>Walter Bornmann GmbH · Angebot 2026000042 · 26.03.2026</span>
+    <span>4 / 6</span>
+  </div>
+</div>
+
+<!-- ============================================================
+     SHEET 4 — VERGLEICH
+     ============================================================ -->
+<div class="sheet">
+  <div class="sheet-header">
+    <div>
+      <div class="logo"><span class="b1">Wa</span><span class="b2">Bo</span></div>
+      <div class="logo-line">Walter Bornmann GmbH · Präzisionsdrehteile aus Metall</div>
+    </div>
+    <div class="sheet-meta">
+      <strong>Angebot 2026000042</strong>
+      Vergleich
+    </div>
+  </div>
+
+  <div class="eyebrow">Im direkten Vergleich</div>
+  <h1 style="margin-top:6px; margin-bottom:24px;">Angebot A · Angebot B</h1>
+
+  <div class="compare-row">
+    <div class="compare-card">
+      <div class="label">Angebot A · Wie angefragt</div>
+      <div class="sum num">1.469.695 €</div>
+      <div class="meta">netto / Jahr<br>14 Wochen Lieferzeit · Einweg-Verpackung</div>
+    </div>
+    <div class="compare-card b">
+      <div class="label">Angebot B · WaBo-Empfehlung</div>
+      <div class="sum num">1.396.295 €</div>
+      <div class="meta">netto / Jahr<br>13 Wochen 3 Tage · Mehrweg-KLT-Pool</div>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="num">73.400 €</div><div class="label">Ersparnis / Jahr</div></div>
+    <div class="stat"><div class="num">−4 Tage</div><div class="label">Lieferzeit</div></div>
+    <div class="stat"><div class="num">−1,2 t</div><div class="label">Verpackung</div></div>
+    <div class="stat"><div class="num">+5,0 %</div><div class="label">Marge bei gleichem VK</div></div>
+  </div>
+
+  <h2 style="margin-top:32px; margin-bottom:14px;">Konditionen Angebot B</h2>
+  <div class="conditions">
+    <div class="cond-item"><div class="label">Lieferzeit ab Bemusterung</div><div class="value">13 Wochen 3 Tage</div></div>
+    <div class="cond-item"><div class="label">Erstbemusterung</div><div class="value">PPAP Klasse 3 · KW 17</div></div>
+    <div class="cond-item"><div class="label">Verpackung</div><div class="value">Mehrweg-KLT, Pool-System</div></div>
+    <div class="cond-item"><div class="label">Lieferlos</div><div class="value">Abgestimmt mit Ihrer Logistik</div></div>
+    <div class="cond-item"><div class="label">Zahlung</div><div class="value">30 Tage netto · 14 Tage 2 % Skonto</div></div>
+    <div class="cond-item"><div class="label">Lieferung</div><div class="value">FCA Ennepetal · Incoterms 2020</div></div>
+  </div>
+
+  <div class="terms">
+    Angebot freibleibend bis 26. April 2026 · Preise zzgl. gesetzlicher MwSt. · Werkzeugkosten bei diesem Auftragsvolumen entfallen · Materialpreis-Anpassungen bei signifikanter Veränderung der Vormaterialkosten möglich · Es gelten die WaBo-Liefer- und Zahlungsbedingungen, abrufbar unter walter-bornmann.de/agb.
+  </div>
+
+  <div class="sheet-footer">
+    <span>Walter Bornmann GmbH · Angebot 2026000042 · 26.03.2026</span>
+    <span>5 / 6</span>
+  </div>
+</div>
+
+<!-- ============================================================
+     SHEET 5 — BENEFITS
+     ============================================================ -->
+<div class="sheet">
+  <div class="sheet-header">
+    <div>
+      <div class="logo"><span class="b1">Wa</span><span class="b2">Bo</span></div>
+      <div class="logo-line">Walter Bornmann GmbH · Präzisionsdrehteile aus Metall</div>
+    </div>
+    <div class="sheet-meta">
+      <strong>Angebot 2026000042</strong>
+      Was Sie zusätzlich bekommen
+    </div>
+  </div>
+
+  <div class="eyebrow">Ohne Mehrkosten · in jedem Angebot</div>
+  <h1 style="margin-top:6px; margin-bottom:14px;">Was Sie zusätzlich bekommen</h1>
+  <p style="max-width:155mm;">Der Unterschied zu anderen Lieferanten entsteht bei WaBo nicht im Drehteil, sondern im Prozess davor und danach.</p>
+
+  <ul class="benefits-list" style="margin-top:24px;">
+    <li class="benefit-item">
+      <div class="ico">✓</div>
+      <div>
+        <div class="title">Indikation in 5 Minuten</div>
+        <div class="text">Preisspanne und Lieferfenster sofort sichtbar — keine Wartezeit, kein Mailen, keine Nachfragen.</div>
+      </div>
+    </li>
+    <li class="benefit-item">
+      <div class="ico">✓</div>
+      <div>
+        <div class="title">Live-Status für jede Anfrage</div>
+        <div class="text">Persönlicher Link, jeder Schritt sichtbar (Arbeitsvorbereitung, Einkauf, Qualitätssicherung, Angebot) — ohne Login.</div>
+      </div>
+    </li>
+    <li class="benefit-item">
+      <div class="ico">✓</div>
+      <div>
+        <div class="title">Zwei Angebote als Standard</div>
+        <div class="text">Original und Optimierungs-Vorschlag zu jeder Anfrage — sofort vergleichbar, einzeln annehmbar.</div>
+      </div>
+    </li>
+    <li class="benefit-item">
+      <div class="ico">✓</div>
+      <div>
+        <div class="title">Persönlicher Ansprechpartner</div>
+        <div class="text">Direkt erreichbar, mit Foto und Durchwahl. Kein Call-Center, kein Ticket-System.</div>
+      </div>
+    </li>
+    <li class="benefit-item">
+      <div class="ico">✓</div>
+      <div>
+        <div class="title">Status-Mail bei jeder Änderung</div>
+        <div class="text">Sie wissen automatisch, wann Sie etwas wissen müssen — kein Spam, nur die relevanten Schritte.</div>
+      </div>
+    </li>
+    <li class="benefit-item">
+      <div class="ico">✓</div>
+      <div>
+        <div class="title">FEM-Belegung bei Optimierungen</div>
+        <div class="text">Jeder Vorschlag mit Begründung und Berechnungsnachweis — nicht nur „günstiger", sondern belegt.</div>
+      </div>
+    </li>
+    <li class="benefit-item">
+      <div class="ico">✓</div>
+      <div>
+        <div class="title">Sichere Speicherung, ohne Login</div>
+        <div class="text">Persönlicher Status-Link statt Account-Pflicht. DSGVO-konform, automatische Löschung nach Abschluss.</div>
+      </div>
+    </li>
+    <li class="benefit-item">
+      <div class="ico">✓</div>
+      <div>
+        <div class="title">Prototypen &amp; Kleinserien für Bestandskunden</div>
+        <div class="text">Als Bestandskunde mit Mengen-Kontingent fertigen wir auch Prototypen und Kleinserien — exklusiv, jenseits unserer Standard-Lose.</div>
+      </div>
+    </li>
+  </ul>
+
+  <div class="sheet-footer">
+    <span>Walter Bornmann GmbH · Hagener Str. 168 b · 58256 Ennepetal · HRB 10984 · GF Philipp Herkenrath</span>
+    <span>6 / 6</span>
+  </div>
+</div>
+
+</body>
+</html>
