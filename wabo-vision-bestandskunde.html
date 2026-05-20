@@ -1007,8 +1007,8 @@
             <div class="role" data-de="Ihr Ansprechpartner · Vertrieb" data-en="Your contact · Sales">Ihr Ansprechpartner · Vertrieb</div>
           </div>
         </div>
-        <div class="line">📞 +49 2333 68943-12</div>
-        <div class="line">✉ koenen@walter-bornmann.de</div>
+        <div class="line">📞 <a href="tel:+4923336894312">+49 2333 68943-12</a></div>
+        <div class="line">✉ <a href="mailto:koenen@walter-bornmann.de">koenen@walter-bornmann.de</a></div>
       </div>
     </div>
   </div>
@@ -1164,6 +1164,10 @@
 
   <div class="indication-list" id="indList"></div>
 
+  <div style="font-size:13px; color:var(--c-mute); line-height:1.55; margin:-12px 0 24px 0; padding:14px 18px; background:#f8f9fa; border-left:3px solid var(--c-primary); border-radius:6px;">
+    <div data-de="* Lieferzeit-Spanne enthält die Materialbeschaffung. Als <strong>Serienabruf binnen 10 Arbeitstagen lieferbar</strong>, sobald die Erstcharge produziert ist und Vormaterial bei uns disponiert ist." data-en="* Delivery window includes raw-material procurement. Available as a <strong>serial call-off within 10 working days</strong> once the first batch is produced and stock material is allocated.">* Lieferzeit-Spanne enthält die Materialbeschaffung. Als <strong>Serienabruf binnen 10 Arbeitstagen lieferbar</strong>, sobald die Erstcharge produziert ist und Vormaterial bei uns disponiert ist.</div>
+  </div>
+
   <div style="text-align:center; padding:24px; background:var(--c-primary-light); border-radius:var(--radius-lg);">
     <strong data-de="Sie erhalten das vollständige Detail-Angebot mit Optimierungen innerhalb von 2 Werktagen." data-en="You'll receive the full detail offer with optimisations within 2 business days.">Sie erhalten das vollständige Detail-Angebot mit Optimierungen innerhalb von 2 Werktagen.</strong>
   </div>
@@ -1250,8 +1254,8 @@
             <div class="role" data-de="Ihr Ansprechpartner seit 2022" data-en="Your contact since 2022">Ihr Ansprechpartner seit 2022</div>
           </div>
         </div>
-        <div class="phone">📞 +49 2333 68943-12</div>
-        <div class="mail">✉ koenen@walter-bornmann.de</div>
+        <div class="phone">📞 <a href="tel:+4923336894312">+49 2333 68943-12</a></div>
+        <div class="mail">✉ <a href="mailto:koenen@walter-bornmann.de">koenen@walter-bornmann.de</a></div>
       </div>
     </div>
   </div>
@@ -1723,11 +1727,11 @@ document.querySelectorAll('.slot-btn').forEach(btn => {
 
 // ===== Indication List (Screen 6) =====
 const inds = [
-  { nr: '619471', qty_de: '1.000', qty_en: '1,000', range_de: '3,80 € – 4,20 €', range_en: '€3.80 – €4.20', delivery_de: '10–11 Wochen', delivery_en: '10–11 weeks' },
-  { nr: '409823', qty_de: '4.000', qty_en: '4,000', range_de: '5,60 € – 6,10 €', range_en: '€5.60 – €6.10', delivery_de: '9–11 Wochen', delivery_en: '9–11 weeks' },
-  { nr: '178551', qty_de: '3.000', qty_en: '3,000', range_de: '5,30 € – 5,70 €', range_en: '€5.30 – €5.70', delivery_de: '9–11 Wochen', delivery_en: '9–11 weeks' },
-  { nr: '178671', qty_de: '4.000', qty_en: '4,000', range_de: '5,10 € – 5,50 €', range_en: '€5.10 – €5.50', delivery_de: '9–11 Wochen', delivery_en: '9–11 weeks' },
-  { nr: '178211', qty_de: '2.400', qty_en: '2,400', range_de: '4,30 € – 4,70 €', range_en: '€4.30 – €4.70', delivery_de: '9–11 Wochen', delivery_en: '9–11 weeks' }
+  { nr: '619471', qty_de: '1.000', qty_en: '1,000', range_de: '3,80 € – 4,20 €', range_en: '€3.80 – €4.20', delivery_de: '10–11 Wochen *', delivery_en: '10–11 weeks *' },
+  { nr: '409823', qty_de: '4.000', qty_en: '4,000', range_de: '5,60 € – 6,10 €', range_en: '€5.60 – €6.10', delivery_de: '9–11 Wochen *', delivery_en: '9–11 weeks *' },
+  { nr: '178551', qty_de: '3.000', qty_en: '3,000', range_de: '5,30 € – 5,70 €', range_en: '€5.30 – €5.70', delivery_de: '9–11 Wochen *', delivery_en: '9–11 weeks *' },
+  { nr: '178671', qty_de: '4.000', qty_en: '4,000', range_de: '5,10 € – 5,50 €', range_en: '€5.10 – €5.50', delivery_de: '9–11 Wochen *', delivery_en: '9–11 weeks *' },
+  { nr: '178211', qty_de: '2.400', qty_en: '2,400', range_de: '4,30 € – 4,70 €', range_en: '€4.30 – €4.70', delivery_de: '9–11 Wochen *', delivery_en: '9–11 weeks *' }
 ];
 const indList = document.getElementById('indList');
 inds.forEach(i => {
