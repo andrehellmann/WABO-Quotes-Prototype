@@ -52,8 +52,27 @@
   }
   .logo-tag {
     margin-left: 14px; padding-left: 14px; border-left: 1px solid var(--c-line);
-    color: var(--c-mute); font-size: 13px; line-height: 1.3;
+    color: var(--c-mute); font-size: 13px; line-height: 1.35;
   }
+  .logo-tag strong { color: var(--c-ink); font-weight: 700; letter-spacing: -.2px; }
+  .iatf-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 10px; border: 1px solid var(--c-line);
+    border-radius: 6px; font-size: 11px; line-height: 1.2;
+    color: var(--c-ink); background: #fff; text-decoration: none;
+    font-weight: 600;
+  }
+  .iatf-badge .seal {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--c-ink); color: #fff;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 800; letter-spacing: -.4px;
+  }
+  .iatf-badge .txt { display: flex; flex-direction: column; line-height: 1.15; }
+  .iatf-badge .txt .t1 { font-weight: 800; color: var(--c-ink); font-size: 11px; }
+  .iatf-badge .txt .t2 { color: var(--c-mute); font-size: 9.5px; letter-spacing: .5px; text-transform: uppercase; }
+  body.in-iframe .iatf-badge { display: none; }
+  @media (max-width: 720px) { .iatf-badge .txt { display: none; } }
   .header-actions { margin-left: auto; display: flex; align-items: center; gap: 12px; }
   .back-btn {
     background: transparent; border: 1px solid var(--c-line);
@@ -316,9 +335,8 @@
      ============================================================ -->
 <header class="app-header">
   <img class="logo" src="walter-bornmann-logo.svg" alt="Walter Bornmann GmbH" onclick="backToIndex()" />
-  <div class="logo-tag" data-de="Walter Bornmann GmbH<br>Präzisionsdrehteile aus Metall" data-en="Walter Bornmann GmbH<br>Precision turned metal parts">
-    Walter Bornmann GmbH<br>Präzisionsdrehteile aus Metall
-  </div>
+  <div class="logo-tag" data-de="<strong>Simplifying Precision</strong><br>Walter Bornmann GmbH" data-en="<strong>Simplifying Precision</strong><br>Walter Bornmann GmbH"><strong>Simplifying Precision</strong><br>Walter Bornmann GmbH</div>
+  <div class="iatf-badge" title="IATF 16949 — Zertifikat-Nr. WB-DE-007421 · gültig bis 2027" aria-label="IATF 16949 zertifiziert"><span class="seal">✓</span><span class="txt"><span class="t1">IATF 16949</span><span class="t2" data-de="zertifiziert" data-en="certified">zertifiziert</span></span></div>
   <div class="header-actions">
     <button class="back-btn" id="backBtn" onclick="backToIndex()" data-de="← Zurück zur Übersicht" data-en="← Back to overview">← Zurück zur Übersicht</button>
     <div class="lang-switch">
@@ -333,12 +351,12 @@
      ============================================================ -->
 <main class="index-view" id="indexView">
   <section class="hero">
-    <div class="eyebrow" data-de="Demo · WaBo Angebotsprozess" data-en="Demo · WaBo Quote Process">Demo · WaBo Angebotsprozess</div>
+    <div class="eyebrow" data-de="Simplifying Precision · Demo Angebotsprozess" data-en="Simplifying Precision · Quote Process Demo">Simplifying Precision · Demo Angebotsprozess</div>
     <h1 data-de="Drei Visionen unseres<br>neuen <span class='accent'>Angebotsprozesses</span>" data-en="Three visions of our<br>new <span class='accent'>quote process</span>">
       Drei Visionen unseres<br>neuen <span class="accent">Angebotsprozesses</span>
     </h1>
-    <p data-de="Wir zeigen Ihnen, wie der Prozess für Neukunden und Bestandskunden aussehen wird — und welchen Quick-Win wir in 12 Wochen live haben. Klicken Sie sich frei durch. Alle Daten sind anonymisiert." data-en="We show you how the process will look for new customers and existing customers — and which quick win we will have live in 12 weeks. Click through freely. All data is anonymised.">
-      Wir zeigen Ihnen, wie der Prozess für Neukunden und Bestandskunden aussehen wird — und welchen Quick-Win wir in 12 Wochen live haben. Klicken Sie sich frei durch. Alle Daten sind anonymisiert.
+    <p data-de="Weniger Reibung, mehr Klarheit. Wir zeigen, wie der WaBo-Angebotsprozess für Neu- und Bestandskunden aussehen wird — effizient im Ablauf, transparent in jedem Schritt, schnell in der Kommunikation. Klicken Sie sich frei durch. Alle Daten sind anonymisiert." data-en="Less friction, more clarity. We show how the WaBo quote process will look for new and existing customers — efficient in flow, transparent at every step, fast in communication. Click through freely. All data is anonymised.">
+      Weniger Reibung, mehr Klarheit. Wir zeigen, wie der WaBo-Angebotsprozess für Neu- und Bestandskunden aussehen wird — effizient im Ablauf, transparent in jedem Schritt, schnell in der Kommunikation. Klicken Sie sich frei durch. Alle Daten sind anonymisiert.
     </p>
   </section>
 

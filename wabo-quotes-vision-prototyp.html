@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WaBo — Prozess formt Präzision · Angebotsprozess Prototyp</title>
+<title>WaBo — Simplifying Precision · Angebotsprozess Prototyp</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%232DBCB6'/%3E%3Ctext x='16' y='23' text-anchor='middle' font-family='-apple-system,Arial,sans-serif' font-size='22' font-weight='900' fill='white'%3EB%3C/text%3E%3C/svg%3E">
 <style>
   /* ============================================================
@@ -100,8 +100,27 @@
   }
   .logo-tag {
     margin-left: 14px; padding-left: 14px; border-left: 1px solid var(--c-line);
-    color: var(--c-mute); font-size: 13px; line-height: 1.3;
+    color: var(--c-mute); font-size: 13px; line-height: 1.35;
   }
+  .logo-tag strong { color: var(--c-ink); font-weight: 700; letter-spacing: -.2px; }
+  .iatf-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 10px; border: 1px solid var(--c-line);
+    border-radius: 6px; font-size: 11px; line-height: 1.2;
+    color: var(--c-ink); background: #fff; text-decoration: none;
+    font-weight: 600;
+  }
+  .iatf-badge .seal {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--c-ink); color: #fff;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 800; letter-spacing: -.4px;
+  }
+  .iatf-badge .txt { display: flex; flex-direction: column; line-height: 1.15; }
+  .iatf-badge .txt .t1 { font-weight: 800; color: var(--c-ink); font-size: 11px; }
+  .iatf-badge .txt .t2 { color: var(--c-mute); font-size: 9.5px; letter-spacing: .5px; text-transform: uppercase; }
+  body.in-iframe .iatf-badge { display: none; }
+  @media (max-width: 720px) { .iatf-badge .txt { display: none; } }
   .header-actions {
     margin-left: auto; display: flex; align-items: center; gap: 12px;
   }
@@ -737,6 +756,41 @@
   .offer-actions {
     display: flex; gap: 12px; padding: 0 28px 24px;
   }
+  .offer-actions .dl-row {
+    display: flex; gap: 8px; flex-basis: 100%; padding-top: 4px;
+    border-top: 1px dashed var(--c-line); margin-top: 4px; align-items: center;
+  }
+  .offer-actions .dl-row .dl-label {
+    font-size: 11px; color: var(--c-mute); text-transform: uppercase;
+    letter-spacing: 1px; font-weight: 700; padding-top: 6px; margin-right: auto;
+  }
+  .offer-actions .btn-dl {
+    background: #fff; border: 1px solid var(--c-line); color: var(--c-ink);
+    padding: 7px 12px; border-radius: 6px; font-family: var(--font);
+    font-size: 12px; font-weight: 700; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 6px; text-decoration: none;
+  }
+  .offer-actions .btn-dl:hover { background: var(--c-bg); border-color: var(--c-mute); color: var(--c-ink); }
+  .offer-actions .btn-dl svg { width: 13px; height: 13px; }
+
+  /* Rahmenvereinbarung */
+  .frame-deal {
+    margin-top: 28px; background: var(--c-ink); color: #fff;
+    border-radius: var(--radius-lg); padding: 28px 32px;
+    display: grid; grid-template-columns: 1fr 1fr auto; gap: 28px; align-items: center;
+  }
+  .frame-deal .fd-label { color: var(--c-primary); font-weight: 700; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
+  .frame-deal h3 { color: #fff; font-size: 18px; margin-bottom: 6px; }
+  .frame-deal p { color: rgba(255,255,255,.78); font-size: 13px; line-height: 1.5; margin: 0; }
+  .frame-deal ul { list-style: none; padding: 0; margin: 0; font-size: 13px; }
+  .frame-deal ul li { padding: 5px 0 5px 22px; position: relative; color: rgba(255,255,255,.9); }
+  .frame-deal ul li::before { content: '+'; color: var(--c-primary); font-weight: 800; position: absolute; left: 0; top: 4px; font-size: 16px; }
+  .frame-deal .fd-price { text-align: center; min-width: 220px; background: var(--c-primary); color: #fff; border-radius: var(--radius); padding: 18px 20px; }
+  .frame-deal .fd-price .extra { font-size: 11px; opacity: .85; letter-spacing: 1px; text-transform: uppercase; }
+  .frame-deal .fd-price .amount { font-size: 24px; font-weight: 800; margin: 4px 0; }
+  .frame-deal .fd-price .total { font-size: 12px; opacity: .9; }
+  .frame-deal .fd-price button { background: #fff; color: var(--c-ink); border: 0; padding: 8px 14px; border-radius: 6px; font-family: var(--font); font-size: 12px; font-weight: 700; cursor: pointer; margin-top: 10px; width: 100%; }
+  @media (max-width: 980px) { .frame-deal { grid-template-columns: 1fr; } }
 
   .offer-positions {
     margin-top: 16px; max-height: 0; overflow: hidden; transition: max-height .3s;
@@ -931,9 +985,8 @@
      ============================================================ -->
 <header class="app-header">
   <img class="logo" src="walter-bornmann-logo.svg" alt="Walter Bornmann GmbH" />
-  <div class="logo-tag" data-de="Walter Bornmann GmbH<br>Präzisionsdrehteile aus Metall" data-en="Walter Bornmann GmbH<br>Precision turned metal parts">
-    Walter Bornmann GmbH<br>Präzisionsdrehteile aus Metall
-  </div>
+  <div class="logo-tag" data-de="<strong>Simplifying Precision</strong><br>Walter Bornmann GmbH" data-en="<strong>Simplifying Precision</strong><br>Walter Bornmann GmbH"><strong>Simplifying Precision</strong><br>Walter Bornmann GmbH</div>
+  <div class="iatf-badge" title="IATF 16949 — Zertifikat-Nr. WB-DE-007421 · gültig bis 2027" aria-label="IATF 16949 zertifiziert"><span class="seal">✓</span><span class="txt"><span class="t1">IATF 16949</span><span class="t2" data-de="zertifiziert" data-en="certified">zertifiziert</span></span></div>
   <div class="header-actions">
     <div class="lang-switch">
       <button class="active" data-lang="de">DE</button>
@@ -951,7 +1004,7 @@
 <section class="screen active" data-screen="1">
   <div class="hero">
     <div>
-      <div class="hero-claim" data-de="Prozess formt Präzision" data-en="Process shapes precision">Prozess formt Präzision</div>
+      <div class="hero-claim" data-de="Simplifying Precision" data-en="Simplifying Precision">Simplifying Precision</div>
       <h1 data-de="Ihre Anfrage. Unsere Vorschläge. <span class='accent'>In 48 Stunden.</span>" data-en="Your request. Our proposals. <span class='accent'>In 48 hours.</span>">
         Ihre Anfrage. Unsere Vorschläge. <span class="accent">In 48 Stunden.</span>
       </h1>
@@ -1139,6 +1192,37 @@
           </p>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- IATF 16949: Automotive-Anforderungen abfragen -->
+  <div style="margin-top:16px;">
+    <div class="card" style="background:#fff; border:1px solid var(--c-line);">
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px;">
+        <span style="display:inline-block; padding:3px 8px; background:var(--c-ink); color:#fff; border-radius:4px; font-size:10px; font-weight:800; letter-spacing:.5px;">IATF 16949</span>
+        <strong style="color:var(--c-ink); font-size:15px;" data-de="Automotive-Anforderungen" data-en="Automotive requirements">Automotive-Anforderungen</strong>
+        <span style="font-size:12px; color:var(--c-mute); margin-left:auto;" data-de="optional · für PPAP-pflichtige Bauteile" data-en="optional · for PPAP-relevant parts">optional · für PPAP-pflichtige Bauteile</span>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:18px;">
+        <div>
+          <label style="display:block; font-size:12px; font-weight:700; color:var(--c-ink); margin-bottom:6px;" data-de="Sicherheits- / zulassungsrelevante Merkmale (KMA)?" data-en="Safety- / regulation-critical characteristics (KMA)?">Sicherheits- / zulassungsrelevante Merkmale (KMA)?</label>
+          <div style="display:flex; gap:8px;">
+            <label style="flex:1; padding:8px 12px; border:1px solid var(--c-line); border-radius:6px; font-size:13px; cursor:pointer; display:flex; align-items:center; gap:6px;"><input type="radio" name="kma" value="ja" /> <span data-de="Ja · KMA vorhanden" data-en="Yes · KMA present">Ja · KMA vorhanden</span></label>
+            <label style="flex:1; padding:8px 12px; border:1px solid var(--c-primary); background:var(--c-primary-light); border-radius:6px; font-size:13px; cursor:pointer; display:flex; align-items:center; gap:6px;"><input type="radio" name="kma" value="nein" checked /> <span data-de="Nein" data-en="No">Nein</span></label>
+          </div>
+        </div>
+        <div>
+          <label style="display:block; font-size:12px; font-weight:700; color:var(--c-ink); margin-bottom:6px;" data-de="PPAP-Level (Erstbemusterung)" data-en="PPAP level (initial sampling)">PPAP-Level (Erstbemusterung)</label>
+          <select style="width:100%; padding:9px 12px; border:1px solid var(--c-line); border-radius:6px; font-family:var(--font); font-size:13px; background:#fff; color:var(--c-ink);">
+            <option data-de="Level 1 — nur EMPB" data-en="Level 1 — EMPB only">Level 1 — nur EMPB</option>
+            <option data-de="Level 2 — EMPB + Muster" data-en="Level 2 — EMPB + samples">Level 2 — EMPB + Muster</option>
+            <option selected data-de="Level 3 — Standard Automotive" data-en="Level 3 — automotive standard">Level 3 — Standard Automotive</option>
+            <option data-de="Level 4 — kundenspezifisch" data-en="Level 4 — customer-specific">Level 4 — kundenspezifisch</option>
+            <option data-de="Level 5 — vor Ort beim Kunden" data-en="Level 5 — at customer site">Level 5 — vor Ort beim Kunden</option>
+          </select>
+        </div>
+      </div>
+      <p style="font-size:12px; color:var(--c-mute); margin-top:12px;" data-de="Diese Angaben fließen direkt in unseren IATF-konformen Freigabeprozess (APQP, EMPB, FMEA). Bei KMA-Teilen prüfen wir alle Optimierungs-Hebel zusätzlich auf Re-PPAP-Bedarf — bevor wir sie Ihnen vorschlagen." data-en="These inputs feed directly into our IATF-compliant release process (APQP, PPAP, FMEA). For KMA parts we check every optimisation lever for re-PPAP impact — before we propose it to you.">Diese Angaben fließen direkt in unseren IATF-konformen Freigabeprozess (APQP, EMPB, FMEA). Bei KMA-Teilen prüfen wir alle Optimierungs-Hebel zusätzlich auf Re-PPAP-Bedarf — bevor wir sie Ihnen vorschlagen.</p>
     </div>
   </div>
 </section>
@@ -1424,9 +1508,14 @@
         <div class="sum-row total"><span data-de="Summe netto / Jahr" data-en="Total net / year">Summe netto / Jahr</span><span>1.469.695 €</span></div>
         <div class="sum-row" style="margin-top:8px; font-size:12px; color:var(--c-mute);"><span data-de="Lieferzeit ab Bemusterung" data-en="Delivery from sampling">Lieferzeit ab Bemusterung</span><span data-de="14 Wochen" data-en="14 weeks">14 Wochen</span></div>
       </div>
-      <div class="offer-actions">
+      <div class="offer-actions" style="flex-wrap:wrap;">
         <a class="btn btn-secondary" style="flex:1; text-decoration:none;" href="wabo-angebot-beispiel.pdf" target="_blank" data-de="Angebot als PDF" data-en="Offer as PDF">Angebot als PDF</a>
         <button class="btn" style="flex:1;" data-de="Angebot A annehmen" data-en="Accept offer A">Angebot A annehmen</button>
+        <div class="dl-row">
+          <div class="dl-label" data-de="Für Ihr ERP / SAP" data-en="For your ERP / SAP">Für Ihr ERP / SAP</div>
+          <button class="btn-dl" onclick="downloadOffer('A','xlsx')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 3v14M6 13l6 6 6-6M5 21h14"/></svg> XLSX</button>
+          <button class="btn-dl" onclick="downloadOffer('A','csv')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 3v14M6 13l6 6 6-6M5 21h14"/></svg> CSV</button>
+        </div>
       </div>
     </div>
 
@@ -1448,6 +1537,7 @@
                 <div class="lever-effect">
                   <span class="effect-tag">−28.000 € / Jahr</span>
                   <span class="effect-tag neutral" data-de="FEM-Bericht auf Anfrage" data-en="FEM report on request">FEM-Bericht auf Anfrage</span>
+                  <span class="effect-tag neutral" style="border-color:#bbb; color:#444;" data-de="IATF · Re-PPAP nach Ihrer Freigabe" data-en="IATF · re-PPAP after your release">IATF · Re-PPAP nach Ihrer Freigabe</span>
                 </div>
               </div>
             </div>
@@ -1508,7 +1598,33 @@
         <a class="btn btn-secondary" style="flex:1; text-decoration:none; min-width:160px;" href="wabo-angebot-beispiel.pdf" target="_blank" data-de="Angebot als PDF" data-en="Offer as PDF">Angebot als PDF</a>
         <button class="btn btn-secondary" style="flex:1; min-width:160px;" data-de="15-Min-Call buchen" data-en="Book 15-min call">15-Min-Call buchen</button>
         <button class="btn" style="flex:1; min-width:160px;" onclick="goToScreen(9)" data-de="Angebot B annehmen →" data-en="Accept offer B →">Angebot B annehmen →</button>
+        <div class="dl-row">
+          <div class="dl-label" data-de="Für Ihr ERP / SAP" data-en="For your ERP / SAP">Für Ihr ERP / SAP</div>
+          <button class="btn-dl" onclick="downloadOffer('B','xlsx')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 3v14M6 13l6 6 6-6M5 21h14"/></svg> XLSX</button>
+          <button class="btn-dl" onclick="downloadOffer('B','csv')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 3v14M6 13l6 6 6-6M5 21h14"/></svg> CSV</button>
+        </div>
       </div>
+    </div>
+  </div>
+
+  <!-- Rahmenvereinbarung -->
+  <div class="frame-deal">
+    <div>
+      <div class="fd-label" data-de="Optional · Plus-Option zu Angebot B" data-en="Optional · Plus add-on to offer B">Optional · Plus-Option zu Angebot B</div>
+      <h3 data-de="Noch mehr sparen mit Rahmenvereinbarung" data-en="Save even more with a master agreement">Noch mehr sparen mit Rahmenvereinbarung</h3>
+      <p data-de="12 Monate Abnahme-Commitment auf die 7 Positionen. Sie planen verbindlich — wir geben mehr zurück." data-en="12-month volume commitment on the 7 positions. You plan reliably — we give more back.">12 Monate Abnahme-Commitment auf die 7 Positionen. Sie planen verbindlich — wir geben mehr zurück.</p>
+    </div>
+    <ul>
+      <li data-de="−2 % zusätzlich auf alle Positionen" data-en="−2 % extra on all positions">−2 % zusätzlich auf alle Positionen</li>
+      <li data-de="Preisbindung bis 31.12.2027" data-en="Price lock until 31 Dec 2027">Preisbindung bis 31.12.2027</li>
+      <li data-de="Vorrang in Maschinenbelegung &amp; Vormaterial-Disposition" data-en="Priority in machine slots &amp; material allocation">Vorrang in Maschinenbelegung &amp; Vormaterial-Disposition</li>
+      <li data-de="Konsignations-Option auf Anfrage" data-en="Consignment option on request">Konsignations-Option auf Anfrage</li>
+    </ul>
+    <div class="fd-price">
+      <div class="extra" data-de="Zusätzliche Ersparnis" data-en="Additional savings">Zusätzliche Ersparnis</div>
+      <div class="amount">−27.926 €</div>
+      <div class="total" data-de="Total dann 101.326 € statt 73.400 € / Jahr" data-en="Total then €101,326 instead of €73,400 / year">Total dann 101.326 € statt 73.400 € / Jahr</div>
+      <button data-de="Rahmenvereinbarung anfragen" data-en="Request master agreement">Rahmenvereinbarung anfragen</button>
     </div>
   </div>
 
@@ -1948,6 +2064,66 @@ document.querySelectorAll('.lever-toggle').forEach(cb => {
   cb.addEventListener('change', recalcOfferB);
 });
 recalcOfferB();
+
+/* ============================================================
+   SAP / ERP Export (Screen 7 — Zwei Angebote)
+   ============================================================ */
+const offerPositions = [
+  { pos: '99000-2-5111', material: '99000-2-5111', menge: 225000, einheit: 'ST', preis_a: 1.80, preis_b: 1.65, waehrung: 'EUR', werkstoff: 'C45 / Stahl',           lieferdatum: '2026-09-04' },
+  { pos: '99150-2-5111', material: '99150-2-5111', menge:  48000, einheit: 'ST', preis_a: 2.40, preis_b: 2.27, waehrung: 'EUR', werkstoff: 'C45 / Stahl',           lieferdatum: '2026-09-04' },
+  { pos: '99650-2-5111', material: '99650-2-5111', menge:  37200, einheit: 'ST', preis_a: 1.95, preis_b: 1.84, waehrung: 'EUR', werkstoff: 'C45 / Stahl',           lieferdatum: '2026-09-04' },
+  { pos: '99220-2-5111', material: '99220-2-5111', menge:  56000, einheit: 'ST', preis_a: 2.10, preis_b: 1.98, waehrung: 'EUR', werkstoff: 'C45 / Stahl',           lieferdatum: '2026-09-04' },
+  { pos: '99320-2-5111', material: '99320-2-5111', menge:  72000, einheit: 'ST', preis_a: 1.65, preis_b: 1.55, waehrung: 'EUR', werkstoff: 'C45 / Stahl',           lieferdatum: '2026-09-04' },
+  { pos: '99450-2-5111', material: '99450-2-5111', menge:  41000, einheit: 'ST', preis_a: 2.85, preis_b: 2.68, waehrung: 'EUR', werkstoff: '1.4571 / Edelstahl',   lieferdatum: '2026-09-04' },
+  { pos: '99550-2-5111', material: '99550-2-5111', menge:  28500, einheit: 'ST', preis_a: 3.05, preis_b: 2.87, waehrung: 'EUR', werkstoff: '1.4571 / Edelstahl',   lieferdatum: '2026-09-04' }
+];
+function buildRows(variant) {
+  const header = ['Angebot_Nr','Position','Material_Nr','Werkstoff','Menge','Einheit','Stueckpreis','Waehrung','Lieferdatum','Gueltig_bis','Lieferant_Nr','IATF_16949'];
+  const angebotNr = 'WB-2026-000142-' + variant;
+  const priceKey = variant === 'B' ? 'preis_b' : 'preis_a';
+  const rows = [header];
+  offerPositions.forEach((p, idx) => {
+    rows.push([
+      angebotNr, String(idx + 1).padStart(2, '0'),
+      p.material, p.werkstoff, p.menge, p.einheit,
+      p[priceKey].toFixed(2).replace('.', ','), p.waehrung,
+      p.lieferdatum, '2026-07-31', 'WB-DE-007421', 'ja'
+    ]);
+  });
+  return rows;
+}
+function downloadOffer(variant, format) {
+  const rows = buildRows(variant);
+  const filename = 'wabo-angebot-WB-2026-000142-' + variant + '.' + format;
+  if (format === 'csv') {
+    const csv = rows.map(r => r.map(c => {
+      const s = String(c);
+      return /[;",\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s;
+    }).join(';')).join('\r\n');
+    const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' });
+    triggerDownload(blob, filename);
+  } else {
+    const go = () => {
+      const ws = XLSX.utils.aoa_to_sheet(rows);
+      ws['!cols'] = [{wch:22},{wch:8},{wch:14},{wch:22},{wch:8},{wch:6},{wch:12},{wch:8},{wch:12},{wch:12},{wch:14},{wch:12}];
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Angebot ' + variant);
+      XLSX.writeFile(wb, filename);
+    };
+    if (window.XLSX) { go(); return; }
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js';
+    s.onload = go;
+    document.head.appendChild(s);
+  }
+}
+function triggerDownload(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 200);
+}
 
 /* ============================================================
    INIT
